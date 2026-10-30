@@ -4,7 +4,7 @@ Legend: `[x]` done · `[ ]` planned · **(S)** small · **(M)** medium · **(L)*
 "On-device" means audio, video and derived memory stay on the user's device by default.
 "PPMA" means the Persistent Proactive Management Agent; RECALL is a north app in its contract.
 
-**Status.** Concept + stage plan. No playable proof yet. Concept note: [recall.md](concept.md).
+**Status.** Playable demo + stage plan. Live at [jiuwendemos.github.io/recall](https://jiuwendemos.github.io/recall/). Concept note: [recall.md](concept.md).
 PPMA integration: [ppma-recall.md](integration-ppma.md).
 
 > **Implementation status in this repository (October 2026).** Every checkbox below has a working
