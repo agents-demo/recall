@@ -193,6 +193,11 @@ The CI also regenerates the pack and fails if the committed pack is not reproduc
 - [Safe evidence API](docs/evidence-api.md) — public evidence-pack contract.
 - [Provenance](docs/provenance.md) — assets, synthetic data, reproducibility and the public-demo boundary.
 
+The roadmap carries **213 implemented checkboxes** plus **153 planned items** across the three tracks that
+close the honest gaps: bounded proactivity, a genuinely 2026 interaction model, and real connections to
+PPMA, openjiuwen and the surrounding services. See
+[Beyond v0.9.0](docs/roadmap.md#beyond-v090--the-three-tracks).
+
 ---
 
 **The meeting is not lost.**
