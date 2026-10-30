@@ -101,7 +101,9 @@ export default function Stage() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      const typing = target && ["INPUT", "TEXTAREA"].includes(target.tagName);
+      const tag = target?.tagName ?? "";
+      const typing = ["INPUT", "TEXTAREA"].includes(tag);
+      const interactive = ["INPUT", "TEXTAREA", "SELECT", "BUTTON", "A"].includes(tag);
       if (event.key === "Escape") {
         navigate("/");
         return;
@@ -117,7 +119,7 @@ export default function Stage() {
           runSearch();
           return;
         }
-        if (typing) return;
+        if (interactive) return;
         event.preventDefault();
         next();
       }

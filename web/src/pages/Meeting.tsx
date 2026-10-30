@@ -232,8 +232,8 @@ export default function Meeting() {
           </div>
         </div>
         <div className="meeting-head-actions">
-          <button className="btn primary" onClick={() => sendMeeting(meeting.id, { safe: true })} disabled={meeting.consent.state !== "granted"}>
-            <Icon name="send" size={14} /> {meeting.ppma.status === "sent" ? "Send correction set" : t("common.send")}
+          <button className="btn primary" onClick={() => sendMeeting(meeting.id, { safe: true })} disabled={meeting.consent.state !== "granted" || meeting.ppma.status === "sent" || meeting.ppma.status === "queued"}>
+            <Icon name="send" size={14} /> {meeting.ppma.status === "sent" ? "Sent to PPMA" : meeting.ppma.status === "queued" ? "Queued for PPMA" : t("common.send")}
           </button>
           <button className="btn" onClick={() => setPackOpen(true)} disabled={!evPack}>
             <Icon name="file" size={14} /> Evidence pack
@@ -516,8 +516,8 @@ export default function Meeting() {
                 <b>{meeting.ppma.status === "sent" ? "PPMA has the facts" : "Ready to hand off"}</b>
                 <p>Text and evidence pointers only. Raw audio stays on {meeting.provenance.device}.</p>
               </div>
-              <button className="btn primary" onClick={() => sendMeeting(meeting.id, { safe: true })} disabled={meeting.consent.state !== "granted"}>
-                <Icon name="send" size={14} /> {meeting.ppma.status === "sent" ? "Send corrected facts" : "Send to PPMA"}
+              <button className="btn primary" onClick={() => sendMeeting(meeting.id, { safe: true })} disabled={meeting.consent.state !== "granted" || meeting.ppma.status === "sent" || meeting.ppma.status === "queued"}>
+                <Icon name="send" size={14} /> {meeting.ppma.status === "sent" ? "PPMA has the facts" : meeting.ppma.status === "queued" ? "Queued — open PPMA to deliver" : "Send to PPMA"}
               </button>
             </div>
           </Panel>

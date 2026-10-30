@@ -728,7 +728,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         },
       });
       pushEvent(event, meeting);
-      setState((prev) => ({ ...prev, project: { ...(prev.project as ProjectState), followup: pack?.ppma.project.followup_draft ?? "" } }));
       return event.event_id;
     },
     [meetingById, pack, pushEvent, say],
@@ -795,7 +794,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             requested_by: state.settings.role,
             deleted_at: at,
           },
-          { sensitivity: meeting.sensitivity, occurredAt: at, seed: `memory.deleted::${meeting.capture_id}::${reason}` },
+          { sensitivity: meeting.sensitivity, occurredAt: at, seed: `memory.deleted::${meeting.capture_id}::${reason}::${at}` },
         ),
         meeting,
       );
@@ -1165,6 +1164,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           last_event: null,
           updated_at: pack.ppma.project.updated_at,
         },
+        settings: { ...prev.settings, ppmaOnline: true },
+        killSwitch: false,
       };
     });
   }, [pack]);
