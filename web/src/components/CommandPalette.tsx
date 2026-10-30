@@ -5,7 +5,10 @@ import { fmtTime, speakerName } from "../lib/engine";
 import { Icon } from "./Icon";
 
 const pages = [
-  { to: "/", label: "Now", detail: "Recent captures, open promises and PPMA state", icon: "wave" },
+  { to: "/", label: "Now", detail: "Recent captures, attention and PPMA state", icon: "wave" },
+  { to: "/attention", label: "Attention", detail: "Bounded proactive nudges with evidence", icon: "alert" },
+  { to: "/canvas", label: "Memory canvas", detail: "Meetings, evidence, people and notes as a graph", icon: "grid" },
+  { to: "/connectors", label: "Connected services", detail: "PPMA, openjiuwen, vendors and safety", icon: "link" },
   { to: "/record", label: "Record", detail: "Consent, device state and a new capture", icon: "record" },
   { to: "/meetings", label: "Meetings", detail: "Transcript, evidence, redaction and retention", icon: "layers" },
   { to: "/recall", label: "Recall", detail: "Ask the evidence or search every meeting", icon: "search" },
@@ -44,10 +47,16 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
 
   const rows = useMemo(() => {
     const list: { kind: "hit" | "page"; to: string; title: string; detail: string; icon: string; meta?: string }[] = [];
+    const q = query.trim().toLowerCase();
+    if (q) {
+      if (/^(record|capture|start)\b/.test(q)) list.push({ kind: "page", to: "/record", title: "Start a consent-gated capture", detail: "RECALL will ask for consent before opening a capture", icon: "record", meta: "command" });
+      if (/^(send|redact|delete|forget)\b/.test(q)) list.push({ kind: "page", to: "/meetings", title: "Prepare a review — never execute", detail: "Open the capture, check the safe version and confirm the action", icon: "shield", meta: "review" });
+      if (/^(attention|what needs)\b/.test(q)) list.push({ kind: "page", to: "/attention", title: "Open attention", detail: "Evidence-linked nudges, never autonomous actions", icon: "alert", meta: "proactive" });
+    }
     for (const hit of hits) list.push({ kind: "hit", to: `/meetings/${hit.meeting_id}?t=${Math.floor(hit.start)}&e=${hit.evidence_id}`, title: hit.text, detail: hit.meeting_title, icon: hit.kind === "decision" || hit.kind === "promise" ? "quote" : "layers", meta: `${fmtTime(hit.start)} · ${Math.round(hit.confidence * 100)}%` });
     for (const page of filteredPages) list.push({ kind: "page", to: page.to, title: page.label, detail: page.detail, icon: page.icon });
     return list;
-  }, [hits, filteredPages]);
+  }, [hits, filteredPages, query]);
 
   useEffect(() => {
     setCursor(0);

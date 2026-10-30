@@ -6,6 +6,9 @@ type Vars = Record<string, string | number>;
 const en: Record<string, string> = {
   "app.tagline": "Private capture for project memory",
   "nav.now": "Now",
+  "nav.attention": "Attention",
+  "nav.canvas": "Canvas",
+  "nav.connectors": "Connections",
   "nav.record": "Record",
   "nav.meetings": "Meetings",
   "nav.recall": "Recall",
@@ -110,6 +113,9 @@ const en: Record<string, string> = {
 const zh: Record<string, string> = {
   "app.tagline": "项目记忆的私密采集层",
   "nav.now": "现在",
+  "nav.attention": "注意力",
+  "nav.canvas": "记忆图谱",
+  "nav.connectors": "连接",
   "nav.record": "录制",
   "nav.meetings": "会议",
   "nav.recall": "回忆",

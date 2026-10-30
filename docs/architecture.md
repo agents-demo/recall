@@ -180,3 +180,10 @@ distinction.
 - Multi-device sync, OIDC and billing are surfaces with named swap points, not live integrations.
 - Redaction is reviewable by a human; it is not advertised as safe without review.
 - The pilot metrics are reference values; they are not field measurements.
+
+## 11. v1.0 additions
+
+The v1.0 proactive/2026/connected layer is documented in [architecture-v1.md](architecture-v1.md): bounded
+attention, threaded recall, memory canvas, BroadcastChannel collaboration, expiring share links, encrypted
+local storage, the real local PPMA server, the openjiuwen adapter, the connector catalogue, the PWA share
+target and the browser extension.

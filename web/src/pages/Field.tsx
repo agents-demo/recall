@@ -6,14 +6,36 @@ import { PageHead, Panel, Chip, Status, DataNote, Toggle, Meter, SourceChip } fr
 import { Icon } from "../components/Icon";
 
 export default function Field() {
-  const { pack, notes, addFieldNote, sendNote, settings, setSetting, queue, flushQueue, events, say } = useStore();
+  const { pack, notes, addFieldNote, sendNote, settings, setSetting, queue, flushQueue, events, ambient, setAmbient, logAmbientActivation, say } = useStore();
   const t = useT();
   const [text, setText] = useState("");
   const [location, setLocation] = useState("Northgate — Building C");
   const [photo, setPhoto] = useState<{ name: string; ocr: string; url: string } | null>(null);
-  const [batteryMode, setBatteryMode] = useState(true);
-  const [ambient, setAmbient] = useState(false);
   const [saved, setSaved] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+
+  const startVoiceNote = () => {
+    const ctor = (window as unknown as { SpeechRecognition?: new () => { lang: string; interimResults: boolean; continuous: boolean; start: () => void; stop: () => void; onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null; onerror: (() => void) | null; onend: (() => void) | null }; webkitSpeechRecognition?: new () => { lang: string; interimResults: boolean; continuous: boolean; start: () => void; stop: () => void; onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null; onerror: (() => void) | null; onend: (() => void) | null } }).SpeechRecognition
+      ?? (window as unknown as { webkitSpeechRecognition?: new () => { lang: string; interimResults: boolean; continuous: boolean; start: () => void; stop: () => void; onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null; onerror: (() => void) | null; onend: (() => void) | null } }).webkitSpeechRecognition;
+    if (!ctor) {
+      say("This browser has no speech recognition. Dictation is unavailable.");
+      return;
+    }
+    const recognition = new ctor();
+    recognition.lang = settings.lang === "zh" ? "zh-CN" : "en-GB";
+    recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setText((value) => (value ? `${value} ${transcript}` : transcript));
+      say("Voice note added as text. It is timestamped when you capture the note.");
+    };
+    recognition.onerror = () => setListening(false);
+    recognition.onend = () => setListening(false);
+    setListening(true);
+    recognition.start();
+    say("Listening with the browser speech engine — not the private on-device ASR.");
+  };
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => () => { if (photo?.url) URL.revokeObjectURL(photo.url); }, [photo]);
@@ -54,7 +76,7 @@ export default function Field() {
             <div className="phone-status">
               <Chip tone={settings.ppmaOnline ? "green" : "amber"} dot={settings.ppmaOnline ? "live" : "warn"}>{settings.ppmaOnline ? "online" : "offline"}</Chip>
               <Chip><Icon name="battery" size={11} /> 54%</Chip>
-              <Chip tone={batteryMode ? "green" : "neutral"}>{batteryMode ? "low-power" : "full quality"}</Chip>
+              <Chip tone={ambient.batteryAware ? "green" : "neutral"}>{ambient.batteryAware ? "low-power" : "full quality"}</Chip>
             </div>
             <label className="field-label">
               <span>Observation</span>
@@ -65,6 +87,10 @@ export default function Field() {
                 placeholder="What did you see or hear? Keep the exact words if they matter."
               />
             </label>
+            <button type="button" className={classNames("field-dictate", listening && "listening")} onClick={startVoiceNote}>
+              <Icon name={listening ? "pause" : "mic"} size={14} /> {listening ? "Listening…" : "Dictate a voice note"}
+              <span>browser speech, not the private ASR</span>
+            </button>
             <label className="field-label">
               <span>Location</span>
               <select value={location} onChange={(event) => setLocation(event.target.value)}>
@@ -150,7 +176,7 @@ export default function Field() {
             </div>
             <div className="live-toggle mt12">
               <span>Battery-aware capture</span>
-              <Toggle checked={batteryMode} onChange={setBatteryMode} label="Battery-aware capture" />
+              <Toggle checked={ambient.batteryAware} onChange={(value) => setAmbient({ batteryAware: value })} label="Battery-aware capture" />
             </div>
             <p className="xsmall soft">Low-power mode reduces diarization cadence and pauses vision models below 20% battery. Capture never becomes cloud-only.</p>
           </Panel>
@@ -195,20 +221,28 @@ export default function Field() {
 
           <Panel title="Ambient capture" sub="Always-on needs consent and a kill switch">
             <div className="live-toggle">
-              <span><i className={classNames("dot", ambient ? "live" : "warn")} /> Low-power VAD · wake word</span>
-              <Toggle checked={ambient} onChange={(value) => { setAmbient(value); say(value ? "Ambient mode armed. It pauses in no-record zones and asks for consent before saving." : "Ambient mode off. Capture requires an explicit start."); }} label="Ambient capture" />
+              <span><i className={classNames("dot", ambient.enabled ? "live" : "warn")} /> Low-power VAD · wake word</span>
+              <Toggle checked={ambient.enabled} onChange={(value) => { setAmbient({ enabled: value }); if (value) logAmbientActivation(); say(value ? "Ambient mode armed. It pauses in no-record zones and asks for consent before saving." : "Ambient mode off. Capture requires an explicit start."); }} label="Ambient capture" />
+            </div>
+            <div className="live-toggle mt8">
+              <span>Wake word before saving</span>
+              <Toggle checked={ambient.wakeWord} onChange={(value) => setAmbient({ wakeWord: value })} label="Wake word before saving" />
             </div>
             <div className="sync-metrics">
               <div><span>VAD</span><b>on device</b></div>
-              <div><span>Wake word</span><b>jurisdiction</b></div>
-              <div><span>Battery budget</span><b>8 h</b></div>
+              <div><span>Wake word</span><b>{ambient.wakeWord ? "required" : "explicit start"}</b></div>
+              <div><span>Battery budget</span><b>{ambient.batteryAware ? "8 h" : "3 h"}</b></div>
               <div><span>Thermal</span><b>nominal</b></div>
+              <div><span>Schedule</span><b>{ambient.schedule}</b></div>
+              <div><span>Activations</span><b>{ambient.activations}</b></div>
+              <div><span>Last activation</span><b>{ambient.lastActivation ? ambient.lastActivation.slice(11, 16) : "—"}</b></div>
+              <div><span>Audit</span><b>on</b></div>
             </div>
             <p className="xsmall soft mt8">Ambient capture is off by default. It requires a wake word or explicit start per jurisdiction, pauses in private spaces, and writes an audit entry for every activation.</p>
             <div className="zones mt8">
               <div><span>Private offices</span><Chip tone="green">auto-pause</Chip></div>
-              <div><span>“Do not record” schedule</span><Chip tone="green">19:00–07:00</Chip></div>
-              <div><span>Ambient activation audit</span><Chip tone="green">on</Chip></div>
+              <div><span>“Do not record” schedule</span><Chip tone="green">{ambient.schedule}</Chip></div>
+              <div><span>Ambient activation audit</span><Chip tone={ambient.activations ? "green" : "neutral"}>{ambient.activations ? `${ambient.activations} recorded` : "ready"}</Chip></div>
             </div>
           </Panel>
 

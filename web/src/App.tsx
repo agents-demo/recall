@@ -3,6 +3,7 @@ import { HashRouter, Route, Routes, useLocation } from "react-router-dom";
 import { StoreProvider, useStore } from "./lib/store";
 import { Shell } from "./components/Shell";
 import Home from "./pages/Home";
+import Attention from "./pages/Attention";
 import Stage from "./pages/Stage";
 import { Icon } from "./components/Icon";
 
@@ -19,6 +20,10 @@ const SettingsPage = lazy(() => import("./pages/Settings"));
 const Design = lazy(() => import("./pages/Design"));
 const About = lazy(() => import("./pages/About"));
 const Booth = lazy(() => import("./pages/Booth"));
+const Canvas = lazy(() => import("./pages/Canvas"));
+const Connectors = lazy(() => import("./pages/Connectors"));
+const Share = lazy(() => import("./pages/Share"));
+const ShareTarget = lazy(() => import("./pages/ShareTarget"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -43,10 +48,14 @@ function Routed() {
   const location = useLocation();
   const { loading, error, pack } = useStore();
   const isStage = location.pathname === "/stage";
+  const isShare = location.pathname.startsWith("/share/");
 
   useEffect(() => {
     const names: Record<string, string> = {
       "/": "Now — RECALL",
+      "/attention": "Attention — RECALL",
+      "/canvas": "Memory canvas — RECALL",
+      "/connectors": "Connected services — RECALL",
       "/record": "Record — RECALL",
       "/meetings": "Meetings — RECALL",
       "/recall": "Recall — RECALL",
@@ -97,11 +106,22 @@ function Routed() {
     );
   }
 
+  if (isShare) {
+    return (
+      <Suspense fallback={<div className="boot">Opening the safe evidence…</div>}>
+        <Routes>
+          <Route path="/share/:token" element={<Share />} />
+        </Routes>
+      </Suspense>
+    );
+  }
+
   return (
     <Shell>
       <Suspense fallback={<div className="page-loading">Loading surface…</div>}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/attention" element={<Attention />} />
           <Route path="/record" element={<Record />} />
           <Route path="/meetings" element={<Meetings />} />
           <Route path="/meetings/:meetingId" element={<Meeting />} />
@@ -115,6 +135,9 @@ function Routed() {
           <Route path="/design" element={<Design />} />
           <Route path="/about" element={<About />} />
           <Route path="/booth" element={<Booth />} />
+          <Route path="/canvas" element={<Canvas />} />
+          <Route path="/connectors" element={<Connectors />} />
+          <Route path="/share-target" element={<ShareTarget />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

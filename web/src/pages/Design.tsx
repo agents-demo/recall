@@ -86,7 +86,7 @@ export default function Design() {
 
         <Panel title="Record control" sub="The one verb">
           <div className="component-row">
-            <button className="record-orb demo-orb" aria-label="Record">
+            <button className="record-orb demo-orb" aria-label="Tap record">
               <span className="record-ring" /><span className="record-core" /><span className="record-label">Tap record</span>
             </button>
             <div className="component-notes">

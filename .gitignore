@@ -16,6 +16,7 @@ dist-ssr/
 # Runtime
 runtime/
 logs/
+server/data/
 .env
 .env.local
 

@@ -4,6 +4,7 @@ import "@fontsource-variable/inter/wght.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
 import "./styles.css";
 import "./styles-more.css";
+import "./styles-v1.css";
 import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(<App />);

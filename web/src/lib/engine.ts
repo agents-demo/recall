@@ -531,7 +531,7 @@ export function buildEvent(
     type,
     sensitivity: opts.sensitivity ?? "personal",
     payload,
-    provenance: opts.provenance ?? { app_version: "0.9.0", local_only: true },
+    provenance: opts.provenance ?? { app_version: "1.0.0", local_only: true },
     delivery: { status: "queued", attempts: 0, delivered_at: null, duplicate: false, latency_ms: null },
   };
 }

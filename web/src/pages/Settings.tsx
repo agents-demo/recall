@@ -14,7 +14,7 @@ const themes: { id: Theme; title: string; detail: string }[] = [
 ];
 
 export default function SettingsPage() {
-  const { pack, settings, setSetting, activeMeetings, memory, reset, exportAudit, say, killSwitch, toggleKillSwitch } = useStore();
+  const { pack, settings, setSetting, activeMeetings, memory, reset, exportAudit, say, killSwitch, toggleKillSwitch, encryption, connectors } = useStore();
   const t = useT();
   const [retentionDays, setRetentionDays] = useState(pack?.team.retention_days ?? 365);
   if (!pack) return null;
@@ -51,6 +51,13 @@ export default function SettingsPage() {
             </div>
           </div>
           <div className="settings-row">
+            <div><b>Text size</b><span>Comfortable raises the metadata and label sizes without changing captured content.</span></div>
+            <div className="segmented">
+              <button className={settings.fontScale === "standard" ? "active" : ""} onClick={() => setSetting("fontScale", "standard")}>Standard</button>
+              <button className={settings.fontScale === "large" ? "active" : ""} onClick={() => setSetting("fontScale", "large")}>Large</button>
+            </div>
+          </div>
+          <div className="settings-row">
             <div><b>Reduced motion</b><span>Disable smooth scroll and long transitions. The stage piece keeps its beats.</span></div>
             <Toggle checked={settings.reducedMotion} onChange={(value) => setSetting("reducedMotion", value)} label="Reduced motion" />
           </div>
@@ -63,7 +70,7 @@ export default function SettingsPage() {
         <Panel title="Roles & access" sub="Navigation hides what a role cannot act on">
           <div className="settings-row">
             <div><b>Current role</b><span>Switch to Privacy / legal to see audit and legal hold; Admin for SSO and billing.</span></div>
-            <select value={settings.role} onChange={(event) => setSetting("role", event.target.value as typeof settings.role)}>
+            <select value={settings.role} aria-label="Current role" onChange={(event) => setSetting("role", event.target.value as typeof settings.role)}>
               <option value="individual">Individual</option>
               <option value="team_lead">Team lead</option>
               <option value="privacy_legal">Privacy / legal</option>
@@ -103,7 +110,7 @@ export default function SettingsPage() {
           <div className="settings-row">
             <div><b>Team default</b><span>Applies to new captures unless a meeting or PPMA policy is stricter.</span></div>
             <div className="inline-field">
-              <input type="number" min={1} max={3650} value={retentionDays} onChange={(event) => setRetentionDays(Number(event.target.value))} />
+              <input type="number" min={1} max={3650} aria-label="Team retention days" value={retentionDays} onChange={(event) => setRetentionDays(Number(event.target.value))} />
               <span>days</span>
               <button className="btn sm" onClick={() => say(`Team default set to ${retentionDays} days (demo)`)}>Save</button>
             </div>
@@ -150,6 +157,18 @@ export default function SettingsPage() {
           <div className="settings-row">
             <div><b>Audit export</b><span>Capture, consent, correction, redaction, share, delete and delivery.</span></div>
             <button className="btn sm" onClick={() => downloadText("recall-audit.csv", exportAudit(), "text/csv;charset=utf-8")}><Icon name="download" size={12} /> Export CSV</button>
+          </div>
+          <div className="settings-row">
+            <div><b>Encrypted local store</b><span>AES-GCM with a non-extractable device key in IndexedDB. The demo migrates the legacy plain store on first write.</span></div>
+            <Chip tone={encryption === "on" ? "green" : encryption === "migrating" ? "amber" : "red"}>{encryption === "on" ? "encrypted" : encryption === "migrating" ? "migrating" : "unavailable"}</Chip>
+          </div>
+          <div className="settings-row">
+            <div><b>Connected services</b><span>{Object.values(connectors).filter((connector) => connector.enabled).length} enabled · one purpose per connection.</span></div>
+            <Link className="btn sm" to="/connectors"><Icon name="link" size={12} /> Manage</Link>
+          </div>
+          <div className="settings-row">
+            <div><b>Replay the tour</b><span>Show the three-step welcome again.</span></div>
+            <button className="btn sm" onClick={() => { setSetting("onboarded", false); say("Tour replayed on the next route."); }}>Replay</button>
           </div>
           <div className="settings-row">
             <div><b>Reset demo</b><span>Return the pack, events, memory and queue to the captured meeting.</span></div>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useStore } from "../lib/store";
 import { useT } from "../lib/i18n";
 import { classNames, fmtDate, fmtDateTime, fmtDuration, pct } from "../lib/engine";
@@ -25,6 +25,7 @@ export default function Ppma() {
     handleCommand,
     runConformance,
     toggleKillSwitch,
+    remoteAcks,
     say,
   } = useStore();
   const t = useT();
@@ -32,6 +33,29 @@ export default function Ppma() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [openEvent, setOpenEvent] = useState<string | null>(null);
+  const [liveStream, setLiveStream] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (settings.ppmaMode !== "live" || !settings.endpointUrl) return;
+    let source: EventSource | null = null;
+    try {
+      source = new EventSource(`${settings.endpointUrl.replace(/\/$/, "")}/v1/stream`);
+      source.onopen = () => setLiveStream("connected");
+      source.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data) as { type?: string; event_id?: string };
+          if (message.type === "ppma.memory_updated") setLiveStream(`updated · ${message.event_id ?? "project"}`);
+        } catch {
+          /* ignore malformed stream frames */
+        }
+      };
+      source.onerror = () => setLiveStream("reconnecting");
+    } catch {
+      setLiveStream("unavailable");
+    }
+    return () => source?.close();
+  }, [settings.ppmaMode, settings.endpointUrl]);
+
   if (!pack) return null;
 
   const types = useMemo(() => [...new Set(events.map((event) => event.type))], [events]);
@@ -87,8 +111,9 @@ export default function Ppma() {
             <span><b>{delivered}</b> delivered</span>
             <span><b>{queue.length}</b> queued</span>
             <span><b>{duplicates}</b> duplicates</span>
-            <span><b>{activeMemory.length}</b> memories</span>
+            <span><b>{remoteAcks.filter((ack) => ack.status === "delivered").length}</b> live acks</span>
           </div>
+          {liveStream && <Chip tone={liveStream.startsWith("updated") || liveStream === "connected" ? "green" : "amber"} dot="live">stream · {liveStream}</Chip>}
         </div>
       </div>
 
@@ -198,6 +223,11 @@ export default function Ppma() {
                   <Status value={event.delivery.status} />
                   {event.delivery.latency_ms !== null && <small className="mono">{event.delivery.latency_ms} ms</small>}
                   {event.delivery.duplicate && <Chip tone="red">duplicate</Chip>}
+                  {remoteAcks.find((ack) => ack.event_id === event.event_id) && (
+                    <Chip tone={remoteAcks.find((ack) => ack.event_id === event.event_id)?.status === "delivered" ? "green" : "red"}>
+                      live · {remoteAcks.find((ack) => ack.event_id === event.event_id)?.detail}
+                    </Chip>
+                  )}
                 </span>
                 <span className="mono xsmall">{event.delivery.attempts}</span>
                 <span className="event-actions">

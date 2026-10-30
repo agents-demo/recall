@@ -13,6 +13,10 @@
 | --- | --- |
 | ![Stage handoff](docs/assets/stage.jpg) | ![Cited answer](docs/assets/recall.jpg) |
 
+| Attention — bounded proactivity | Memory canvas |
+| --- | --- |
+| ![Attention](docs/assets/attention.jpg) | ![Memory canvas](docs/assets/canvas.jpg) |
+
 ![Meeting workspace](docs/assets/meeting.jpg)
 
 > *“The meeting is not lost.”*
@@ -22,8 +26,13 @@ transcribes and diarizes on-device, extracts decisions, promises and actions, ke
 speaker, timestamp, confidence and source, redacts sensitive passages before sharing, and emits structured
 facts to PPMA. Raw audio and video stay local by default.
 
+**v1.0 adds the three missing layers:** a bounded attention engine (proactive, never autonomous), threaded
+recall with voice input and a memory canvas (2026 interaction), and a real local PPMA server with signed
+events, an openjiuwen adapter, an encrypted local store, safe share links and a connector catalogue (the
+beginning of real integration). See [What’s new in v1.0](#whats-new-in-v10).
+
 The public site is a **static, offline build** of the product UI, driven by a deterministic synthetic
-pack. No customer audio, transcript or personal data is included. There is no network call after load.
+pack. No customer audio, transcript or personal data is included. There is no network call after load by default; the optional local PPMA connection is explicitly configured by the user.
 
 ---
 
@@ -49,21 +58,62 @@ A meeting room. A phone on the table. The client asks: *“What did we promise t
 |---|---|---|
 | **Stage piece** | Deterministic 90-second arc: record, recall, correct, redact, hand off. | [`/#/stage`](https://jiuwendemos.github.io/recall/#/stage) |
 | **Booth demo** | A three-minute guided run with the whole data trail exposed. | [`/#/booth`](https://jiuwendemos.github.io/recall/#/booth) |
-| **Now** | Recent captures, open promises, PPMA project state, consent coverage. | [`/#/`](https://jiuwendemos.github.io/recall/#/) |
+| **Now** | Recent captures, the attention strip, open promises, PPMA state and consent coverage. | [`/#/`](https://jiuwendemos.github.io/recall/#/) |
+| **Attention** | Bounded proactive nudges: promises due, unsent handoffs, consent gaps, corrections, redaction reviews, retention, queue and device health. Accept, snooze, dismiss or mark wrong. | [`/#/attention`](https://jiuwendemos.github.io/recall/#/attention) |
 | **Record** | Consent before capture, device state, live transcript, local model run, audio import. | [`/#/record`](https://jiuwendemos.github.io/recall/#/record) |
 | **Meetings** | Every capture, status, consent, speakers, evidence, redactions and tombstones. | [`/#/meetings`](https://jiuwendemos.github.io/recall/#/meetings) |
-| **Meeting workspace** | Transcript editing, speaker correction, extracted facts, redaction, evidence packs, retention, deletion and PPMA events. | [`/#/meetings/mtg_delivery_1030`](https://jiuwendemos.github.io/recall/#/meetings/mtg_delivery_1030) |
-| **Recall** | Search every capture or ask a question. Answers are restricted to local evidence, with citations and an inspectable trace. | [`/#/recall`](https://jiuwendemos.github.io/recall/#/recall) |
-| **PPMA north app** | Manifest, event log, local PPMA inbox, commands, conformance, credentials and queue. | [`/#/ppma`](https://jiuwendemos.github.io/recall/#/ppma) |
-| **Field capture** | Offline-first notes, photo OCR, low-power mode, do-not-record zones and sync. | [`/#/field`](https://jiuwendemos.github.io/recall/#/field) |
+| **Meeting workspace** | Transcript editing, speaker correction, extracted facts, comments/presence, redaction, evidence packs, share links, retention, deletion and PPMA events. | [`/#/meetings/mtg_delivery_1030`](https://jiuwendemos.github.io/recall/#/meetings/mtg_delivery_1030) |
+| **Recall** | A threaded conversation with follow-ups, voice input, inline citations and an inspectable trace. It refuses when evidence is missing. | [`/#/recall`](https://jiuwendemos.github.io/recall/#/recall) |
+| **Memory canvas** | Meetings, evidence, people and field notes as one inspectable graph. | [`/#/canvas`](https://jiuwendemos.github.io/recall/#/canvas) |
+| **Connected services** | PPMA, openjiuwen, calendar, meetings, communication, CRM, work, knowledge, security and billing connectors with purpose, scopes and an off switch. | [`/#/connectors`](https://jiuwendemos.github.io/recall/#/connectors) |
+| **PPMA north app** | Manifest, event log, local PPMA inbox, replay/idempotency, offline queue, commands, conformance and the live SSE stream. | [`/#/ppma`](https://jiuwendemos.github.io/recall/#/ppma) |
+| **Field capture** | Offline-first notes, photo OCR, ambient controls, low-power mode, do-not-record zones and sync. | [`/#/field`](https://jiuwendemos.github.io/recall/#/field) |
 | **Pilot dashboard** | The six gates, latency, useful extraction, funnel, baselines and the honest read. | [`/#/pilot`](https://jiuwendemos.github.io/recall/#/pilot) |
-| **Admin** | Spaces, roles, devices, SSO, residency, compliance, billing, audit and the kill switch. | [`/#/admin`](https://jiuwendemos.github.io/recall/#/admin) |
-| **Capture health** | Model cards, drift, device health, queue depth, memory hygiene and the privacy runbook. | [`/#/health`](https://jiuwendemos.github.io/recall/#/health) |
+| **Admin** | Spaces, roles, devices, SSO, residency, compliance, billing, audit/eDiscovery, backup drills and the kill switch. | [`/#/admin`](https://jiuwendemos.github.io/recall/#/admin) |
+| **Capture health** | Model cards, drift, device health, queue depth, memory hygiene, sync/conflict and the privacy runbook. | [`/#/health`](https://jiuwendemos.github.io/recall/#/health) |
 | **Design system** | Tokens, type, record control, waveform, transcript, evidence, redaction, motion, glossary and accessibility. | [`/#/design`](https://jiuwendemos.github.io/recall/#/design) |
+| **Share view** | A read-only, expiring safe-evidence page. No audio, no unredacted text. | [`/#/share/...`](https://jiuwendemos.github.io/recall/#/share) |
 | **About** | The boundary with PPMA, the eight task families, NPU usage, business model and hard parts. | [`/#/about`](https://jiuwendemos.github.io/recall/#/about) |
 
 The admin surface is visible when the role selector is set to **Privacy / legal** or **Admin**. The nav
 deliberately hides what a role cannot act on.
+
+---
+
+## What’s new in v1.0
+
+**Proactive, but bounded**
+
+- a deterministic attention engine over promises, questions, consent, corrections, redactions, retention,
+  queue and device health;
+- a home attention strip, inline meeting nudges, a team digest, “why am I seeing this?” and
+  accept / snooze / dismiss / “this is wrong” feedback;
+- every nudge links to evidence and can never create a task, send a message or change project state.
+
+**2026 interaction**
+
+- threaded recall with follow-ups (“who said that?”, “show me the moment”, compare);
+- voice input through the browser speech engine, with an explicit privacy note;
+- a memory canvas of meetings, evidence, people and field notes;
+- comments, presence and live corrections across open tabs through `BroadcastChannel`;
+- role-based home, a first-run tour, a larger default type scale and a trust ribbon;
+- a pre-send “What will PPMA receive?” preview and a deletion receipt;
+- expiring safe share links, a PWA share target and a browser extension.
+
+**Connected**
+
+- a real local PPMA server in [`server/`](server/) with HMAC-signed events, dedupe, memory projection,
+  corrections, redactions, tombstones, commands, SSE `ppma.memory_updated`, evidence search, evidence API,
+  OpenAPI and `/v1/tools` for openjiuwen;
+- a live browser client that signs and posts events with Web Crypto, and falls back to the local fake;
+- an openjiuwen adapter with read-only and “prepare” tools — deliberately no execute/send/delete tool;
+- an encrypted local store (AES-GCM, non-extractable key in IndexedDB) with migration from the legacy plain
+  store;
+- a connector catalogue with consent purpose, scopes, an off switch and per-connector test;
+- an email draft (never sent), browser extension and safe evidence API.
+
+**Still simulated:** ASR/diarization, NPU, OCR, vendor OAuth, billing and the synthetic meeting itself.
+The roadmap tracks the remaining 70 planned items explicitly.
 
 ---
 
@@ -93,9 +143,21 @@ Requirements: Node 20+ (tested on Node 24), npm 10+.
 cd web
 npm install
 npm run dev        # http://localhost:5184
-npm test           # 12 contract and recall tests
+npm test           # 20 local contract, attention and conversation tests
 npm run build      # type-check + static build in web/dist
 ```
+
+The real local PPMA server:
+
+```bash
+cd server
+npm start          # http://localhost:8787
+npm test           # 6 signed-event / memory / deletion tests
+```
+
+Then open **Connections**, enter `http://localhost:8787` and the shared secret
+(`recall-demo-secret` by default), and press **Test connection**. Events are signed in the browser with
+Web Crypto and posted to the server; the local fake remains the fallback.
 
 The demo pack is generated deterministically from the script:
 
@@ -105,7 +167,8 @@ python3 scripts/build_demo_pack.py # macOS / Linux / CI
 ```
 
 The pack is committed at `web/public/demo-pack.json`, so the site works offline and on a USB stick.
-Deployment is GitHub Pages via `.github/workflows/pages.yml`.
+Deployment is GitHub Pages via `.github/workflows/pages.yml`. The browser extension lives in
+[`extension/`](extension/).
 
 ---
 
@@ -137,13 +200,16 @@ redactions, consent withdrawal and tombstones. See [`docs/architecture.md`](docs
 correction, redaction with safe-version preview, evidence packs with hashes, retention and legal hold
 controls, deletion tombstones, PPMA event envelopes, idempotency/duplicate detection, offline queue,
 audit export, role-based navigation, English/Chinese UI, dark/paper/high-contrast themes, offline PWA
-shell, deterministic tests and a fully static deployment.
+shell, deterministic tests, the attention engine, threaded recall, memory canvas, comments/presence,
+expiring share links, AES-GCM encrypted local storage, the local PPMA server with signed events, and the
+openjiuwen adapter contract.
 
-**Simulated for the public demo:** the scripted 14-minute meeting and its 119 transcript rows, the local
-ASR/diarization outputs, the on-device OCR result, the PPMA backend, pilot metrics and admin/billing
-data. The microphone is not opened, and the audio timeline is a visualisation — no audio is included.
-Production swap points (real NPU runtime, encrypted SQLite store, OIDC, sync, billing) are named in
-[`docs/architecture.md`](docs/architecture.md).
+**Simulated for the public demo:** the scripted 14-minute meeting and its 119 transcript rows, the
+ASR/diarization outputs, the on-device OCR result, the vendor OAuth connectors, pilot metrics and
+admin/billing data. The microphone is not opened, and the audio timeline is a visualisation - no audio is
+included. The PPMA server is real but the public GitHub Pages build uses the local fake by default because
+there is no hosted backend. Production swap points (real NPU runtime, host identity provider, vendor
+credentials, multi-device sync, billing) are named in [`docs/architecture.md`](docs/architecture.md).
 
 **Never:** training on customer audio or transcripts, raw media in the cloud by default, silent
 deletion, or capture without a recorded consent state.
@@ -166,18 +232,27 @@ deletion, or capture without a recorded consent state.
 
 ```bash
 cd web && npm test
+cd server && npm test
 ```
 
-The CI also regenerates the pack and fails if the committed pack is not reproducible.
+`web/src/lib/attention.test.ts` covers the bounded attention engine and suppression. 
+`web/src/lib/conversation.test.ts` covers follow-up context, review-only actions and refusal in a thread.
+`server/test/server.test.mjs` covers signature rejection, signed completion, duplicate rejection, memory
+projection, correction, redaction, tombstone and the command inbox.
+
+The CI also regenerates the pack and fails if the committed pack is not reproducible, and runs the local
+PPMA server suite.
 
 ---
 
 ## Data rights and provenance
 
 - Synthetic pack, fixed seed `20261030`. No customer audio, transcript or personal data.
+- The local store is encrypted with AES-GCM and a non-extractable key in IndexedDB; the legacy plain store is migrated and removed.
 - Fonts (Fraunces, Inter, JetBrains Mono) are bundled locally. No font, icon or CDN calls.
 - Icons are in-house SVG.
 - The service worker and all assets are relative, so the build works under `/recall/` or from a folder.
+- The local PPMA server signs events with HMAC and stores only safe derived facts; it has no raw-media endpoint.
 - Licence: MIT. See [`LICENSE`](LICENSE) and [`docs/provenance.md`](docs/provenance.md).
 
 ---
@@ -185,15 +260,18 @@ The CI also regenerates the pack and fails if the committed pack is not reproduc
 ## Documentation
 
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
-- [Roadmap](docs/roadmap.md) — 0A through Phase 6, every checkbox implemented in this demo.
+- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 296 implemented and 70 planned.
 - [PPMA × RECALL contract](docs/integration-ppma.md) — events, commands, consent, deletion, idempotency.
 - [Architecture](docs/architecture.md) — state machine, store, event pipeline, security, production swaps.
+- [Local PPMA server](server/README.md) — signed events, memory, commands, SSE and the openjiuwen adapter.
 - [Stage script](docs/stage-script.md) — the 90 seconds, props, reset, fallback and rehearsals.
 - [Design audit & research](docs/design-audit.md) — responsive audit, WCAG, budgets and the pilot research gate.
+- [Accessibility audit](docs/accessibility.md) — route scores, keyboard paths and the screen-reader script.
 - [Safe evidence API](docs/evidence-api.md) — public evidence-pack contract.
+- [Vendor register](docs/vendor-register.md) — connector purpose, direction, data posture and DPA status.
 - [Provenance](docs/provenance.md) — assets, synthetic data, reproducibility and the public-demo boundary.
 
-The roadmap carries **213 implemented checkboxes** plus **153 planned items** across the three tracks that
+The roadmap carries **296 implemented checkboxes** plus **70 planned items** across the three tracks that
 close the honest gaps: bounded proactivity, a genuinely 2026 interaction model, and real connections to
 PPMA, openjiuwen and the surrounding services. See
 [Beyond v0.9.0](docs/roadmap.md#beyond-v090--the-three-tracks).

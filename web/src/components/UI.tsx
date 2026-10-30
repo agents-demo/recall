@@ -179,11 +179,11 @@ export function Waveform({
   return (
     <div
       className={classNames("waveform", big && "waveform-big")}
-      role={onSeek ? "slider" : undefined}
+      role={onSeek ? "slider" : "img"}
       aria-label="Meeting timeline"
-      aria-valuemin={0}
-      aria-valuemax={Math.round(duration)}
-      aria-valuenow={Math.round(progress)}
+      aria-valuemin={onSeek ? 0 : undefined}
+      aria-valuemax={onSeek ? Math.round(duration) : undefined}
+      aria-valuenow={onSeek ? Math.round(progress) : undefined}
       tabIndex={onSeek ? 0 : undefined}
       onClick={(event) => {
         if (!onSeek) return;

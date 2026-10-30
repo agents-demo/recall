@@ -42,3 +42,14 @@ jobs:
         run: python scripts/build_demo_pack.py
       - name: The committed pack must be reproducible
         run: git diff --exit-code -- web/public/demo-pack.json
+
+  server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test the local PPMA server
+        run: npm test
+        working-directory: server

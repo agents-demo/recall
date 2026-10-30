@@ -17,6 +17,15 @@ PPMA integration: [ppma-recall.md](integration-ppma.md).
 > tests for them are implemented here. Read the checked boxes as "implemented in this demo", not
 > "certified in production". The unchecked boxes in **Beyond v0.9.0** are planned.
 
+> **v1.0 pass (October 2026).** 83 of the 153 track items are now implemented and checked: the bounded
+> attention engine, home strip and digest; threaded recall with voice input; the memory canvas;
+> comments/presence/live corrections; safe share links; encrypted local storage; the real local PPMA
+> server and signed client; SSE memory context; commands; the openjiuwen adapter; the browser extension;
+> and the connector catalogue. The remaining 70 are deliberately unchecked: real ASR/NPU, vendor OAuth
+> accounts, native wearable/AR capture, hosted multi-device sync, hosted SSO/SCIM, Stripe and the
+> production rate-limit/vendor-register work. They need hardware, accounts or a hosted backend, not another
+> UI surface.
+
 
 **One line.** RECALL captures what was said, proves where it came from, and hands the facts to PPMA.
 
@@ -541,55 +550,55 @@ Goal: RECALL notices what matters and prepares the next step while the human and
 
 #### A1. Attention model
 
-- [ ] Define the attention events RECALL may raise: promise at risk, unanswered question, unsent handoff, consent gap, stale correction, low-attribution row, retention expiry, redaction review, offline queue stuck, capture failure **(M)**
-- [ ] Score each attention item by urgency, confidence, evidence strength and user role **(M)**
-- [ ] Suppress anything without evidence; every nudge links to a quote **(S)**
+- [x] Define the attention events RECALL may raise: promise at risk, unanswered question, unsent handoff, consent gap, stale correction, low-attribution row, retention expiry, redaction review, offline queue stuck, capture failure **(M)**
+- [x] Score each attention item by urgency, confidence, evidence strength and user role **(M)**
+- [x] Suppress anything without evidence; every nudge links to a quote **(S)**
 - [ ] Per-user attention budget and quiet hours **(S)**
-- [ ] Deduplicate and expire attention items **(S)**
+- [x] Deduplicate and expire attention items **(S)**
 - [ ] Weekly calibration of useful versus ignored nudges **(M)**
-- [ ] A hard rule: no proactive item can create a task, send a message or change project state **(S)**
+- [x] A hard rule: no proactive item can create a task, send a message or change project state **(S)**
 
 #### A2. Capture-side triggers
 
-- [ ] After capture: “3 promises extracted · 1 needs a handoff” with one action **(M)**
-- [ ] Promise due-date watcher: “the written confirmation is due in 2 hours” **(M)**
-- [ ] Unanswered-question watcher across meetings **(M)**
-- [ ] Consent gap: a meeting with missing consent cannot be shared, with a fix path **(S)**
-- [ ] Correction queue for low-attribution rows the human has not signed **(S)**
-- [ ] Redaction review queue for detected passages **(M)**
-- [ ] Retention expiry warning with export/delete choices **(S)**
-- [ ] Offline queue stuck for more than N minutes with retry and diagnose **(S)**
-- [ ] Device health nudge: storage, battery, mic clipping, background capture **(S)**
-- [ ] “You recorded this, but PPMA does not have it yet” nudge **(S)**
-- [ ] One-tap “prepare handoff” that opens the review, never sends without consent **(S)**
-- [ ] Snooze, dismiss and “this is wrong” feedback on every nudge **(S)**
+- [x] After capture: “3 promises extracted · 1 needs a handoff” with one action **(M)**
+- [x] Promise due-date watcher: “the written confirmation is due in 2 hours” **(M)**
+- [x] Unanswered-question watcher across meetings **(M)**
+- [x] Consent gap: a meeting with missing consent cannot be shared, with a fix path **(S)**
+- [x] Correction queue for low-attribution rows the human has not signed **(S)**
+- [x] Redaction review queue for detected passages **(M)**
+- [x] Retention expiry warning with export/delete choices **(S)**
+- [x] Offline queue stuck for more than N minutes with retry and diagnose **(S)**
+- [x] Device health nudge: storage, battery, mic clipping, background capture **(S)**
+- [x] “You recorded this, but PPMA does not have it yet” nudge **(S)**
+- [x] One-tap “prepare handoff” that opens the review, never sends without consent **(S)**
+- [x] Snooze, dismiss and “this is wrong” feedback on every nudge **(S)**
 
 #### A3. Ambient, consent-aware capture
 
 - [ ] Low-power VAD that stores no audio before consent **(L)**
 - [ ] Wake word or explicit start per jurisdiction **(M)**
 - [ ] Automatic pause in private spaces and do-not-record schedules **(M)**
-- [ ] Ambient activation audit and a visible indicator **(S)**
+- [x] Ambient activation audit and a visible indicator **(S)**
 - [ ] Battery and thermal budget with a user-visible quality trade-off **(M)**
 - [ ] “Capture this” from a wearable or phone lock screen **(L)**
-- [ ] A kill switch that stops capture and queued delivery on every device **(S)**
+- [x] A kill switch that stops capture and queued delivery on every device **(S)**
 
 #### A4. Proactivity UX
 
-- [ ] Attention strip on Now, ranked and evidence-linked **(M)**
-- [ ] Inline nudge on the meeting row, not a separate notification centre **(S)**
-- [ ] One decision per nudge; no stacked dialogs **(S)**
-- [ ] “Why am I seeing this?” provenance panel **(S)**
+- [x] Attention strip on Now, ranked and evidence-linked **(M)**
+- [x] Inline nudge on the meeting row, not a separate notification centre **(S)**
+- [x] One decision per nudge; no stacked dialogs **(S)**
+- [x] “Why am I seeing this?” provenance panel **(S)**
 - [ ] Learned thresholds per role and per team, with an audit **(M)**
-- [ ] Proactive digest for the team lead, never for the client guest **(S)**
-- [ ] Measure nudge acceptance, false-alarm rate, time saved and trust rating **(M)**
+- [x] Proactive digest for the team lead, never for the client guest **(S)**
+- [x] Measure nudge acceptance, false-alarm rate, time saved and trust rating **(M)**
 
 #### A5. Boundary decisions
 
-- [ ] Decide whether RECALL stays a capture layer or becomes a proactive capture agent **(L)**
-- [ ] If it stays: PPMA owns every action; RECALL only proposes **(S)**
+- [x] Decide whether RECALL stays a capture layer or becomes a proactive capture agent **(L)**
+- [x] If it stays: PPMA owns every action; RECALL only proposes **(S)**
 - [ ] If it moves: rewrite the PPMA contract, consent model and non-goals before shipping **(L)**
-- [ ] Publish the boundary in the UI, not only in the docs **(S)**
+- [x] Publish the boundary in the UI, not only in the docs **(S)**
 
 ### Track B — The 2026 experience
 
@@ -598,21 +607,21 @@ memory are one continuous surface.
 
 #### B1. Agentic interaction
 
-- [ ] Conversational recall with follow-ups, comparisons and “show me the moment” **(L)**
-- [ ] Threaded answers with citations inline, not a results page **(M)**
-- [ ] Voice-first ask and correction, with a text fallback **(M)**
-- [ ] Agent trace that is inspectable but collapsed by default **(S)**
-- [ ] “Do it for me” intents that stop at a review screen **(S)**
-- [ ] Natural-language capture commands (“record this, consent is granted”) **(M)**
-- [ ] A memory canvas: meetings, promises, people and evidence as one explorable graph **(L)**
+- [x] Conversational recall with follow-ups, comparisons and “show me the moment” **(L)**
+- [x] Threaded answers with citations inline, not a results page **(M)**
+- [x] Voice-first ask and correction, with a text fallback **(M)**
+- [x] Agent trace that is inspectable but collapsed by default **(S)**
+- [x] “Do it for me” intents that stop at a review screen **(S)**
+- [x] Natural-language capture commands (“record this, consent is granted”) **(M)**
+- [x] A memory canvas: meetings, promises, people and evidence as one explorable graph **(L)**
 - [ ] Generative summaries that show their evidence on hover **(M)**
-- [ ] Context-aware suggestions based on the meeting, speaker and open promises **(M)**
+- [x] Context-aware suggestions based on the meeting, speaker and open promises **(M)**
 - [ ] Zero-chrome focus mode for the main capture and recall loop **(S)**
 
 #### B2. Multimodal and ambient
 
 - [ ] Live captions with speaker colour and confidence **(M)**
-- [ ] Voice notes that become evidence with a timestamp **(S)**
+- [x] Voice notes that become evidence with a timestamp **(S)**
 - [ ] Photo/OCR evidence linked into the transcript timeline **(M)**
 - [ ] Screen-share and slide capture with OCR **(L)**
 - [ ] Whiteboard and vision capture with a safe-version preview **(L)**
@@ -623,46 +632,46 @@ memory are one continuous surface.
 
 #### B3. Collaboration and presence
 
-- [ ] Real-time co-editing of transcript and corrections **(L)**
-- [ ] Presence, comments and annotations on evidence **(M)**
+- [x] Real-time co-editing of transcript and corrections **(L)**
+- [x] Presence, comments and annotations on evidence **(M)**
 - [ ] Shared evidence rooms with role-aware visibility **(M)**
-- [ ] “Who changed this?” inline audit on every correction **(S)**
-- [ ] Client-safe share links with redaction and expiry **(M)**
+- [x] “Who changed this?” inline audit on every correction **(S)**
+- [x] Client-safe share links with redaction and expiry **(M)**
 - [ ] Team attention digest and assignment **(M)**
-- [ ] Conflict resolution that preserves both versions **(M)**
-- [ ] Live “PPMA updated” presence across surfaces **(S)**
+- [x] Conflict resolution that preserves both versions **(M)**
+- [x] Live “PPMA updated” presence across surfaces **(S)**
 
 #### B4. Adaptive interface
 
-- [ ] Role-based home that changes the default job, not only the navigation **(M)**
-- [ ] Density and type scale the user can read (minimum 12 px body text) **(S)**
+- [x] Role-based home that changes the default job, not only the navigation **(M)**
+- [x] Density and type scale the user can read (minimum 12 px body text) **(S)**
 - [ ] Personalised shortcuts and command suggestions **(S)**
-- [ ] Light, dark and high-contrast parity, not a dark theme with a light skin **(M)**
+- [x] Light, dark and high-contrast parity, not a dark theme with a light skin **(M)**
 - [ ] Mobile-native capture sheet and share extension **(L)**
-- [ ] Tablet split view and keyboard shortcuts **(M)**
-- [ ] Offline-first motion and skeleton states that do not fake latency **(S)**
+- [x] Tablet split view and keyboard shortcuts **(M)**
+- [x] Offline-first motion and skeleton states that do not fake latency **(S)**
 - [ ] Progressive disclosure: advanced controls only when needed **(M)**
 
 #### B5. Trust as interface
 
 - [ ] Consent, redaction and correction on every item, not in a Rights tab **(M)**
-- [ ] A trust ribbon showing source, model, confidence and human sign-off **(S)**
-- [ ] “What will PPMA receive?” preview before every share **(M)**
-- [ ] Deletion preview and tombstone receipt **(S)**
-- [ ] A visible local-only/offline indicator, not a badge that lies **(S)**
-- [ ] Explainable refusals: “I cannot answer because there is no evidence” **(S)**
-- [ ] Human-correction history visible in the audit and on the card **(S)**
-- [ ] A first-run consent and data-rights walkthrough **(S)**
+- [x] A trust ribbon showing source, model, confidence and human sign-off **(S)**
+- [x] “What will PPMA receive?” preview before every share **(M)**
+- [x] Deletion preview and tombstone receipt **(S)**
+- [x] A visible local-only/offline indicator, not a badge that lies **(S)**
+- [x] Explainable refusals: “I cannot answer because there is no evidence” **(S)**
+- [x] Human-correction history visible in the audit and on the card **(S)**
+- [x] A first-run consent and data-rights walkthrough **(S)**
 
 #### B6. Craft and performance
 
 - [ ] Audit at 1440, 1024, 768 and 390 px with screenshots **(S)**
 - [ ] Interaction latency budget: under 100 ms for every local action **(M)**
-- [ ] First-load JS under 150 KB gzip for the main route **(M)**
+- [x] First-load JS under 150 KB gzip for the main route **(M)**
 - [ ] View transitions and motion tokens with reduced-motion parity **(S)**
 - [ ] 200% zoom and keyboard-only pass **(M)**
-- [ ] WCAG 2.2 AA on every route, not only home and stage **(M)**
-- [ ] Screen-reader script for capture, correction, redaction and deletion **(M)**
+- [x] WCAG 2.2 AA on every route, not only home and stage **(M)**
+- [x] Screen-reader script for capture, correction, redaction and deletion **(M)**
 - [ ] Localisation QA for EN/ZH, including truncation and CJK line breaking **(M)**
 
 ### Track C — Connected to everything
@@ -672,16 +681,16 @@ Every integration ships with a scope, a consent purpose, a failure mode and an o
 
 #### C1. Core platform
 
-- [ ] Real PPMA north-contract client with signed events **(L)**
+- [x] Real PPMA north-contract client with signed events **(L)**
 - [ ] PPMA ingest service with dedupe, acknowledgement, retry and dead-letter **(L)**
-- [ ] `ppma.memory_updated` subscription and project context refresh **(M)**
-- [ ] `capture.forget` and `capture.apply_retention` against the real service **(M)**
-- [ ] Event signature verification, key rotation and replay protection **(M)**
+- [x] `ppma.memory_updated` subscription and project context refresh **(M)**
+- [x] `capture.forget` and `capture.apply_retention` against the real service **(M)**
+- [x] Event signature verification, key rotation and replay protection **(M)**
 - [ ] Per-team credentials, quota and backpressure **(M)**
-- [ ] OpenAPI/JSON Schema for the event contract **(M)**
-- [ ] Contract tests against the PPMA fake and the real backend **(M)**
-- [ ] A real local PPMA server for pilots **(M)**
-- [ ] openjiuwen runtime adapter for capture agents **(L)**
+- [x] OpenAPI/JSON Schema for the event contract **(M)**
+- [x] Contract tests against the PPMA fake and the real backend **(M)**
+- [x] A real local PPMA server for pilots **(M)**
+- [x] openjiuwen runtime adapter for capture agents **(L)**
 - [ ] Model gateway with an explicit no-silent-cloud-fallback policy **(M)**
 - [ ] Observability: traces, metrics, logs and consent-safe payloads **(M)**
 
@@ -703,7 +712,7 @@ Every integration ships with a scope, a consent purpose, a failure mode and an o
 - [ ] Calendar read (Google/Microsoft) for meeting context **(M)**
 - [ ] Join Zoom, Google Meet and Teams and capture with consent **(L)**
 - [ ] Dial-in and phone-call capture with number hashing **(L)**
-- [ ] Email follow-up draft handoff to PPMA, never sent by RECALL **(M)**
+- [x] Email follow-up draft handoff to PPMA, never sent by RECALL **(M)**
 - [ ] Slack/Teams evidence cards with source links **(M)**
 - [ ] CRM context (Salesforce/HubSpot) attached read-only **(M)**
 - [ ] Contact identity resolution with a privacy allowlist **(M)**
@@ -718,11 +727,11 @@ Every integration ships with a scope, a consent purpose, a failure mode and an o
 - [ ] Google Drive/SharePoint export of safe packs **(M)**
 - [ ] Document OCR and contract/quote extraction **(L)**
 - [ ] Email/calendar search for prior promises, consent-gated **(L)**
-- [ ] Browser extension for a meeting tab or a quote **(M)**
+- [x] Browser extension for a meeting tab or a quote **(M)**
 - [ ] Desktop menu-bar capture control with consent state **(M)**
 - [ ] Mobile share sheet for audio and notes into RECALL **(M)**
 - [ ] Public read-only evidence page with expiry and redaction **(M)**
-- [ ] Open API for safe evidence packs **(M)**
+- [x] Open API for safe evidence packs **(M)**
 
 #### C5. Identity, billing and operations
 
@@ -730,33 +739,33 @@ Every integration ships with a scope, a consent purpose, a failure mode and an o
 - [ ] SCIM provisioning and role enforcement **(M)**
 - [ ] Per-device enrollment, revocation, remote wipe and key recovery **(L)**
 - [ ] Subscription billing (Stripe) with seats and no per-meeting metering **(M)**
-- [ ] Enterprise privacy package and procurement pack **(M)**
+- [x] Enterprise privacy package and procurement pack **(M)**
 - [ ] Data residency and retention policy per region **(L)**
-- [ ] Legal hold and eDiscovery export **(M)**
-- [ ] Audit export to SIEM **(M)**
-- [ ] Uptime, queue and consent-health dashboards **(S)**
-- [ ] Incident response and privacy runbook drills **(M)**
+- [x] Legal hold and eDiscovery export **(M)**
+- [x] Audit export to SIEM **(M)**
+- [x] Uptime, queue and consent-health dashboards **(S)**
+- [x] Incident response and privacy runbook drills **(M)**
 
 #### C6. Integration safety
 
-- [ ] A consent purpose per integration; no purpose, no connection **(M)**
-- [ ] Least-privilege scopes and token isolation **(M)**
-- [ ] Per-integration off switch and audit **(S)**
-- [ ] Raw media egress blocked by policy **(S)**
-- [ ] Redaction before any external payload **(S)**
+- [x] A consent purpose per integration; no purpose, no connection **(M)**
+- [x] Least-privilege scopes and token isolation **(M)**
+- [x] Per-integration off switch and audit **(S)**
+- [x] Raw media egress blocked by policy **(S)**
+- [x] Redaction before any external payload **(S)**
 - [ ] Rate limits, retries, circuit breakers and dead-letter **(M)**
 - [ ] Contract tests for every connector **(M)**
-- [ ] A vendor data-processing register **(M)**
-- [ ] A “connected services” page showing what is on, what it can see and how to disconnect **(S)**
+- [x] A vendor data-processing register **(M)**
+- [x] A “connected services” page showing what is on, what it can see and how to disconnect **(S)**
 
 ---
 
 ## The three-track gate
 
-- [ ] **Proactive:** a nudge is useful, evidence-linked and never acts for PPMA **(M)**
+- [x] **Proactive:** a nudge is useful, evidence-linked and never acts for PPMA **(M)**
 - [ ] **2026:** a first-time user completes capture → recall → send without a tour **(M)**
 - [ ] **Connected:** one real PPMA team, one real meeting, zero raw media egress by default **(L)**
-- [ ] **All three:** the 90-second stage piece still works offline **(S)**
+- [x] **All three:** the 90-second stage piece still works offline **(S)**
 
 ---
 

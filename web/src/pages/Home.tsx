@@ -6,7 +6,7 @@ import { PageHead, Panel, Stat, Chip, Status, ConsentBadge, SpeakerChip, Meter, 
 import { Icon } from "../components/Icon";
 
 export default function Home() {
-  const { pack, activeMeetings, notes, memory, project, queue, events, settings, consentCoverage } = useStore();
+  const { pack, activeMeetings, notes, memory, project, queue, events, settings, consentCoverage, attention, feedbackAttention } = useStore();
   const t = useT();
   if (!pack) return null;
 
@@ -37,7 +37,69 @@ export default function Home() {
         }
       />
 
+      <div className="role-focus">
+        <span className="kicker">Your job as {settings.role.replace(/_/g, " ")}</span>
+        <div className="role-focus-actions">
+          {settings.role === "field" ? (
+            <>
+              <Link className="btn sm primary" to="/field"><Icon name="pin" size={12} /> Capture a field note</Link>
+              <Link className="btn sm" to="/field">Sync offline queue</Link>
+            </>
+          ) : settings.role === "privacy_legal" ? (
+            <>
+              <Link className="btn sm primary" to="/attention"><Icon name="shield" size={12} /> Review consent & retention</Link>
+              <Link className="btn sm" to="/health">Privacy controls</Link>
+            </>
+          ) : settings.role === "admin" ? (
+            <>
+              <Link className="btn sm primary" to="/connectors"><Icon name="link" size={12} /> Connected services</Link>
+              <Link className="btn sm" to="/admin">Devices & audit</Link>
+            </>
+          ) : settings.role === "individual" ? (
+            <>
+              <Link className="btn sm primary" to="/record"><Icon name="record" size={12} /> Capture a meeting</Link>
+              <Link className="btn sm" to="/recall">Ask the evidence</Link>
+            </>
+          ) : (
+            <>
+              <Link className="btn sm primary" to="/attention"><Icon name="alert" size={12} /> {attention.length} attention items</Link>
+              <Link className="btn sm" to="/pilot">Pilot metrics</Link>
+              <Link className="btn sm" to="/connectors">Connections</Link>
+            </>
+          )}
+        </div>
+      </div>
+
       <DataNote seed={pack.meta.seed} />
+
+      {attention.length > 0 && (
+        <section className="attention-strip" aria-label="Attention">
+          <div className="attention-strip-head">
+            <div>
+              <span className="kicker">Attention · bounded proactivity</span>
+              <b>{attention.length} thing{attention.length === 1 ? "" : "s"} need a human</b>
+            </div>
+            <Link className="btn sm" to="/attention">Open all <Icon name="arrow" size={12} /></Link>
+          </div>
+          <div className="attention-strip-list">
+            {attention.slice(0, 3).map((item) => (
+              <article className={`attention-mini sev-${item.severity}`} key={item.id}>
+                <div className="row between">
+                  <Chip tone={item.severity === "critical" || item.severity === "high" ? "red" : "amber"}>{item.severity}</Chip>
+                  <span className="mono xsmall soft">{Math.round(item.score)}</span>
+                </div>
+                <Link to={item.route}><b>{item.title}</b></Link>
+                <p>{item.detail}</p>
+                <div className="attention-mini-actions">
+                  <Link className="btn sm ghost" to={item.route}>{item.action_label} <Icon name="arrow" size={11} /></Link>
+                  <button className="btn sm ghost" onClick={() => feedbackAttention(item.id, "accepted")} title="Mark useful and dismiss">Useful</button>
+                  <button className="btn sm ghost" onClick={() => feedbackAttention(item.id, "snoozed")} title="Snooze for 24 hours">Snooze</button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="home-hero">
         <section className="cold-open">

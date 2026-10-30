@@ -448,6 +448,7 @@ export interface Answer {
   confidence: number;
   refused: boolean;
   latency_ms: number;
+  review?: { label: string; route: string };
 }
 
 export interface EvidencePack {
@@ -465,3 +466,120 @@ export interface EvidencePack {
   hash: string;
   markdown: string;
 }
+
+export type AttentionKind =
+  | "unsent_handoff"
+  | "promise_due"
+  | "unanswered_question"
+  | "consent_gap"
+  | "correction_needed"
+  | "redaction_review"
+  | "retention_expiry"
+  | "queue_stuck"
+  | "handoff_failed"
+  | "note_unsent"
+  | "device_health";
+
+export type AttentionState = "dismissed" | "snoozed" | "accepted" | "wrong";
+
+export interface AttentionFeedback {
+  state: AttentionState;
+  at: string;
+  until?: string;
+  note?: string;
+}
+
+export interface AttentionItem {
+  id: string;
+  kind: AttentionKind;
+  severity: "info" | "warning" | "high" | "critical";
+  title: string;
+  detail: string;
+  why: string;
+  meeting_id?: string;
+  evidence_id?: string;
+  route: string;
+  action_label: string;
+  confidence: number;
+  score: number;
+  due?: string;
+}
+
+export interface Comment {
+  id: string;
+  target_type: "meeting" | "evidence";
+  target_id: string;
+  meeting_id: string;
+  author: string;
+  role: string;
+  text: string;
+  at: string;
+  resolved: boolean;
+  parent_id?: string | null;
+}
+
+export interface ConnectorState {
+  enabled: boolean;
+  configured: boolean;
+  consent_purpose: string;
+  scopes: string[];
+  last_test: string | null;
+  last_status: "ok" | "error" | "not_configured";
+  detail: string;
+}
+
+export interface ConnectorDef {
+  id: string;
+  name: string;
+  category: string;
+  direction: "read" | "write" | "read+write";
+  purpose: string;
+  scopes: string[];
+  status: "available" | "preview" | "blocked";
+  note: string;
+  mock: boolean;
+}
+
+export interface AmbientState {
+  enabled: boolean;
+  wakeWord: boolean;
+  batteryAware: boolean;
+  schedule: string;
+  zones: string[];
+  lastActivation: string | null;
+  activations: number;
+}
+
+export interface ConversationTurn {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  answer?: Answer;
+  at: string;
+}
+
+export interface ShareRecord {
+  token: string;
+  meeting_id: string;
+  evidence_id: string;
+  created_at: string;
+  expires_at: string;
+  redacted: boolean;
+}
+
+export interface RemoteAck {
+  event_id: string;
+  status: "delivered" | "queued" | "failed";
+  at: string;
+  detail: string;
+  latency_ms: number | null;
+}
+
+export interface NudgeFeedbackView {
+  accepted: number;
+  dismissed: number;
+  wrong: number;
+  snoozed: number;
+  acceptance: number;
+}
+

@@ -9,6 +9,36 @@
   "background_color": "#0b0b0c",
   "theme_color": "#0b0b0c",
   "categories": ["productivity", "business", "utilities"],
+  "share_target": {
+    "action": "./#/share-target",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Record a meeting",
+      "short_name": "Record",
+      "url": "./#/record",
+      "description": "Start a consent-gated capture"
+    },
+    {
+      "name": "Ask the evidence",
+      "short_name": "Ask",
+      "url": "./#/recall",
+      "description": "Ask a question across captures"
+    },
+    {
+      "name": "Capture a field note",
+      "short_name": "Field",
+      "url": "./#/field",
+      "description": "Offline note with photo OCR"
+    }
+  ],
   "icons": [
     {
       "src": "./favicon.svg",

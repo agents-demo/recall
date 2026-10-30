@@ -1,0 +1,43 @@
+{
+  "app_id": "recall-capture",
+  "adapter": "openjiuwen/recall",
+  "version": "1.0.0",
+  "contract": "PPMA North Contract v0",
+  "base_url": "http://localhost:8787",
+  "tools": [
+    {
+      "name": "capture.search",
+      "description": "Read-only local evidence search",
+      "method": "GET",
+      "path": "/v1/search?q={query}",
+      "risk": "read"
+    },
+    {
+      "name": "capture.evidence",
+      "description": "Quote, speaker, time and provenance",
+      "method": "GET",
+      "path": "/v1/evidence/{evidence_id}",
+      "risk": "read"
+    },
+    {
+      "name": "capture.prepare_handoff",
+      "description": "Return a review payload; never sends",
+      "method": "GET",
+      "path": "/v1/memory",
+      "risk": "prepare"
+    },
+    {
+      "name": "capture.prepare_redaction",
+      "description": "Safe-version preview; never applies",
+      "method": "GET",
+      "path": "/v1/evidence/{evidence_id}",
+      "risk": "prepare"
+    }
+  ],
+  "non_goals": [
+    "No execute/send/delete tool",
+    "No raw media endpoint",
+    "No task, calendar or email action",
+    "No project-state mutation"
+  ]
+}

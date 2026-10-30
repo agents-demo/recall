@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useStore } from "../lib/store";
 import { useT } from "../lib/i18n";
-import { classNames, fmtTime, speakerName, pct } from "../lib/engine";
+import { classNames, fmtTime, pct, speakerName } from "../lib/engine";
 import type { Answer } from "../types";
-import { PageHead, Panel, Chip, Confidence, DataNote, Empty } from "../components/UI";
+import { PageHead, Chip, Confidence, DataNote, Empty, Panel } from "../components/UI";
 import { Icon } from "../components/Icon";
 
 function Highlight({ text, query }: { text: string; query: string }) {
@@ -29,31 +29,35 @@ const examples = [
   "What is the capital of France?",
 ];
 
+const followUps = ["Who said that?", "Show me the moment", "What about the training?", "Compare with kickoff"];
+
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  start: () => void;
+  stop: () => void;
+  onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+};
+
 export default function Recall() {
-  const { pack, activeMeetings, notes, search, ask, settings, meetingById } = useStore();
+  const { pack, activeMeetings, notes, search, meetingById, settings, conversation, askThread, clearConversation, say } = useStore();
   const t = useT();
   const [params, setParams] = useSearchParams();
-  const initialQuery = params.get("q") ?? "";
-  const [query, setQuery] = useState(initialQuery);
-  const [submitted, setSubmitted] = useState(initialQuery);
   const [mode, setMode] = useState<"ask" | "search">("ask");
+  const [query, setQuery] = useState(params.get("q") ?? "");
+  const [submitted, setSubmitted] = useState("");
   const [meetingFilter, setMeetingFilter] = useState("all");
   const [speakerFilter, setSpeakerFilter] = useState("all");
   const [kindFilter, setKindFilter] = useState("all");
-  const [answer, setAnswer] = useState<Answer | null>(() => (initialQuery.trim() ? ask(initialQuery) : null));
-  const [showTrace, setShowTrace] = useState(false);
+  const [showTrace, setShowTrace] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const threadEnd = useRef<HTMLDivElement>(null);
+  const startedRef = useRef(false);
   if (!pack) return null;
-
-  useEffect(() => {
-    const initial = params.get("q");
-    if (initial !== null && initial !== submitted) {
-      setQuery(initial);
-      setSubmitted(initial);
-      if (initial.trim()) setAnswer(ask(initial));
-    }
-    // Only react to a new deep-link query.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params]);
 
   const speakers = useMemo(() => {
     const map = new Map<string, string>();
@@ -74,190 +78,234 @@ export default function Recall() {
     [submitted, search, meetingFilter, speakerFilter, kindFilter],
   );
 
-  const submit = (value: string) => {
-    setQuery(value);
-    setSubmitted(value);
-    setParams(value ? { q: value } : {});
-    if (mode === "ask") setAnswer(ask(value));
+  useEffect(() => {
+    const initial = params.get("q");
+    if (initial && !startedRef.current && conversation.length === 0) {
+      startedRef.current = true;
+      setQuery(initial);
+      setSubmitted(initial);
+      askThread(initial);
+    }
+    // Only react to the first deep link, not to every route change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params]);
+
+  useEffect(() => {
+    threadEnd.current?.scrollIntoView({ block: "end", behavior: settings.reducedMotion ? "auto" : "smooth" });
+  }, [conversation.length, settings.reducedMotion]);
+
+  const submit = (value = query) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    setQuery(trimmed);
+    setSubmitted(trimmed);
+    setParams({ q: trimmed });
+    if (mode === "ask") askThread(trimmed);
+    setQuery("");
   };
+
+  const startVoice = () => {
+    const ctor = (window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike; webkitSpeechRecognition?: new () => SpeechRecognitionLike }).SpeechRecognition
+      ?? (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognitionLike }).webkitSpeechRecognition;
+    if (!ctor) {
+      say("This browser has no speech recognition. Type the question instead.");
+      return;
+    }
+    const recognition = new ctor();
+    recognition.lang = settings.lang === "zh" ? "zh-CN" : "en-GB";
+    recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+      submit(transcript);
+    };
+    recognition.onerror = () => setListening(false);
+    recognition.onend = () => setListening(false);
+    recognitionRef.current = recognition;
+    setListening(true);
+    recognition.start();
+    say("Listening with the browser speech engine. This is not the private on-device ASR.");
+  };
+
+  const lastAssistant = [...conversation].reverse().find((turn) => turn.role === "assistant" && turn.answer);
+  const lastAnswer = lastAssistant?.answer;
 
   return (
     <>
       <PageHead
-        kicker="Recall · local, cited, correctable"
+        kicker="Recall · threaded, cited, correctable"
         title={t("recall.title")}
         subtitle={t("recall.subtitle")}
         actions={<Chip tone="green" dot="live">No web · no model memory</Chip>}
       />
-      <DataNote seed={pack.meta.seed} note="Answers are composed locally from this deterministic pack. The same policy applies to real captures: if no evidence matches, RECALL refuses and says so." />
+      <DataNote seed={pack.meta.seed} note="Answers and follow-ups are composed locally from this deterministic pack. If no evidence matches, RECALL refuses. Voice input uses the browser speech engine; the private capture path remains on-device." />
 
-      <div className="recall-search-wrap">
-        <div className="recall-modes">
-          <button className={classNames("mode-btn", mode === "ask" && "active")} onClick={() => { setMode("ask"); if (query) setAnswer(ask(query)); }}>
-            <Icon name="spark" size={15} /> Ask the evidence
-          </button>
-          <button className={classNames("mode-btn", mode === "search" && "active")} onClick={() => setMode("search")}>
-            <Icon name="search" size={15} /> Search every capture
-          </button>
-        </div>
-        <form
-          className="recall-search"
-          onSubmit={(event) => {
-            event.preventDefault();
-            submit(query);
-          }}
-        >
-          <Icon name="search" size={20} />
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={mode === "ask" ? "What did we promise about the 14th?" : "delivery, 14th, Sandra, training…"}
-            aria-label={mode === "ask" ? "Ask a question about the evidence" : "Search all captures"}
-          />
-          <button className="btn primary" type="submit">{mode === "ask" ? "Ask" : "Search"}</button>
-        </form>
-        <div className="example-row">
-          <span>Try</span>
-          {examples.map((example) => (
-            <button key={example} onClick={() => submit(example)}>{example}</button>
-          ))}
-        </div>
-      </div>
-
-      <div className="filter-bar recall-filters">
-        <select value={meetingFilter} onChange={(event) => setMeetingFilter(event.target.value)} aria-label="Filter by meeting">
-          <option value="all">All captures</option>
-          {activeMeetings.map((meeting) => <option key={meeting.id} value={meeting.id}>{meeting.title}</option>)}
-          <option value={pack.notes[0]?.id}>Field notes</option>
-        </select>
-        <select value={speakerFilter} onChange={(event) => setSpeakerFilter(event.target.value)} aria-label="Filter by speaker">
-          <option value="all">All speakers</option>
-          {speakers.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
-        </select>
-        <select value={kindFilter} onChange={(event) => setKindFilter(event.target.value)} aria-label="Filter by evidence kind">
-          <option value="all">All evidence</option>
-          <option value="promise">Promises</option>
-          <option value="decision">Decisions</option>
-          <option value="action">Actions</option>
-          <option value="question">Questions</option>
-          <option value="note">Notes</option>
-        </select>
-        <span className="filter-count"><Icon name="lock" size={12} /> searched {activeMeetings.length} captures · {notes.length} notes locally</span>
-      </div>
-
-      {mode === "ask" && submitted.trim() && (
-        <div className={classNames("answer-card", answer?.refused && "refused")}>
-          <div className="answer-head">
-            <div>
-              <span className="kicker">Answer · {answer?.refused ? "refused" : "from your evidence"}</span>
-              <h2>{submitted}</h2>
-            </div>
-            <div className="answer-meta">
-              {answer && !answer.refused && <Chip tone="green"><i className="dot live" /> {Math.round(answer.confidence * 100)}% confidence</Chip>}
-              {answer?.refused && <Chip tone="red">no evidence</Chip>}
-              <span className="mono xsmall">{answer?.latency_ms ?? 0} ms · local</span>
-            </div>
+      <div className="recall-shell">
+        <div className="recall-bar">
+          <div className="recall-modes">
+            <button className={classNames("mode-btn", mode === "ask" && "active")} onClick={() => setMode("ask")}><Icon name="spark" size={15} /> Ask</button>
+            <button className={classNames("mode-btn", mode === "search" && "active")} onClick={() => setMode("search")}><Icon name="search" size={15} /> Search</button>
           </div>
-          <p className="answer-text">{answer?.answer ?? "Ask a question to begin."}</p>
-          {answer && answer.citations.length > 0 && (
-            <div className="citation-list">
-              {answer.citations.map((citation, index) => (
-                <Link key={`${citation.meeting_id}-${citation.evidence_id}`} className="citation" to={`/meetings/${citation.meeting_id}?t=${Math.floor(citation.start)}&e=${citation.evidence_id}`}>
-                  <span className="citation-index">{index + 1}</span>
-                  <span>
-                    <b>“{citation.quote}”</b>
-                    <small>{citation.speaker} · {citation.meeting_title} · {fmtTime(citation.start)} · {Math.round(citation.confidence * 100)}%</small>
-                  </span>
-                  <Icon name="arrow" size={14} />
-                </Link>
-              ))}
-            </div>
-          )}
-          <div className="answer-foot">
-            <button className="btn sm ghost" onClick={() => setShowTrace((value) => !value)}>
-              <Icon name="terminal" size={12} /> {showTrace ? "Hide" : "Inspect"} the answer trace
-            </button>
-            <span className="xsmall soft">Answers are restricted to the user's evidence, with citations. If evidence is missing, the answer is “no”.</span>
+          <div className="recall-session">
+            <span className="mono xsmall soft">{conversation.length / 2} turns · local</span>
+            <button className="btn sm ghost" onClick={clearConversation}><Icon name="refresh" size={12} /> New thread</button>
           </div>
-          {showTrace && answer && (
-            <div className="trace">
-              {answer.trace.map((step, index) => (
-                <div className="trace-step" key={step.step}>
-                  <span className="trace-num">{index + 1}</span>
-                  <div><b>{step.step}</b><p>{step.detail}</p></div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
-      )}
 
-      <div className="results-head">
-        <h2>{submitted ? `Evidence results · ${results.length}` : "Search the library"}</h2>
-        {submitted && <span className="xsmall soft">Ranked locally. Every result opens the exact timestamp.</span>}
-      </div>
+        {mode === "ask" ? (
+          <div className="chat">
+            <div className="chat-thread">
+              {conversation.length === 0 && (
+                <div className="chat-intro">
+                  <span className="kicker">Ask the evidence</span>
+                  <h1>What did we promise,<br />and who said it?</h1>
+                  <p>Ask a question, then follow up. Every answer cites the exact quote, speaker and timestamp. If the evidence is not there, RECALL says so.</p>
+                  <div className="chat-examples">
+                    {examples.map((example) => <button key={example} onClick={() => submit(example)}>{example}</button>)}
+                  </div>
+                  <div className="chat-capabilities">
+                    <div><Icon name="quote" size={16} /><b>Cited answers</b><span>Quote, speaker, time, confidence</span></div>
+                    <div><Icon name="layers" size={16} /><b>Threaded follow-ups</b><span>“Who said that?” resolves against the last answer</span></div>
+                    <div><Icon name="shield" size={16} /><b>Bounded actions</b><span>Prepare a review; never send or delete</span></div>
+                  </div>
+                </div>
+              )}
+              {conversation.map((turn) => {
+                if (turn.role === "user") {
+                  return (
+                    <div className="chat-user" key={turn.id}>
+                      <div className="chat-bubble">{turn.text}</div>
+                    </div>
+                  );
+                }
+                const answer = turn.answer;
+                if (!answer) return null;
+                return (
+                  <div className="chat-assistant" key={turn.id}>
+                    <div className="chat-avatar"><Icon name={answer.refused ? "alert" : "quote"} size={15} /></div>
+                    <div className={classNames("chat-answer", answer.refused && "refused")}>
+                      <div className="chat-answer-head">
+                        <span className="kicker">{answer.refused ? "Refused · no evidence" : "Answer from evidence"}</span>
+                        <div className="row gap6">
+                          {!answer.refused && <Chip tone="green">{Math.round(answer.confidence * 100)}% confidence</Chip>}
+                          <span className="mono xsmall soft">{answer.latency_ms} ms</span>
+                        </div>
+                      </div>
+                      <p>{answer.answer}</p>
+                      {answer.citations.length > 0 && (
+                        <div className="chat-citations">
+                          {answer.citations.map((citation, index) => (
+                            <Link key={`${citation.meeting_id}-${citation.evidence_id}`} to={`/meetings/${citation.meeting_id}?t=${Math.floor(citation.start)}&e=${citation.evidence_id}`}>
+                              <span className="citation-index">{index + 1}</span>
+                              <span><b>“{citation.quote}”</b><small>{citation.speaker} · {citation.meeting_title} · {fmtTime(citation.start)}</small></span>
+                              <Icon name="arrow" size={13} />
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      {answer.review && <Link className="btn sm primary" to={answer.review.route}><Icon name="edit" size={12} /> {answer.review.label}</Link>}
+                      <div className="chat-actions">
+                        <button className="btn sm ghost" onClick={() => setShowTrace(showTrace === turn.id ? null : turn.id)}><Icon name="terminal" size={12} /> {showTrace === turn.id ? "Hide" : "Inspect"} trace</button>
+                        <span className="xsmall soft">Answers are restricted to local evidence, with citations.</span>
+                      </div>
+                      {showTrace === turn.id && (
+                        <div className="trace">
+                          {answer.trace.map((step, index) => (
+                            <div className="trace-step" key={step.step}><span className="trace-num">{index + 1}</span><div><b>{step.step}</b><p>{step.detail}</p></div></div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={threadEnd} />
+            </div>
 
-      <div className="result-list">
-        {results.map((hit) => {
-          const meeting = meetingById(hit.meeting_id);
-          const speaker = meeting ? speakerName(meeting, hit.speaker_id) : hit.speaker_id;
-          return (
-            <Link
-              key={`${hit.type}-${hit.id}-${hit.start}`}
-              className="result-row"
-              to={`/meetings/${hit.meeting_id}?t=${Math.floor(hit.start)}&e=${hit.evidence_id}`}
-            >
-              <div className="result-time mono">{fmtTime(hit.start)}</div>
-              <div className="result-body">
-                <div className="result-meta">
-                  <Chip tone={hit.kind === "promise" ? "amber" : hit.kind === "decision" ? "cyan" : "neutral"}>{hit.kind ?? hit.type}</Chip>
-                  <span>{hit.meeting_title}</span>
-                  <span>·</span>
-                  <b>{speaker || "field note"}</b>
-                  {hit.redacted && <Chip tone="red">redacted</Chip>}
-                </div>
-                <p><Highlight text={hit.text} query={submitted} /></p>
-                <div className="result-foot">
-                  <span className="mono">{hit.evidence_id}</span>
-                  <Confidence value={hit.confidence} />
-                  <span className="mono xsmall soft">score {hit.score}</span>
-                </div>
+            {lastAnswer && !lastAnswer.refused && (
+              <div className="chat-followups">
+                <span>Follow up</span>
+                {followUps.map((follow) => <button key={follow} onClick={() => submit(follow)}>{follow}</button>)}
               </div>
-              <span className="result-open">Open <Icon name="arrow" size={13} /></span>
-            </Link>
-          );
-        })}
-        {submitted && results.length === 0 && (
-          <Empty title="No evidence matches" detail="Try fewer words, another speaker, or search for the exact phrase you remember." icon="search" />
-        )}
-        {!submitted && (
-          <div className="recall-blank">
-            <div className="recall-blank-grid">
-              {activeMeetings.slice(0, 3).map((meeting) => (
-                <Link key={meeting.id} className="recall-blank-card" to={`/meetings/${meeting.id}`}>
-                  <span className="kicker">{meeting.mode}</span>
-                  <b>{meeting.title}</b>
-                  <p>“{meeting.evidence[0]?.quote}”</p>
-                  <span className="xsmall soft">{meeting.evidence.length} evidence items · {meeting.participants.length} speakers</span>
-                </Link>
-              ))}
-            </div>
-            <div className="local-policy">
-              <Icon name="shield" size={18} />
-              <div>
-                <b>The answer policy</b>
-                <p>RECALL only answers from captured evidence. Every claim carries a speaker, timestamp, source and confidence. Redacted text is replaced with the safe version. No open web, no un-cited memory.</p>
-              </div>
-            </div>
+            )}
+
+            <form className="chat-composer" onSubmit={(event) => { event.preventDefault(); submit(); }}>
+              <button type="button" className={classNames("mic-btn", listening && "listening")} onClick={startVoice} aria-label="Ask by voice">
+                <Icon name={listening ? "pause" : "mic"} size={17} />
+              </button>
+              <textarea
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    submit();
+                  }
+                }}
+                rows={1}
+                placeholder="Ask a follow-up, or say “show me the moment”…"
+                aria-label="Ask the evidence"
+              />
+              <button className="btn primary" type="submit">Ask <Icon name="arrow" size={13} /></button>
+            </form>
+            <p className="chat-foot"><Icon name="lock" size={11} /> Local answer policy · no web · no training on your audio</p>
           </div>
+        ) : (
+          <>
+            <div className="recall-search-wrap">
+              <form className="recall-search" onSubmit={(event) => { event.preventDefault(); setSubmitted(query); setParams({ q: query }); }}>
+                <Icon name="search" size={20} />
+                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="delivery, 14th, Sandra, training…" aria-label="Search all captures" />
+                <button className="btn primary" type="submit">Search</button>
+              </form>
+            </div>
+            <div className="filter-bar recall-filters">
+              <select value={meetingFilter} onChange={(event) => setMeetingFilter(event.target.value)} aria-label="Filter by meeting">
+                <option value="all">All captures</option>
+                {activeMeetings.map((meeting) => <option key={meeting.id} value={meeting.id}>{meeting.title}</option>)}
+                {notes[0] && <option value={notes[0].id}>Field notes</option>}
+              </select>
+              <select value={speakerFilter} onChange={(event) => setSpeakerFilter(event.target.value)} aria-label="Filter by speaker">
+                <option value="all">All speakers</option>
+                {speakers.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+              </select>
+              <select value={kindFilter} onChange={(event) => setKindFilter(event.target.value)} aria-label="Filter by evidence kind">
+                <option value="all">All evidence</option>
+                <option value="promise">Promises</option>
+                <option value="decision">Decisions</option>
+                <option value="action">Actions</option>
+                <option value="question">Questions</option>
+                <option value="note">Notes</option>
+              </select>
+              <span className="filter-count"><Icon name="lock" size={12} /> {activeMeetings.length} captures · {notes.length} notes</span>
+            </div>
+            <div className="result-list">
+              {results.map((hit) => {
+                const meeting = meetingById(hit.meeting_id);
+                const speaker = meeting ? speakerName(meeting, hit.speaker_id) : hit.speaker_id;
+                return (
+                  <Link key={`${hit.type}-${hit.id}-${hit.start}`} className="result-row" to={`/meetings/${hit.meeting_id}?t=${Math.floor(hit.start)}&e=${hit.evidence_id}`}>
+                    <div className="result-time mono">{fmtTime(hit.start)}</div>
+                    <div className="result-body">
+                      <div className="result-meta">
+                        <Chip tone={hit.kind === "promise" ? "amber" : hit.kind === "decision" ? "cyan" : "neutral"}>{hit.kind ?? hit.type}</Chip>
+                        <span>{hit.meeting_title}</span><span>·</span><b>{speaker || "field note"}</b>
+                        {hit.redacted && <Chip tone="red">redacted</Chip>}
+                      </div>
+                      <p><Highlight text={hit.text} query={submitted} /></p>
+                      <div className="result-foot"><span className="mono">{hit.evidence_id}</span><Confidence value={hit.confidence} /><span className="mono xsmall soft">score {hit.score}</span></div>
+                    </div>
+                    <span className="result-open">Open <Icon name="arrow" size={13} /></span>
+                  </Link>
+                );
+              })}
+              {submitted && results.length === 0 && <Empty title="No evidence matches" detail="Try fewer words, another speaker, or the exact phrase you remember." icon="search" />}
+              {!submitted && <div className="recall-blank"><div className="local-policy"><Icon name="search" size={18} /><div><b>Search every capture</b><p>Exact strings, speakers, evidence kinds and notes. Every result opens the timestamp.</p></div></div></div>}
+            </div>
+          </>
         )}
       </div>
-
-      {submitted && (
-        <p className="capture-foot">
-          <Icon name="clock" size={12} /> Time to quote: <b>{pack.pilot.quote_seconds}s</b> in the pilot · target ≤ {pack.pilot.target_quote_seconds}s. Local search does not call a model.
-        </p>
-      )}
     </>
   );
 }

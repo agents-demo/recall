@@ -9,9 +9,15 @@ import {
   type ReactNode,
 } from "react";
 import type {
+  AmbientState,
   Answer,
+  AttentionFeedback,
+  AttentionItem,
   AuditEntry,
+  Comment,
+  ConnectorState,
   Consent,
+  ConversationTurn,
   Correction,
   Lang,
   Meeting,
@@ -21,6 +27,7 @@ import type {
   PpmaCommand,
   PpmaEvent,
   Redaction,
+  RemoteAck,
   Retention,
   Role,
   SearchHit,
@@ -46,6 +53,11 @@ import {
   speakerName,
   tombstoneMeeting,
 } from "./engine";
+import { deriveAttention, nudgeMetrics, attentionForMeeting as attentionForMeetingEngine } from "./attention";
+import { converse } from "./conversation";
+import { defaultConnectorState } from "./connectors";
+import { sendEvent, sendCommand } from "./ppmaClient";
+import { clearVault, encryptionAvailable, loadVault, saveVault } from "./vault";
 
 const STORAGE_KEY = "recall.demo.v2";
 
@@ -55,6 +67,12 @@ export interface Settings {
   role: Role;
   reducedMotion: boolean;
   ppmaOnline: boolean;
+  fontScale: "standard" | "large";
+  onboarded: boolean;
+  ppmaMode: "fake" | "live";
+  endpointUrl: string;
+  endpointToken: string;
+  endpointSecret: string;
 }
 
 export interface ProjectState {
@@ -81,7 +99,23 @@ interface Persisted {
   killSwitch: boolean;
   lastReplay: { event_id: string; at: string; result: string } | null;
   conformanceRun: string | null;
+  attentionFeedback: Record<string, AttentionFeedback>;
+  comments: Comment[];
+  connectors: Record<string, ConnectorState>;
+  conversation: ConversationTurn[];
+  ambient: AmbientState;
+  remoteAcks: RemoteAck[];
 }
+
+const DEFAULT_AMBIENT: AmbientState = {
+  enabled: false,
+  wakeWord: true,
+  batteryAware: true,
+  schedule: "19:00–07:00",
+  zones: ["Private offices", "Bathrooms / changing rooms", "Client legal review"],
+  lastActivation: null,
+  activations: 0,
+};
 
 const DEFAULT_SETTINGS: Settings = {
   theme: "dark",
@@ -89,6 +123,12 @@ const DEFAULT_SETTINGS: Settings = {
   role: "team_lead",
   reducedMotion: false,
   ppmaOnline: true,
+  fontScale: "large",
+  onboarded: false,
+  ppmaMode: "fake",
+  endpointUrl: "",
+  endpointToken: "",
+  endpointSecret: "",
 };
 
 const EMPTY: Persisted = {
@@ -108,6 +148,12 @@ const EMPTY: Persisted = {
   killSwitch: false,
   lastReplay: null,
   conformanceRun: null,
+  attentionFeedback: {},
+  comments: [],
+  connectors: defaultConnectorState(),
+  conversation: [],
+  ambient: DEFAULT_AMBIENT,
+  remoteAcks: [],
 };
 
 function loadPersisted(): Persisted {
@@ -319,6 +365,7 @@ interface StoreValue {
   activeMeetings: Meeting[];
   notes: Note[];
   tombstoned: Meeting[];
+  corrections: Correction[];
   events: PpmaEvent[];
   queue: PpmaEvent[];
   memory: MemoryEntry[];
@@ -331,6 +378,25 @@ interface StoreValue {
   conformanceRun: string | null;
   toast: string | null;
   consentCoverage: number;
+  attention: AttentionItem[];
+  attentionMetrics: ReturnType<typeof nudgeMetrics>;
+  attentionForMeeting: (meetingId: string) => AttentionItem[];
+  attentionFeedback: Record<string, AttentionFeedback>;
+  feedbackAttention: (id: string, state: AttentionFeedback["state"], note?: string) => void;
+  comments: Comment[];
+  addComment: (targetType: Comment["target_type"], targetId: string, meetingId: string, text: string) => void;
+  resolveComment: (commentId: string) => void;
+  conversation: ConversationTurn[];
+  askThread: (input: string) => Answer;
+  clearConversation: () => void;
+  connectors: Record<string, ConnectorState>;
+  setConnector: (id: string, patch: Partial<ConnectorState>) => void;
+  ambient: AmbientState;
+  setAmbient: (patch: Partial<AmbientState>) => void;
+  logAmbientActivation: () => void;
+  encryption: "on" | "migrating" | "unavailable";
+  collabPeers: { id: string; name: string; role: Role; at: number }[];
+  remoteAcks: RemoteAck[];
   meetingById: (id: string) => Meeting | undefined;
   noteById: (id: string) => Note | undefined;
   search: (query: string, options?: { meeting_id?: string; speaker_id?: string; kind?: string; limit?: number }) => SearchHit[];
@@ -373,12 +439,76 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<Persisted>(() => loadPersisted());
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const [encryption, setEncryption] = useState<"on" | "migrating" | "unavailable">(encryptionAvailable() ? "migrating" : "unavailable");
+  const [collabPeers, setCollabPeers] = useState<{ id: string; name: string; role: Role; at: number }[]>([]);
+  const channelRef = useRef<BroadcastChannel | null>(null);
 
   const say = useCallback((message: string) => {
     setToast(message);
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
     toastTimer.current = window.setTimeout(() => setToast(null), 3800);
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const saved = await loadVault<Partial<Persisted>>();
+        if (!cancelled && saved) {
+          setState((prev) => ({
+            ...prev,
+            ...saved,
+            events: saved.events ?? prev.events,
+            memory: saved.memory ?? prev.memory,
+            commands: saved.commands ?? prev.commands,
+            settings: { ...DEFAULT_SETTINGS, ...(saved.settings ?? {}) },
+            connectors: { ...defaultConnectorState(), ...(saved.connectors ?? {}) },
+            ambient: { ...DEFAULT_AMBIENT, ...(saved.ambient ?? {}) },
+            attentionFeedback: saved.attentionFeedback ?? {},
+            comments: saved.comments ?? [],
+            conversation: saved.conversation ?? [],
+            remoteAcks: saved.remoteAcks ?? [],
+          }));
+        }
+      } finally {
+        if (!cancelled) {
+          setHydrated(true);
+          setEncryption(encryptionAvailable() ? "on" : "unavailable");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof BroadcastChannel === "undefined") return;
+    const channel = new BroadcastChannel("recall-collab");
+    channelRef.current = channel;
+    const peer = { id: newId("peer"), name: `Collaborator ${Math.floor(Math.random() * 90 + 10)}`, role: state.settings.role, at: Date.now() };
+    const heartbeat = window.setInterval(() => channel.postMessage({ type: "presence", peer: { ...peer, at: Date.now() } }), 8000);
+    channel.onmessage = (event: MessageEvent) => {
+      const message = event.data as { type?: string; peer?: typeof peer; comment?: Comment; correction?: Correction; message?: string };
+      if (message.type === "presence" && message.peer) {
+        setCollabPeers((prev) => [...prev.filter((item) => item.id !== message.peer!.id), message.peer!].slice(-8));
+      } else if (message.type === "comment" && message.comment) {
+        setState((prev) => (prev.comments.some((item) => item.id === message.comment!.id) ? prev : { ...prev, comments: [...prev.comments, message.comment!] }));
+      } else if (message.type === "correction" && message.correction) {
+        setState((prev) => (prev.corrections.some((item) => item.id === message.correction!.id) ? prev : { ...prev, corrections: [...prev.corrections, message.correction!] }));
+      } else if (message.type === "toast" && message.message) {
+        say(message.message);
+      }
+    };
+    const prune = window.setInterval(() => setCollabPeers((prev) => prev.filter((item) => Date.now() - item.at < 22000)), 6000);
+    return () => {
+      window.clearInterval(heartbeat);
+      window.clearInterval(prune);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [state.settings.role, say]);
 
   useEffect(() => {
     let cancelled = false;
@@ -418,19 +548,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (state.events === null) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      /* a full disk should not break a capture */
+    if (!hydrated || state.events === null) return;
+    if (!encryptionAvailable()) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {
+        /* a full disk should not break a capture */
+      }
+      return;
     }
-  }, [state]);
+    void saveVault(state).then((ok) => setEncryption((prev) => (prev === (ok ? "on" : "unavailable") ? prev : ok ? "on" : "unavailable")));
+  }, [state, hydrated]);
 
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = state.settings.theme;
     root.dataset.lang = state.settings.lang;
     root.dataset.motion = state.settings.reducedMotion ? "reduced" : "full";
+    root.dataset.font = state.settings.fontScale;
   }, [state.settings]);
 
   const baseMeetings = useMemo(() => (pack ? [...pack.meetings, ...state.imported] : []), [pack, state.imported]);
@@ -481,6 +616,35 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const meetingById = useCallback((id: string) => meetings.find((m) => m.id === id), [meetings]);
   const noteById = useCallback((id: string) => notes.find((n) => n.id === id), [notes]);
 
+  const attention = useMemo(
+    () => (pack ? deriveAttention(pack, activeMeetings, notes, events, state.attentionFeedback) : []),
+    [pack, activeMeetings, notes, events, state.attentionFeedback],
+  );
+  const attentionMetrics = useMemo(() => nudgeMetrics(state.attentionFeedback), [state.attentionFeedback]);
+  const attentionForMeeting = useCallback(
+    (meetingId: string) => {
+      const meeting = meetings.find((item) => item.id === meetingId);
+      return pack && meeting ? attentionForMeetingEngine(pack, meeting, events, state.attentionFeedback) : [];
+    },
+    [pack, meetings, events, state.attentionFeedback],
+  );
+
+  const feedbackAttention = useCallback(
+    (id: string, status: AttentionFeedback["state"], note?: string) => {
+      const at = nowIso();
+      const until = status === "snoozed" ? new Date(Date.now() + 24 * 3_600_000).toISOString() : undefined;
+      setState((prev) => ({
+        ...prev,
+        attentionFeedback: { ...prev.attentionFeedback, [id]: { state: status, at, until, note } },
+      }));
+      if (status === "accepted") say("Marked useful. The nudge moves out of the way.");
+      else if (status === "wrong") say("Thanks — this nudge is suppressed and the feedback is kept.");
+      else if (status === "snoozed") say("Snoozed for 24 hours. No notification is sent.");
+      else say("Dismissed. You can bring it back from the attention page.");
+    },
+    [say],
+  );
+
   const search = useCallback(
     (query: string, options?: { meeting_id?: string; speaker_id?: string; kind?: string; limit?: number }) =>
       searchPack(activeMeetings, notes, query, options),
@@ -491,6 +655,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     (query: string) => (pack ? answerQuestion(pack, activeMeetings, query) : { answer: "", citations: [], trace: [], confidence: 0, refused: true, latency_ms: 0 }),
     [pack, activeMeetings],
   );
+
+  const askThread = useCallback(
+    (input: string) => {
+      const answer = pack
+        ? converse(pack, activeMeetings, notes, state.conversation, input)
+        : { answer: "The pack is still loading.", citations: [], trace: [], confidence: 0, refused: true, latency_ms: 0 };
+      const at = nowIso();
+      const userTurn: ConversationTurn = { id: newId("turn"), role: "user", text: input, at };
+      const assistantTurn: ConversationTurn = { id: newId("turn"), role: "assistant", text: answer.answer, answer, at };
+      setState((prev) => ({ ...prev, conversation: [...prev.conversation, userTurn, assistantTurn].slice(-40) }));
+      return answer;
+    },
+    [pack, activeMeetings, notes, state.conversation],
+  );
+
+  const clearConversation = useCallback(() => {
+    setState((prev) => ({ ...prev, conversation: [] }));
+    say("Conversation cleared. The evidence is untouched.");
+  }, [say]);
 
   const pushEvent = useCallback(
     (event: PpmaEvent, meeting?: Meeting) => {
@@ -513,10 +696,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         say("PPMA rejected a duplicate event_id. Nothing was replayed.");
         return;
       }
+      if (state.settings.ppmaMode === "live" && state.settings.endpointUrl) {
+        void sendEvent(
+          { endpointUrl: state.settings.endpointUrl, token: state.settings.endpointToken, secret: state.settings.endpointSecret },
+          event,
+        ).then((ack) => {
+          setState((prev) => ({ ...prev, remoteAcks: [ack, ...prev.remoteAcks].slice(0, 100) }));
+          say(ack.status === "delivered" ? `Live PPMA acknowledged ${event.type}` : `Live PPMA failed: ${ack.detail} — the local copy is safe.`);
+        });
+      }
       if (state.settings.ppmaOnline && !state.killSwitch) say("PPMA updated · event delivered");
       else say("PPMA unavailable — queued locally. Capture continues.");
     },
-    [pack, say, state.events, state.killSwitch, state.settings.ppmaOnline],
+    [pack, say, state.events, state.killSwitch, state.settings.ppmaOnline, state.settings.ppmaMode, state.settings.endpointUrl, state.settings.endpointToken, state.settings.endpointSecret],
   );
 
   const correctSpeaker = useCallback(
@@ -537,6 +729,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         at: nowIso(),
       };
       setState((prev) => ({ ...prev, corrections: [...prev.corrections, correction] }));
+      channelRef.current?.postMessage({ type: "correction", correction });
       const event = buildEvent(
         "capture.correction",
         {
@@ -577,6 +770,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         at: nowIso(),
       };
       setState((prev) => ({ ...prev, corrections: [...prev.corrections, correction] }));
+      channelRef.current?.postMessage({ type: "correction", correction });
       const evidence = meeting.evidence.find((e) => e.utterance_id === utteranceId);
       pushEvent(
         buildEvent(
@@ -622,6 +816,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         at: nowIso(),
       };
       setState((prev) => ({ ...prev, corrections: [...prev.corrections, correction] }));
+      channelRef.current?.postMessage({ type: "correction", correction });
       pushEvent(
         buildEvent(
           "capture.correction",
@@ -643,6 +838,71 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     [meetingById, pushEvent, say, state.settings.role],
   );
+
+  const addComment = useCallback(
+    (targetType: Comment["target_type"], targetId: string, meetingId: string, text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      const comment: Comment = {
+        id: newId("cmt"),
+        target_type: targetType,
+        target_id: targetId,
+        meeting_id: meetingId,
+        author: "You",
+        role: state.settings.role,
+        text: trimmed,
+        at: nowIso(),
+        resolved: false,
+      };
+      setState((prev) => ({ ...prev, comments: [...prev.comments, comment] }));
+      channelRef.current?.postMessage({ type: "comment", comment });
+      say("Comment added · visible to other open tabs in this demo");
+    },
+    [say, state.settings.role],
+  );
+
+  const resolveComment = useCallback((commentId: string) => {
+    setState((prev) => ({
+      ...prev,
+      comments: prev.comments.map((comment) => (comment.id === commentId ? { ...comment, resolved: !comment.resolved } : comment)),
+    }));
+  }, []);
+
+  const setConnector = useCallback((id: string, patch: Partial<ConnectorState>) => {
+    setState((prev) => ({
+      ...prev,
+      connectors: {
+        ...prev.connectors,
+        [id]: { ...(prev.connectors[id] ?? { enabled: false, configured: false, consent_purpose: "", scopes: [], last_test: null, last_status: "not_configured", detail: "" }), ...patch },
+      },
+    }));
+  }, []);
+
+  const setAmbient = useCallback((patch: Partial<AmbientState>) => {
+    setState((prev) => ({ ...prev, ambient: { ...prev.ambient, ...patch } }));
+  }, []);
+
+  const logAmbientActivation = useCallback(() => {
+    const at = nowIso();
+    setState((prev) => ({
+      ...prev,
+      ambient: { ...prev.ambient, lastActivation: at, activations: prev.ambient.activations + 1 },
+      audit: [
+        {
+          id: newId("aud"),
+          at,
+          actor: state.settings.role,
+          action: "ambient.activated",
+          object: "device:local",
+          detail: `Ambient activation · wake word ${prev.ambient.wakeWord ? "on" : "off"} · zones ${prev.ambient.zones.length}`,
+          model: "vad+consent",
+          sources: ["local"],
+        },
+        ...prev.audit,
+      ],
+    }));
+    say("Ambient activation recorded in the audit.");
+  }, [say, state.settings.role]);
 
   const redact = useCallback(
     (meetingId: string, evidenceId: string, reason: string, label = "Sensitive passage") => {
@@ -741,7 +1001,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         sensitivity: note.sensitivity,
         occurredAt: nowIso(),
         seed: `note.created::${note.note_id}`,
-        provenance: { device: "iPhone 16 Pro · A18", model: "ocr-small-v3", app_version: "0.9.0", local_only: true },
+        provenance: { device: "iPhone 16 Pro · A18", model: "ocr-small-v3", app_version: "1.0.0", local_only: true },
       });
       pushEvent(event);
       return event.event_id;
@@ -908,6 +1168,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     (commandId: string, action: "apply" | "reject") => {
       const command = commands.find((c) => c.id === commandId);
       if (!command) return;
+      if (action === "apply" && state.settings.ppmaMode === "live" && state.settings.endpointUrl) {
+        void sendCommand(
+          { endpointUrl: state.settings.endpointUrl, token: state.settings.endpointToken, secret: state.settings.endpointSecret },
+          { type: command.type, payload: command.payload, target: command.target },
+        ).then((result) => say(result.ok ? `Live PPMA accepted ${command.type}` : `Live PPMA command failed: ${result.detail}`));
+      }
       if (action === "reject") {
         setState((prev) => ({ ...prev, commands: prev.commands?.map((c) => (c.id === commandId ? { ...c, status: "rejected" as const } : c)) ?? [] }));
         say("Command rejected. RECALL keeps the local policy and reports why.");
@@ -939,7 +1205,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }));
       }
     },
-    [commands, deleteMeeting, meetings, say, setRetention],
+    [commands, deleteMeeting, meetings, say, setRetention, state.settings.ppmaMode, state.settings.endpointUrl, state.settings.endpointToken, state.settings.endpointSecret],
   );
 
   const recordSession = useCallback(
@@ -977,7 +1243,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           jurisdiction: consentState.jurisdiction,
           participants_notified: consentState.participants_notified,
         },
-        { sensitivity: "personal", occurredAt: started, seed: `recording.started::${captureId}`, provenance: { device: scenario.provenance.device, model: "vad+asr", app_version: "0.9.0", local_only: true } },
+        { sensitivity: "personal", occurredAt: started, seed: `recording.started::${captureId}`, provenance: { device: scenario.provenance.device, model: "vad+asr", app_version: "1.0.0", local_only: true } },
       );
       pushEvent(event);
       say("Recording started on device · consent recorded");
@@ -1056,7 +1322,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         sensitivity: note.sensitivity,
         occurredAt: note.captured_at,
         seed: `note.created::${note.note_id}`,
-        provenance: { device: "iPhone 16 Pro · A18", model: "ocr-small-v3", app_version: "0.9.0", local_only: true },
+        provenance: { device: "iPhone 16 Pro · A18", model: "ocr-small-v3", app_version: "1.0.0", local_only: true },
       });
       pushEvent(event);
       say("Field note captured on device · evidence pointer created");
@@ -1096,7 +1362,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const reset = useCallback(() => {
     if (!pack) return;
-    localStorage.removeItem(STORAGE_KEY);
+    clearVault();
     setState({
       ...EMPTY,
       settings: state.settings,
@@ -1104,6 +1370,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       memory: pack.ppma.memory,
       commands: pack.ppma.commands,
       audit: pack.admin.audit,
+      connectors: defaultConnectorState(),
       project: { state: pack.ppma.project.state_before, followup: "", last_event: null, updated_at: pack.ppma.project.updated_at },
     });
     say("Demo reset · back to the lost promise");
@@ -1178,6 +1445,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     activeMeetings,
     notes,
     tombstoned,
+    corrections: state.corrections,
     events,
     queue,
     memory,
@@ -1190,6 +1458,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     conformanceRun: state.conformanceRun,
     toast,
     consentCoverage: consentCoverage(meetings),
+    attention,
+    attentionMetrics,
+    attentionForMeeting,
+    attentionFeedback: state.attentionFeedback,
+    feedbackAttention,
+    comments: state.comments,
+    addComment,
+    resolveComment,
+    conversation: state.conversation,
+    askThread,
+    clearConversation,
+    connectors: state.connectors,
+    setConnector,
+    ambient: state.ambient,
+    setAmbient,
+    logAmbientActivation,
+    encryption,
+    collabPeers,
+    remoteAcks: state.remoteAcks,
     meetingById,
     noteById,
     search,

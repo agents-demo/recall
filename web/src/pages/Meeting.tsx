@@ -15,6 +15,7 @@ import {
   utteranceText,
 } from "../lib/engine";
 import type { Evidence, Meeting as MeetingType } from "../types";
+import { createShareLink } from "../lib/share";
 import {
   Chip,
   Confidence,
@@ -33,7 +34,7 @@ import {
 } from "../components/UI";
 import { Icon } from "../components/Icon";
 
-type Tab = "transcript" | "extracted" | "ppma" | "rights";
+type Tab = "transcript" | "extracted" | "ppma" | "comments" | "rights";
 
 export default function Meeting() {
   const { meetingId = "" } = useParams();
@@ -60,6 +61,13 @@ export default function Meeting() {
     toggleLegalHold,
     withdrawConsent,
     resetMeeting,
+    attentionForMeeting,
+    feedbackAttention,
+    collabPeers,
+    comments,
+    addComment,
+    resolveComment,
+    corrections,
     say,
   } = store;
 
@@ -82,6 +90,10 @@ export default function Meeting() {
   const [redactReason, setRedactReason] = useState("client_confidential");
   const [retentionDate, setRetentionDate] = useState("");
   const [consentReason, setConsentReason] = useState("participant_request");
+  const [sendPreviewOpen, setSendPreviewOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState("");
+  const [commentTarget, setCommentTarget] = useState<"meeting" | "evidence">("meeting");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const selected = useMemo(
@@ -93,13 +105,18 @@ export default function Meeting() {
 
   useEffect(() => {
     if (!meeting) return;
+    const requestedTab = params.get("tab");
+    if (requestedTab && ["transcript", "extracted", "ppma", "comments", "rights"].includes(requestedTab)) {
+      setTab(requestedTab as Tab);
+    } else {
+      setTab("transcript");
+    }
     if (paramEvent) setSelectedId(paramEvent);
-    setTab("transcript");
     setProgress(Number(paramTime ?? 0) || 0);
     setRetentionDate(meeting.retention.retain_until.slice(0, 10));
-    // A deep link (from search, the palette or PPMA) must select the exact row.
+    // A deep link (from search, attention or PPMA) must select the exact row.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [meetingId, paramEvent, paramTime]);
+  }, [meetingId, paramEvent, paramTime, params.get("tab")]);
 
   useEffect(() => {
     if (!playing || !meeting) return;
@@ -161,6 +178,7 @@ export default function Meeting() {
           <div className="row gap8 mt16">
             <button className="btn primary" onClick={() => resetMeeting(meeting.id)}><Icon name="refresh" size={14} /> Restore for demo</button>
             <Link className="btn" to="/meetings">All meetings</Link>
+            <button className="btn" onClick={() => downloadText(`recall-tombstone-${meeting.id}.json`, JSON.stringify({ tombstone_id: meeting.tombstone_id, capture_id: meeting.capture_id, title: meeting.title, reason: meeting.deleted_reason, deleted_at: meeting.deleted_at, scope: "transcript+evidence", audit: meetingAudit }, null, 2), "application/json")}><Icon name="download" size={13} /> Deletion receipt</button>
             <Link className="btn ghost" to="/ppma">PPMA event log</Link>
           </div>
         </div>
@@ -183,6 +201,8 @@ export default function Meeting() {
   const currentRow = [...meeting.utterances].reverse().find((row) => row.start <= progress);
   const averageConfidence =
     meeting.evidence.reduce((sum, item) => sum + item.confidence, 0) / Math.max(1, meeting.evidence.length);
+  const meetingAttention = attentionForMeeting(meeting.id);
+  const meetingComments = comments.filter((comment) => comment.meeting_id === meeting.id);
 
   const seek = (seconds: number) => {
     setProgress(Math.max(0, Math.min(meeting.duration_s, seconds)));
@@ -228,11 +248,12 @@ export default function Meeting() {
             <Chip>{meeting.participants.length} speakers</Chip>
             <Chip>{meeting.language.toUpperCase()}</Chip>
             {appliedRedactions.length > 0 && <Chip tone="green">{appliedRedactions.length} redacted</Chip>}
+            {collabPeers.length > 0 && <Chip tone="cyan" dot="live">{collabPeers.length + 1} editing</Chip>}
             {meeting.import && <Chip tone="amber">imported</Chip>}
           </div>
         </div>
         <div className="meeting-head-actions">
-          <button className="btn primary" onClick={() => sendMeeting(meeting.id, { safe: true })} disabled={meeting.consent.state !== "granted" || meeting.ppma.status === "sent" || meeting.ppma.status === "queued"}>
+          <button className="btn primary" onClick={() => setSendPreviewOpen(true)} disabled={meeting.consent.state !== "granted" || meeting.ppma.status === "sent" || meeting.ppma.status === "queued"}>
             <Icon name="send" size={14} /> {meeting.ppma.status === "sent" ? "Sent to PPMA" : meeting.ppma.status === "queued" ? "Queued for PPMA" : t("common.send")}
           </button>
           <button className="btn" onClick={() => setPackOpen(true)} disabled={!evPack}>
@@ -241,6 +262,20 @@ export default function Meeting() {
           <button className="btn ghost" onClick={() => setRetentionOpen(true)}><Icon name="clock" size={14} /> Retention</button>
         </div>
       </div>
+
+      {meetingAttention.length > 0 && (
+        <div className="meeting-nudges" aria-label="Attention for this capture">
+          {meetingAttention.slice(0, 2).map((item) => (
+            <div className={`meeting-nudge sev-${item.severity}`} key={item.id}>
+              <Icon name={item.kind === "promise_due" ? "clock" : item.kind === "redaction_review" ? "scissors" : "alert"} size={14} />
+              <div><b>{item.title}</b><span>{item.why}</span></div>
+              <Link className="btn sm" to={item.route}>{item.action_label}</Link>
+              <button className="btn sm ghost" onClick={() => feedbackAttention(item.id, "accepted")}>Useful</button>
+              <button className="btn sm ghost" onClick={() => feedbackAttention(item.id, "snoozed")}>Snooze</button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="meeting-stats">
         <div><span>Text confidence</span><b>{Math.round(averageConfidence * 100)}%</b></div>
@@ -282,6 +317,7 @@ export default function Meeting() {
           ["transcript", "Transcript", "wave"],
           ["extracted", "Extracted facts", "spark"],
           ["ppma", "PPMA", "send"],
+          ["comments", `Comments${meetingComments.length ? ` (${meetingComments.length})` : ""}`, "list"],
           ["rights", "Consent & rights", "shield"],
         ] as [Tab, string, string][]).map(([id, label, icon]) => (
           <button key={id} className={classNames("tab", tab === id && "active")} onClick={() => setTab(id)}>
@@ -516,11 +552,77 @@ export default function Meeting() {
                 <b>{meeting.ppma.status === "sent" ? "PPMA has the facts" : "Ready to hand off"}</b>
                 <p>Text and evidence pointers only. Raw audio stays on {meeting.provenance.device}.</p>
               </div>
-              <button className="btn primary" onClick={() => sendMeeting(meeting.id, { safe: true })} disabled={meeting.consent.state !== "granted" || meeting.ppma.status === "sent" || meeting.ppma.status === "queued"}>
+              <button className="btn" onClick={() => { const citation = selected ? `\n\n“${safeQuote(meeting, selected, true)}”\n— ${speakerName(meeting, selected.speaker_id)}, ${fmtTime(selected.start)}` : ""; const subject = `RECALL follow-up — ${meeting.title}`; const body = `${meeting.summary}${citation}\n\nSafe evidence pointer: recall://captures/${meeting.capture_id}\n\nPrepared by RECALL. Review before sending; RECALL never sends email.`; window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; say("Email draft prepared. RECALL never sends it."); }}>
+                <Icon name="mail" size={13} /> Email draft
+              </button>
+              <button className="btn primary" onClick={() => setSendPreviewOpen(true)} disabled={meeting.consent.state !== "granted" || meeting.ppma.status === "sent" || meeting.ppma.status === "queued"}>
                 <Icon name="send" size={14} /> {meeting.ppma.status === "sent" ? "PPMA has the facts" : meeting.ppma.status === "queued" ? "Queued — open PPMA to deliver" : "Send to PPMA"}
               </button>
             </div>
           </Panel>
+        </div>
+      )}
+
+      {tab === "comments" && (
+        <div className="comments-grid">
+          <Panel title="Annotations" sub="Comments stay local until a safe pack is shared">
+            <div className="comments-list">
+              {meetingComments.map((comment) => (
+                <div className={classNames("comment-row", comment.resolved && "resolved")} key={comment.id}>
+                  <span className="comment-avatar">{comment.author.slice(0, 1)}</span>
+                  <div className="comment-body">
+                    <div className="comment-head">
+                      <b>{comment.author}</b>
+                      <Chip>{comment.role.replace(/_/g, " ")}</Chip>
+                      <span className="mono xsmall soft">{fmtDate(comment.at, settings.lang)}</span>
+                      <Chip tone="violet">{comment.target_type} · {comment.target_id}</Chip>
+                      <button className="btn sm ghost" onClick={() => resolveComment(comment.id)}>{comment.resolved ? "Reopen" : "Resolve"}</button>
+                    </div>
+                    <p>{comment.text}</p>
+                  </div>
+                </div>
+              ))}
+              {meetingComments.length === 0 && <Empty title="No annotations yet" detail="Comment on the meeting or on a specific evidence item. Open a second tab to see live presence." icon="list" />}
+            </div>
+            <div className="comment-composer">
+              <div className="segmented">
+                <button className={commentTarget === "meeting" ? "active" : ""} onClick={() => setCommentTarget("meeting")}>Meeting</button>
+                <button className={commentTarget === "evidence" ? "active" : ""} onClick={() => setCommentTarget("evidence")} disabled={!selected}>Evidence {selected ? selected.id : ""}</button>
+              </div>
+              <textarea value={commentText} onChange={(event) => setCommentText(event.target.value)} rows={2} placeholder="Add an annotation. It is visible to other open tabs in this demo." />
+              <button className="btn primary sm" onClick={() => { addComment(commentTarget, commentTarget === "evidence" && selected ? selected.id : meeting.id, meeting.id, commentText); setCommentText(""); }} disabled={!commentText.trim()}>Add comment</button>
+            </div>
+          </Panel>
+          <aside className="comments-side">
+            <Panel title="Who changed this?" sub="Every correction keeps its actor and before/after">
+              <div className="correction-history">
+                {corrections.filter((correction) => correction.meeting_id === meeting.id).map((correction) => (
+                  <div key={correction.id}>
+                    <b>{correction.field.replace(/_/g, " ")}</b>
+                    <span>{correction.before} → {correction.after}</span>
+                    <small>{correction.reason} · {correction.corrected_by} · {fmtDate(correction.at, settings.lang)}</small>
+                  </div>
+                ))}
+                {corrections.filter((correction) => correction.meeting_id === meeting.id).length === 0 && <Empty title="No corrections" detail="A correction will appear here with its before and after." icon="edit" />}
+              </div>
+            </Panel>
+            <Panel title="Trust ribbon" sub="What every evidence item carries">
+              <div className="trust-ribbon">
+                <span><b>Source</b>RECALL · {meeting.capture_id.slice(0, 12)}…</span>
+                <span><b>Model</b>{meeting.provenance.asr_model}</span>
+                <span><b>Consent</b>{meeting.consent.state} · {meeting.consent.wording_version}</span>
+                <span><b>Human sign-off</b>{corrections.some((correction) => correction.meeting_id === meeting.id) ? "correction recorded" : "not required yet"}</span>
+                <span><b>Redaction</b>{meeting.redactions.some((redaction) => redaction.status === "applied") ? "safe version applied" : "none applied"}</span>
+              </div>
+            </Panel>
+            <Panel title="Present now" sub="Live presence in this browser">
+              <div className="presence-list">
+                <span><i className="dot live" /> You · {settings.role.replace(/_/g, " ")}</span>
+                {collabPeers.map((peer) => <span key={peer.id}><i className="dot live" /> {peer.name} · {peer.role.replace(/_/g, " ")}</span>)}
+                {collabPeers.length === 0 && <p className="xsmall soft">Open this meeting in another tab to see presence and live comments.</p>}
+              </div>
+            </Panel>
+          </aside>
         </div>
       )}
 
@@ -653,6 +755,27 @@ export default function Meeting() {
         )}
       </Modal>
 
+      <Modal open={sendPreviewOpen} onClose={() => setSendPreviewOpen(false)} title="What will PPMA receive?" kicker="Text, evidence pointers and safe versions only" wide>
+        <div className="send-preview">
+          <div className="send-preview-summary">
+            <div><span>Capture</span><b>{meeting.title}</b></div>
+            <div><span>Decisions</span><b>{meeting.decisions.length}</b></div>
+            <div><span>Actions</span><b>{meeting.actions.length}</b></div>
+            <div><span>Questions</span><b>{meeting.questions.length}</b></div>
+            <div><span>Redactions</span><b>{meeting.redactions.filter((redaction) => redaction.status === "applied").length}</b></div>
+            <div><span>Raw media</span><b>not attached</b></div>
+          </div>
+          <pre className="send-preview-json">{JSON.stringify(meetingPayload(meeting, { safe: true }), null, 2)}</pre>
+          <div className="row gap8 mt12">
+            <button className="btn primary" onClick={() => { sendMeeting(meeting.id, { safe: true }); setSendPreviewOpen(false); }}>
+              <Icon name="send" size={13} /> Send safe facts to PPMA
+            </button>
+            <button className="btn ghost" onClick={() => setSendPreviewOpen(false)}>Cancel</button>
+          </div>
+          <p className="xsmall soft mt8">The internal comment is replaced by its safe text. Audio is never attached. Consent is checked again on send.</p>
+        </div>
+      </Modal>
+
       <Modal open={packOpen} onClose={() => setPackOpen(false)} title="Evidence pack" kicker={meeting.title} wide>
         {evPack && (
           <>
@@ -667,7 +790,15 @@ export default function Meeting() {
               <CopyButton text={evPack.markdown} label="Copy pack" />
               <button className="btn" onClick={() => downloadText(`recall-evidence-${meeting.id}-${selected?.id}.md`, evPack.markdown)}><Icon name="download" size={13} /> Download .md</button>
               <button className="btn" onClick={() => downloadText(`recall-evidence-${meeting.id}.json`, JSON.stringify(meetingPayload(meeting, { safe: true }), null, 2), "application/json")}><Icon name="file" size={13} /> JSON payload</button>
+              {selected && <button className="btn" onClick={() => setShareUrl(createShareLink(meeting, selected.id, 7)?.url ?? null)}><Icon name="link" size={13} /> Create 7-day link</button>}
             </div>
+            {shareUrl && (
+              <div className="share-link-box">
+                <span className="kicker">Safe read-only link · expires in 7 days</span>
+                <input readOnly value={shareUrl} onFocus={(event) => event.currentTarget.select()} />
+                <div className="row gap6"><CopyButton text={shareUrl} label="Copy link" /><Link className="btn sm ghost" to={shareUrl.split("#")[1] ?? "/"}>Preview</Link></div>
+              </div>
+            )}
             <p className="xsmall soft mt8">The pack contains the safe quote, speaker, timestamp, source, consent, provenance and a hash. Raw audio is not included.</p>
           </>
         )}

@@ -6,9 +6,11 @@ import type { Role } from "../types";
 import { classNames } from "../lib/engine";
 import { Icon } from "./Icon";
 import { CommandPalette } from "./CommandPalette";
+import { Onboarding } from "./Onboarding";
 
 const navItems: { to: string; key: string; icon: string; roles: Role[] }[] = [
   { to: "/", key: "nav.now", icon: "wave", roles: ["individual", "team_lead", "privacy_legal", "field", "admin"] },
+  { to: "/attention", key: "nav.attention", icon: "alert", roles: ["individual", "team_lead", "privacy_legal", "field", "admin"] },
   { to: "/record", key: "nav.record", icon: "record", roles: ["individual", "team_lead", "field", "admin"] },
   { to: "/meetings", key: "nav.meetings", icon: "layers", roles: ["individual", "team_lead", "privacy_legal", "admin"] },
   { to: "/recall", key: "nav.recall", icon: "search", roles: ["individual", "team_lead", "privacy_legal", "field", "admin"] },
@@ -19,6 +21,10 @@ const navItems: { to: string; key: string; icon: string; roles: Role[] }[] = [
 ];
 
 const moreItems = [
+  { to: "/attention", key: "nav.attention", icon: "alert" },
+  { to: "/meetings", key: "nav.meetings", icon: "layers" },
+  { to: "/canvas", key: "nav.canvas", icon: "grid" },
+  { to: "/connectors", key: "nav.connectors", icon: "link" },
   { to: "/booth", key: "nav.booth", icon: "play" },
   { to: "/field", key: "nav.field", icon: "pin" },
   { to: "/health", key: "nav.health", icon: "activity" },
@@ -29,6 +35,9 @@ const moreItems = [
 
 const titles: Record<string, string> = {
   "/": "Now",
+  "/attention": "Attention",
+  "/canvas": "Memory canvas",
+  "/connectors": "Connected services",
   "/record": "Record",
   "/meetings": "Meetings",
   "/recall": "Recall",
@@ -228,11 +237,10 @@ export function Shell({ children }: { children: ReactNode }) {
       </main>
 
       <nav className="bottom-nav" aria-label="Primary mobile">
-        {visible.slice(0, 4).map((item) => (
+        {visible.filter((item) => ["/", "/attention", "/recall", "/record"].includes(item.to)).slice(0, 4).map((item) => (
           <NavLink key={item.to} to={item.to} end={item.to === "/"} className={({ isActive }) => classNames("bottom-link", isActive && "active")}>
             <Icon name={item.icon} size={20} />
             <span>{t(item.key)}</span>
-            {item.to === "/ppma" && queue.length > 0 && <i className="bottom-badge">{queue.length}</i>}
           </NavLink>
         ))}
         <button className="bottom-link" onClick={() => setMoreOpen(true)}>
@@ -242,6 +250,7 @@ export function Shell({ children }: { children: ReactNode }) {
       </nav>
 
       <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
+      <Onboarding />
 
       {moreOpen && (
         <div className="modal-back" onClick={() => setMoreOpen(false)}>

@@ -6,7 +6,7 @@ import { PageHead, Panel, Chip, Status, DataNote, Toggle, Meter } from "../compo
 import { Icon } from "../components/Icon";
 
 export default function Admin() {
-  const { pack, settings, setSetting, killSwitch, toggleKillSwitch, exportAudit, say, consentCoverage, activeMeetings, events } = useStore();
+  const { pack, settings, setSetting, killSwitch, toggleKillSwitch, exportAudit, say, consentCoverage, activeMeetings, events, audit } = useStore();
   const t = useT();
   const [revoked, setRevoked] = useState<string[]>(["dev_pixel_01"]);
   const [wiped, setWiped] = useState<string[]>([]);
@@ -67,7 +67,7 @@ export default function Admin() {
           </div>
           <div className="role-switch">
             <span>View as</span>
-            <select value={settings.role} onChange={(event) => setSetting("role", event.target.value as typeof settings.role)}>
+            <select value={settings.role} aria-label="View as role" onChange={(event) => setSetting("role", event.target.value as typeof settings.role)}>
               <option value="individual">Individual</option>
               <option value="team_lead">Team lead</option>
               <option value="privacy_legal">Privacy / legal</option>
@@ -273,6 +273,9 @@ export default function Admin() {
                 }
               >
                 <Icon name="scale" size={12} /> eDiscovery pack
+              </button>
+              <button className="btn sm" onClick={() => downloadText("recall-audit.jsonl", audit.map((entry) => JSON.stringify(entry)).join("\n"), "application/x-ndjson")}>
+                <Icon name="terminal" size={12} /> SIEM JSONL
               </button>
             </div>
           </div>
