@@ -41,3 +41,5 @@ demo/video/close.html
 .vscode/
 .DS_Store
 Thumbs.db
+
+demo/video/frames/
