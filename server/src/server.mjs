@@ -238,6 +238,50 @@ function route(req, res) {
       components: { securitySchemes: { bearer: { type: "http", scheme: "bearer" }, hmac: { type: "apiKey", in: "header", name: "X-Recall-Signature" } } },
     });
   }
+  if (req.method === "POST" && url.pathname === "/v1/auth/demo") {
+    return json(res, 200, {
+      token: "demo_oidc_token",
+      user: { sub: "user_anna", name: "Anna Voss", email: "anna@example.com", groups: ["recall-team-northgate", "recall-team-leads"] },
+      issuer: "http://localhost:8787/oidc",
+      note: "Mock OIDC identity. A real IdP needs client id, secret and PKCE.",
+    });
+  }
+  if (req.method === "GET" && url.pathname === "/v1/scim/Users") {
+    return json(res, 200, {
+      totalResults: 4,
+      Resources: [
+        { id: "user_anna", userName: "anna@example.com", displayName: "Anna Voss", active: true, groups: ["recall-team-northgate"] },
+        { id: "user_marek", userName: "marek@example.com", displayName: "Marek Nowak", active: true, groups: ["recall-team-northgate"] },
+        { id: "user_lena", userName: "lena@example.com", displayName: "Lena Hoffmann", active: true, groups: ["recall-legal"] },
+        { id: "user_sam", userName: "sam@example.com", displayName: "Sam Field", active: false, groups: ["recall-field"] },
+      ],
+    });
+  }
+  if (req.method === "POST" && url.pathname === "/v1/billing/checkout") {
+    return readBody(req).then((raw) => {
+      const body = raw ? JSON.parse(raw) : {};
+      return json(res, 201, { checkout_url: "https://checkout.stripe.com/mock/recall", session: `cs_mock_${Date.now()}`, seats: body.seats || 12, meter: "no per-meeting metering", note: "Mock checkout. Real Stripe keys never ship in the static build." });
+    }).catch((error) => json(res, 400, { error: String(error) }));
+  }
+  if (req.method === "GET" && url.pathname === "/v1/residency") {
+    return json(res, 200, {
+      primary: "eu-central-1 · Frankfurt",
+      backup: "eu-west-1 · Dublin",
+      media: "on device only",
+      retention: "team policy + legal hold",
+      note: "Derived text and events follow the region; raw media never leaves the device.",
+    });
+  }
+  if (req.method === "GET" && url.pathname === "/v1/devices") {
+    return json(res, 200, {
+      devices: [
+        { id: "dev_mac_01", name: "MacBook Pro 14", status: "active", enrollment: "owner", last_seen: "2026-10-30T08:58:00Z" },
+        { id: "dev_iphone_01", name: "iPhone 16 Pro", status: "active", enrollment: "owner", last_seen: "2026-10-30T08:41:00Z" },
+        { id: "dev_pixel_01", name: "Pixel 9", status: "revoked", enrollment: "owner", last_seen: "2026-09-30T12:00:00Z" },
+      ],
+      note: "Remote wipe and key recovery are contract surfaces; enrollment requires device attestation.",
+    });
+  }
   if (req.method === "GET" && url.pathname === "/v1/events") {
     const limit = Math.min(200, Number(url.searchParams.get("limit") || 50));
     return json(res, 200, { events: db.events.slice(-limit), count: db.events.length });

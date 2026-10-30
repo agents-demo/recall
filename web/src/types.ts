@@ -181,6 +181,7 @@ export interface PpmaEvent {
   provenance: Record<string, unknown>;
   delivery: DeliveryState;
   note?: string;
+  assignee?: string;
 }
 
 export interface PpmaCommand {
@@ -480,13 +481,14 @@ export type AttentionKind =
   | "note_unsent"
   | "device_health";
 
-export type AttentionState = "dismissed" | "snoozed" | "accepted" | "wrong";
+export type AttentionState = "dismissed" | "snoozed" | "accepted" | "wrong" | "assigned";
 
 export interface AttentionFeedback {
   state: AttentionState;
   at: string;
   until?: string;
   note?: string;
+  assignee?: string;
 }
 
 export interface AttentionItem {

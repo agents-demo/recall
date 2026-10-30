@@ -41,6 +41,7 @@ function dueWeight(due: string | undefined, now: Date): number {
 function feedbackAllows(feedback: AttentionFeedback | undefined, now: Date): boolean {
   if (!feedback) return true;
   if (feedback.state === "dismissed" || feedback.state === "accepted" || feedback.state === "wrong") return false;
+  if (feedback.state === "assigned") return true;
   if (feedback.state === "snoozed") {
     const until = date(feedback.until);
     return Boolean(until && until.getTime() <= now.getTime());

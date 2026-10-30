@@ -82,7 +82,7 @@ export default function Home() {
             <Link className="btn sm" to="/attention">Open all <Icon name="arrow" size={12} /></Link>
           </div>
           <div className="attention-strip-list">
-            {attention.slice(0, 3).map((item) => (
+            {attention.slice(0, settings.attentionBudget).map((item) => (
               <article className={`attention-mini sev-${item.severity}`} key={item.id}>
                 <div className="row between">
                   <Chip tone={item.severity === "critical" || item.severity === "high" ? "red" : "amber"}>{item.severity}</Chip>

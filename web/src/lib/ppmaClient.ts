@@ -37,38 +37,38 @@ export async function sendEvent(config: EndpointConfig, event: PpmaEvent): Promi
     return { event_id: event.event_id, status: "failed", at: new Date().toISOString(), detail: "No endpoint configured", latency_ms: null };
   }
   const body = JSON.stringify(event);
-  try {
-    const response = await fetch(`${base(config)}/v1/events`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Recall-Signature": await hmac(config.secret, body),
-        ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}),
-      },
-      body,
-    });
-    const payload = (await response.json()) as { accepted?: boolean; duplicate?: boolean; error?: string; memory_entries?: number };
-    const latency = Math.round(performance.now() - started);
-    if (!response.ok || !payload.accepted) {
-      return { event_id: event.event_id, status: "failed", at: new Date().toISOString(), detail: payload.error || `HTTP ${response.status}`, latency_ms: latency };
+  let lastDetail = "network error";
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const response = await fetch(`${base(config)}/v1/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Recall-Signature": await hmac(config.secret, body),
+          ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}),
+        },
+        body,
+      });
+      const payload = (await response.json()) as { accepted?: boolean; duplicate?: boolean; error?: string; memory_entries?: number };
+      const latency = Math.round(performance.now() - started);
+      if (response.ok && payload.accepted) {
+        return {
+          event_id: event.event_id,
+          status: "delivered",
+          at: new Date().toISOString(),
+          detail: payload.duplicate ? "duplicate rejected" : `accepted · ${payload.memory_entries ?? 0} memory entries`,
+          latency_ms: latency,
+          duplicate: payload.duplicate,
+        };
+      }
+      lastDetail = payload.error || `HTTP ${response.status}`;
+      if (response.status >= 400 && response.status < 500) break;
+    } catch (error) {
+      lastDetail = error instanceof Error ? error.message : "network error";
     }
-    return {
-      event_id: event.event_id,
-      status: "delivered",
-      at: new Date().toISOString(),
-      detail: payload.duplicate ? "duplicate rejected" : `accepted · ${payload.memory_entries ?? 0} memory entries`,
-      latency_ms: latency,
-      duplicate: payload.duplicate,
-    };
-  } catch (error) {
-    return {
-      event_id: event.event_id,
-      status: "failed",
-      at: new Date().toISOString(),
-      detail: error instanceof Error ? error.message : "network error",
-      latency_ms: null,
-    };
+    if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** (attempt - 1)));
   }
+  return { event_id: event.event_id, status: "failed", at: new Date().toISOString(), detail: lastDetail, latency_ms: null };
 }
 
 export async function sendCommand(config: EndpointConfig, command: { type: string; payload: Record<string, unknown>; target?: string }): Promise<{ ok: boolean; detail: string }> {

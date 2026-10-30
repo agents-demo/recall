@@ -25,6 +25,7 @@ const moreItems = [
   { to: "/meetings", key: "nav.meetings", icon: "layers" },
   { to: "/canvas", key: "nav.canvas", icon: "grid" },
   { to: "/connectors", key: "nav.connectors", icon: "link" },
+  { to: "/lab", key: "nav.lab", icon: "flask" },
   { to: "/booth", key: "nav.booth", icon: "play" },
   { to: "/field", key: "nav.field", icon: "pin" },
   { to: "/health", key: "nav.health", icon: "activity" },
@@ -38,6 +39,7 @@ const titles: Record<string, string> = {
   "/attention": "Attention",
   "/canvas": "Memory canvas",
   "/connectors": "Connected services",
+  "/lab": "Capability lab",
   "/record": "Record",
   "/meetings": "Meetings",
   "/recall": "Recall",
@@ -149,7 +151,7 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="shell">
+    <div className={classNames("shell", settings.focusMode && "focus-mode")}>
       <a href="#main-content" className="skip-link">Skip to content</a>
 
       <header className="transport">
@@ -204,6 +206,7 @@ export function Shell({ children }: { children: ReactNode }) {
           >
             {settings.lang === "en" ? "中" : "EN"}
           </button>
+          <button className="icon-btn" onClick={() => setSetting("focusMode", true)} aria-label="Focus mode" title="Focus mode"><Icon name="eye" size={16} /></button>
           <button className="icon-btn" onClick={nextTheme} aria-label={t("top.theme")} title={settings.theme}>
             <Icon name={themeIcon} size={16} />
           </button>
@@ -235,6 +238,8 @@ export function Shell({ children }: { children: ReactNode }) {
       <main className="content" id="main-content" aria-label={title}>
         {children}
       </main>
+
+      {settings.focusMode && <button className="focus-exit" onClick={() => setSetting("focusMode", false)}><Icon name="x" size={13} /> Exit focus</button>}
 
       <nav className="bottom-nav" aria-label="Primary mobile">
         {visible.filter((item) => ["/", "/attention", "/recall", "/record"].includes(item.to)).slice(0, 4).map((item) => (

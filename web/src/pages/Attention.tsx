@@ -11,7 +11,7 @@ import { Icon } from "../components/Icon";
 const severityTone: Record<string, string> = { critical: "red", high: "amber", warning: "amber", info: "neutral" };
 
 export default function Attention() {
-  const { pack, attention, attentionMetrics, attentionFeedback, feedbackAttention, activeMeetings } = useStore();
+  const { pack, attention, attentionMetrics, attentionFeedback, feedbackAttention, assignAttention, activeMeetings, settings, setSetting } = useStore();
   const t = useT();
   const [kind, setKind] = useState("all");
   const [severity, setSeverity] = useState("all");
@@ -23,7 +23,8 @@ export default function Attention() {
     (item) =>
       (kind === "all" || item.kind === kind) &&
       (severity === "all" || item.severity === severity) &&
-      (meetingFilter === "all" || item.meeting_id === meetingFilter),
+      (meetingFilter === "all" || item.meeting_id === meetingFilter) &&
+      item.score >= settings.attentionThreshold * 100,
   );
   const high = attention.filter((item) => item.severity === "high" || item.severity === "critical").length;
   const dues = attention.filter((item) => item.kind === "promise_due").length;
@@ -137,6 +138,7 @@ export default function Attention() {
                     <button className="btn sm ghost" onClick={() => feedbackAttention(item.id, "snoozed")}><Icon name="clock" size={12} /> Snooze 24h</button>
                     <button className="btn sm ghost" onClick={() => feedbackAttention(item.id, "dismissed")}>Dismiss</button>
                     <button className="btn sm ghost" onClick={() => feedbackAttention(item.id, "wrong")}><Icon name="x" size={11} /> This is wrong</button>
+                    <span className="assignment"><select aria-label={`Assign ${item.title}`} value={attentionFeedback[item.id]?.assignee ?? ""} onChange={(event) => assignAttention(item.id, event.target.value)}><option value="">Assign…</option><option value="Anna">Anna</option><option value="Marek">Marek</option><option value="Lena">Lena</option></select></span>
                   </div>
                 </article>
               );
@@ -146,6 +148,26 @@ export default function Attention() {
         </div>
 
         <aside className="attention-side">
+          <Panel title="Proactivity controls" sub="Budget, quiet hours and threshold">
+            <div className="attention-controls">
+              <div className="attention-control"><span>Home budget</span><b>{settings.attentionBudget} items</b><input type="range" min={1} max={12} value={settings.attentionBudget} onChange={(event) => setSetting("attentionBudget", Number(event.target.value))} aria-label="Attention budget" /></div>
+              <div className="attention-control"><span>Quiet hours</span><input type="text" value={settings.quietHours} onChange={(event) => setSetting("quietHours", event.target.value)} aria-label="Quiet hours" /></div>
+              <div className="attention-control"><span>Nudge threshold</span><b>{Math.round(settings.attentionThreshold * 100)}%</b><input type="range" min={0} max={1} step={0.05} value={settings.attentionThreshold} onChange={(event) => setSetting("attentionThreshold", Number(event.target.value))} aria-label="Attention threshold" /></div>
+              <div className="attention-control"><span>Assigned</span><b>{Object.values(attentionFeedback).filter((f) => f.state === "assigned").length}</b><Chip tone="green">role audit</Chip></div>
+            </div>
+            <p className="xsmall soft mt8">These are the learned policy controls for the demo. A production team tunes them from acceptance and false-alarm data weekly.</p>
+          </Panel>
+
+          <Panel title="Weekly calibration" sub="Useful versus ignored">
+            <div className="attention-quality">
+              <div><span>Accepted</span><b>{attentionMetrics.accepted}</b></div>
+              <div><span>Dismissed</span><b>{attentionMetrics.dismissed}</b></div>
+              <div><span>Wrong</span><b>{attentionMetrics.wrong}</b></div>
+              <div><span>Snoozed</span><b>{attentionMetrics.snoozed}</b></div>
+            </div>
+            <p className="xsmall soft mt8">Acceptance {Math.round(attentionMetrics.acceptance * 100)}%. A nudge ignored twice is suppressed until the evidence changes; a nudge marked wrong stays suppressed.</p>
+          </Panel>
+
           <Panel title="How this works" sub="The boundary, in the interface">
             <ul className="plain-list">
               <li><Icon name="check" size={12} /> Every nudge cites a quote, a due date or a consent state.</li>

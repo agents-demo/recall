@@ -29,7 +29,7 @@ Headers: `Authorization: Bearer <owner-scoped app token>`.
     "device": "MacBook Pro 14 · M4",
     "asr_model": "parakeet-tdt-0.6b-int8",
     "diarization_model": "pyannote-3.1-mini",
-    "app_version": "1.0.0",
+    "app_version": "1.1.0",
     "local_only": true
   }
 }

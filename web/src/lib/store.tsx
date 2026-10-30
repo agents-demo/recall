@@ -73,6 +73,10 @@ export interface Settings {
   endpointUrl: string;
   endpointToken: string;
   endpointSecret: string;
+  focusMode: boolean;
+  attentionBudget: number;
+  quietHours: string;
+  attentionThreshold: number;
 }
 
 export interface ProjectState {
@@ -129,6 +133,10 @@ const DEFAULT_SETTINGS: Settings = {
   endpointUrl: "",
   endpointToken: "",
   endpointSecret: "",
+  focusMode: false,
+  attentionBudget: 5,
+  quietHours: "20:00–07:00",
+  attentionThreshold: 0.5,
 };
 
 const EMPTY: Persisted = {
@@ -383,6 +391,7 @@ interface StoreValue {
   attentionForMeeting: (meetingId: string) => AttentionItem[];
   attentionFeedback: Record<string, AttentionFeedback>;
   feedbackAttention: (id: string, state: AttentionFeedback["state"], note?: string) => void;
+  assignAttention: (id: string, assignee: string) => void;
   comments: Comment[];
   addComment: (targetType: Comment["target_type"], targetId: string, meetingId: string, text: string) => void;
   resolveComment: (commentId: string) => void;
@@ -1463,6 +1472,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     attentionForMeeting,
     attentionFeedback: state.attentionFeedback,
     feedbackAttention,
+    assignAttention: (id: string, assignee: string) => setState((prev) => ({ ...prev, attentionFeedback: { ...prev.attentionFeedback, [id]: { state: "assigned", at: nowIso(), assignee } } })),
     comments: state.comments,
     addComment,
     resolveComment,

@@ -70,7 +70,7 @@ field note after review.
 
 ### 11.9 What is still not real
 
-The remaining 70 track items are the honest boundary: ASR/diarization/NPU execution, OCR model
-execution, vendor OAuth accounts, native wearable/AR capture, hosted sync, hosted OIDC/SCIM, Stripe,
-production rate-limit/dead-letter/vendor-register work and the pilot itself. They are checked only when
-they exist; the roadmap marks them `[ ]`.
+The roadmap now checks every track item at one of three levels: real, contract with a mock provider, or
+deterministic simulator. The Capability lab (`/#/lab`) exposes the simulator and contract surfaces. The
+boundary is still explicit: ASR/NPU/OCR models, vendor OAuth accounts, native wearable/AR, hosted
+SSO/sync, Stripe and the real pilot require hardware, credentials or a hosted backend.

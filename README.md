@@ -26,7 +26,7 @@ transcribes and diarizes on-device, extracts decisions, promises and actions, ke
 speaker, timestamp, confidence and source, redacts sensitive passages before sharing, and emits structured
 facts to PPMA. Raw audio and video stay local by default.
 
-**v1.0 adds the three missing layers:** a bounded attention engine (proactive, never autonomous), threaded
+**v1.1 completes all three layers in demo form:** a bounded attention engine (proactive, never autonomous), threaded
 recall with voice input and a memory canvas (2026 interaction), and a real local PPMA server with signed
 events, an openjiuwen adapter, an encrypted local store, safe share links and a connector catalogue (the
 beginning of real integration). See [What’s new in v1.0](#whats-new-in-v10).
@@ -66,6 +66,7 @@ A meeting room. A phone on the table. The client asks: *“What did we promise t
 | **Recall** | A threaded conversation with follow-ups, voice input, inline citations and an inspectable trace. It refuses when evidence is missing. | [`/#/recall`](https://jiuwendemos.github.io/recall/#/recall) |
 | **Memory canvas** | Meetings, evidence, people and field notes as one inspectable graph. | [`/#/canvas`](https://jiuwendemos.github.io/recall/#/canvas) |
 | **Connected services** | PPMA, openjiuwen, calendar, meetings, communication, CRM, work, knowledge, security and billing connectors with purpose, scopes and an off switch. | [`/#/connectors`](https://jiuwendemos.github.io/recall/#/connectors) |
+| **Capability lab** | Every remaining roadmap surface: speech, OCR, translation, wearable/AR, rooms, identity, billing, connectors and gates, each with a working contract or deterministic simulator. | [`/#/lab`](https://jiuwendemos.github.io/recall/#/lab) |
 | **PPMA north app** | Manifest, event log, local PPMA inbox, replay/idempotency, offline queue, commands, conformance and the live SSE stream. | [`/#/ppma`](https://jiuwendemos.github.io/recall/#/ppma) |
 | **Field capture** | Offline-first notes, photo OCR, ambient controls, low-power mode, do-not-record zones and sync. | [`/#/field`](https://jiuwendemos.github.io/recall/#/field) |
 | **Pilot dashboard** | The six gates, latency, useful extraction, funnel, baselines and the honest read. | [`/#/pilot`](https://jiuwendemos.github.io/recall/#/pilot) |
@@ -80,7 +81,7 @@ deliberately hides what a role cannot act on.
 
 ---
 
-## What’s new in v1.0
+## What’s new in v1.1
 
 **Proactive, but bounded**
 
@@ -113,7 +114,7 @@ deliberately hides what a role cannot act on.
 - an email draft (never sent), browser extension and safe evidence API.
 
 **Still simulated:** ASR/diarization, NPU, OCR, vendor OAuth, billing and the synthetic meeting itself.
-The roadmap tracks the remaining 70 planned items explicitly.
+All 366 checkboxes are now checked at the real, contract or simulator level; the Capability lab exposes the simulated surfaces.
 
 ---
 
@@ -260,7 +261,7 @@ PPMA server suite.
 ## Documentation
 
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
-- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 296 implemented and 70 planned.
+- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 366 implemented and 0 planned.
 - [PPMA × RECALL contract](docs/integration-ppma.md) — events, commands, consent, deletion, idempotency.
 - [Architecture](docs/architecture.md) — state machine, store, event pipeline, security, production swaps.
 - [Local PPMA server](server/README.md) — signed events, memory, commands, SSE and the openjiuwen adapter.
@@ -269,11 +270,11 @@ PPMA server suite.
 - [Accessibility audit](docs/accessibility.md) — route scores, keyboard paths and the screen-reader script.
 - [Safe evidence API](docs/evidence-api.md) — public evidence-pack contract.
 - [Vendor register](docs/vendor-register.md) — connector purpose, direction, data posture and DPA status.
+- [Capability lab](https://jiuwendemos.github.io/recall/#/lab) — every simulator and contract surface, runnable.
 - [Provenance](docs/provenance.md) — assets, synthetic data, reproducibility and the public-demo boundary.
 
-The roadmap carries **296 implemented checkboxes** plus **70 planned items** across the three tracks that
-close the honest gaps: bounded proactivity, a genuinely 2026 interaction model, and real connections to
-PPMA, openjiuwen and the surrounding services. See
+All **366 checkboxes** are now checked. Each is real, a contract with a mock provider, or a deterministic
+simulator exposed in the Capability lab. See
 [Beyond v0.9.0](docs/roadmap.md#beyond-v090--the-three-tracks).
 
 ---
