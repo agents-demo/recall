@@ -27,6 +27,7 @@ export default function Record() {
   const jurisdictionInfo = pack.admin.jurisdictions.find((j) => j.code === jurisdiction) ?? pack.admin.jurisdictions[0];
   const consentReady = notified && readWording;
   const device = pack.team.devices[0];
+  const personal = settings.workspaceMode === "personal";
 
   useEffect(() => {
     if (!recording) return;
@@ -37,7 +38,7 @@ export default function Record() {
     return () => window.clearInterval(timer);
   }, [recording, scenario.utterances.length]);
 
-  const liveRows = useMemo(() => scenario.utterances.slice(0, lines), [scenario.utterances, lines]);
+  const liveRows = useMemo(() => (personal ? [] : scenario.utterances.slice(0, lines)), [scenario.utterances, lines, personal]);
 
   const consent: Consent = {
     state: "granted",
@@ -85,7 +86,16 @@ export default function Record() {
           </>
         }
       />
-      <DataNote seed={pack.meta.seed} note="The public build uses a scripted meeting and does not open the microphone. Consent, device state, local transcription and the event path are real UI behaviour over a deterministic local pack." />
+      <DataNote
+        seed={pack.meta.seed}
+        label={personal ? "My workspace" : undefined}
+        tone={personal ? "green" : "amber"}
+        note={
+          personal
+            ? "My workspace: consent and capture are real UI behaviour, but this public build does not open the microphone or run speech recognition. The capture is saved without a transcript."
+            : "The public build uses a scripted meeting and does not open the microphone. Consent, device state, local transcription and the event path are real UI behaviour over a deterministic local pack."
+        }
+      />
 
       <div className="record-grid">
         <div className="record-main">
@@ -142,26 +152,32 @@ export default function Record() {
                 </div>
                 <label className="field">
                   <span>Title</span>
-                  <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={`${scenario.title} · new capture`} />
+                  <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={personal ? "New capture" : `${scenario.title} · new capture`} />
                 </label>
-                <label className="field">
-                  <span>Scripted scenario</span>
-                  <select value={scenarioId} onChange={(event) => setScenarioId(event.target.value)}>
-                    {pack.meetings.map((meeting) => (
-                      <option key={meeting.id} value={meeting.id}>
-                        {meeting.title} · {fmtDuration(meeting.duration_s)} · {meeting.participants.length} speakers
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <div className="scenario-strip">
-                  {pack.meetings.map((meeting) => (
-                    <button key={meeting.id} className={classNames("scenario-chip", meeting.id === scenarioId && "active")} onClick={() => setScenarioId(meeting.id)}>
-                      <b>{meeting.title.split("—")[0].trim()}</b>
-                      <small>{fmtDuration(meeting.duration_s)} · {meeting.participants.length} speakers</small>
-                    </button>
-                  ))}
-                </div>
+                {personal ? (
+                  <p className="xsmall soft">No scripted scenario. This capture starts empty; speech recognition is not part of this public build.</p>
+                ) : (
+                  <>
+                    <label className="field">
+                      <span>Scripted scenario</span>
+                      <select value={scenarioId} onChange={(event) => setScenarioId(event.target.value)}>
+                        {pack.meetings.map((meeting) => (
+                          <option key={meeting.id} value={meeting.id}>
+                            {meeting.title} · {fmtDuration(meeting.duration_s)} · {meeting.participants.length} speakers
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <div className="scenario-strip">
+                      {pack.meetings.map((meeting) => (
+                        <button key={meeting.id} className={classNames("scenario-chip", meeting.id === scenarioId && "active")} onClick={() => setScenarioId(meeting.id)}>
+                          <b>{meeting.title.split("—")[0].trim()}</b>
+                          <small>{fmtDuration(meeting.duration_s)} · {meeting.participants.length} speakers</small>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
                 <button className="record-start" onClick={start} disabled={!consentReady}>
                   <span className="record-dot" />
                   {t("record.start")}
@@ -185,32 +201,50 @@ export default function Record() {
                   <Chip tone="green" dot="live">NPU · local</Chip>
                 </div>
                 <div className="live-transcript compact">
-                  {liveRows.map((row) => {
-                    const speaker = scenario.participants.find((p) => p.id === row.speaker_id);
-                    return (
-                      <div className="live-row" key={row.id}>
-                        <span className={`live-speaker sp-${speaker?.color ?? "amber"}`}>{speaker?.initials}</span>
-                        <span className="live-body">
-                          <b>{speaker?.name}</b> <span className="mono">{fmtTime(row.start)}</span>
-                          <p>{row.text}</p>
-                        </span>
-                      </div>
-                    );
-                  })}
-                  <span className="live-cursor" />
+                  {personal ? (
+                    <div className="live-row">
+                      <span className="live-body">
+                        <b>No speech recognition</b>
+                        <p>This build does not open the microphone or run ASR. The timer is real; the capture will be saved empty.</p>
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      {liveRows.map((row) => {
+                        const speaker = scenario.participants.find((p) => p.id === row.speaker_id);
+                        return (
+                          <div className="live-row" key={row.id}>
+                            <span className={`live-speaker sp-${speaker?.color ?? "amber"}`}>{speaker?.initials}</span>
+                            <span className="live-body">
+                              <b>{speaker?.name}</b> <span className="mono">{fmtTime(row.start)}</span>
+                              <p>{row.text}</p>
+                            </span>
+                          </div>
+                        );
+                      })}
+                      <span className="live-cursor" />
+                    </>
+                  )}
                 </div>
                 <div className="recording-actions">
                   <button className="btn danger lg" onClick={stop}>
-                    <Icon name="stop" size={12} /> {t("record.stop")}
+                    <Icon name="stop" size={12} /> {personal ? "Stop capture" : t("record.stop")}
                   </button>
-                  <span className="xsmall soft">Stopping emits `capture.meeting.completed` only after the transcript is usable.</span>
+                  <span className="xsmall soft">{personal ? "Stopping saves the consent record and an empty capture. No transcript is invented." : "Stopping emits `capture.meeting.completed` only after the transcript is usable."}</span>
                 </div>
               </div>
             )}
           </Panel>
 
-          <Panel title="3 · Local transcription & diarization" sub="Models that run on the device; CPU fallback is visibly weaker">
-            <div className="model-run">
+          <Panel title="3 · Local transcription & diarization" sub={personal ? "Not available in this public build" : "Models that run on the device; CPU fallback is visibly weaker"}>
+            {personal ? (
+              <p className="small muted">
+                This build does not ship the on-device VAD, ASR, diarization or extraction models. Your capture keeps the
+                consent record, title, time and event; it has no transcript. The demo pack shows what those models do
+                when the synthetic workspace is enabled.
+              </p>
+            ) : (
+              <div className="model-run">
               {[
                 ["VAD", "Silero VAD 5 · int8", "done"],
                 ["ASR", "Parakeet TDT 0.6B · int8", recording ? "running" : "ready"],
@@ -225,10 +259,13 @@ export default function Record() {
                   <Chip tone={state === "running" ? "amber" : state === "done" ? "green" : "neutral"}>{state}</Chip>
                 </div>
               ))}
-            </div>
-            <div className="cpu-note">
-              <Icon name="alert" size={14} /> CPU fallback is allowed but shows a quality warning: higher latency, lower battery life, weaker diarization. No silent cloud fallback.
-            </div>
+              </div>
+            )}
+            {!personal && (
+              <div className="cpu-note">
+                <Icon name="alert" size={14} /> CPU fallback is allowed but shows a quality warning: higher latency, lower battery life, weaker diarization. No silent cloud fallback.
+              </div>
+            )}
           </Panel>
         </div>
 

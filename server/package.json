@@ -1,6 +1,6 @@
 {
   "name": "recall-ppma-server",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "type": "module",
   "description": "A real local PPMA ingest service for RECALL: signed events, dedupe, memory, commands and a mock connector surface.",

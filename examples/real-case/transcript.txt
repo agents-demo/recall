@@ -1,0 +1,47 @@
+Helios rollout readiness review — 4 November 2026 — 40 minutes
+Synthetic example for the RECALL real-case workflow. Replace every line with your own transcript.
+
+[00:12] Dana Whitfield (Program lead)
+The enterprise pilot is the fixed point. Everything else moves around it.
+
+[00:41] Ravi Menon (Support lead)
+Support can cover the pilot, but not the same week as self-serve onboarding.
+
+[01:08] Dana Whitfield
+Then we hold the enterprise pilot on the fourth and move self-serve onboarding to the eighteenth.
+
+[01:36] Elena Sokolova (Security)
+That gives security two extra weeks for the admin console review.
+
+[01:58] Ravi Menon
+I will send the revised support rota by Friday. The eighth and ninth are still thin.
+
+[02:23] Dana Whitfield
+Borrow one engineer from platform for that weekend if the rota does not close.
+
+[02:51] Dana Whitfield
+The first release ships the read-only admin console. Bulk import waits.
+
+[03:16] Ravi Menon
+Two customers will ask about bulk import as soon as the note goes out.
+
+[03:40] Elena Sokolova
+I will finish the threat model for the admin console by the eighth.
+
+[04:04] Dana Whitfield
+We will run the concierge import manually for those two accounts.
+
+[04:26] Tom Becker (Field operations)
+Berlin can run the pilot with two trainers. I will confirm that tomorrow.
+
+[04:48] Tom Becker
+The field team needs the updated runbook before the fifth.
+
+[05:10] Dana Whitfield
+I will publish the updated rollout note and runbook to customers by the fifth.
+
+[05:36] Elena Sokolova
+Do we need a second on-call engineer for the pilot weekend?
+
+[05:52] Dana Whitfield
+The audit export is not required for the pilot. It can wait for self-serve.

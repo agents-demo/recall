@@ -1,0 +1,5 @@
+id,action,owner,due,status,evidence_id,evidence_quote
+a1,Send the revised support rota for the pilot weekend,Ravi Menon,2026-11-06,open,e5,"I will send the revised support rota by Friday."
+a2,Complete the threat-model review for the admin console,Elena Sokolova,2026-11-08,open,e9,"I will finish the threat model for the admin console by the eighth."
+a3,Confirm the Berlin field team can run the 4 November pilot with two trainers,Tom Becker,2026-11-05,open,e11,"Berlin can run the pilot with two trainers. I will confirm that tomorrow."
+a4,Publish the updated rollout note and runbook to affected customers,Dana Whitfield,2026-11-05,open,e13,"I will publish the updated rollout note and runbook to customers by the fifth."

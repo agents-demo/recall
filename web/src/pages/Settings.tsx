@@ -30,6 +30,32 @@ export default function SettingsPage() {
       <DataNote seed={pack.meta.seed} />
 
       <div className="settings-grid">
+        <Panel
+          title="Workspace data"
+          sub="Choose the synthetic demo pack or your own blank workspace"
+          className="span-2"
+          actions={<Chip tone={settings.workspaceMode === "personal" ? "green" : "amber"}>{settings.workspaceMode === "personal" ? "my workspace" : "synthetic demo"}</Chip>}
+        >
+          <div className="segmented">
+            <button className={classNames(settings.workspaceMode === "demo" && "active")} onClick={() => { setSetting("workspaceMode", "demo"); say("Synthetic demo pack shown. Your own notes and captures are still here."); }}>
+              Synthetic demo
+            </button>
+            <button className={classNames(settings.workspaceMode === "personal" && "active")} onClick={() => { setSetting("workspaceMode", "personal"); say("My workspace: only your own notes and captures are shown."); }}>
+              My workspace (blank)
+            </button>
+          </div>
+          <p className="small muted mt12">
+            {settings.workspaceMode === "personal"
+              ? "Only entries you created are shown: field notes and captures. The four scripted meetings, their transcripts and the seed events are hidden. Nothing is deleted — switch back to the synthetic demo at any time."
+              : "The four scripted meetings, their transcripts, the seed events and the PPMA demo memory are shown. Anything you created is shown alongside them."}
+          </p>
+          <div className="row gap8 mt8">
+            <Link className="btn sm" to="/field"><Icon name="pin" size={12} /> Capture a field note</Link>
+            <Link className="btn sm" to="/record"><Icon name="record" size={12} /> Open capture</Link>
+            <Link className="btn sm ghost" to="/meetings"><Icon name="layers" size={12} /> {settings.workspaceMode === "personal" ? "My captures" : "All captures"}</Link>
+          </div>
+        </Panel>
+
         <Panel title="Appearance" sub="Light, dark and high contrast are designed together">
           <div className="theme-grid">
             {themes.map((theme) => (
@@ -171,7 +197,7 @@ export default function SettingsPage() {
             <button className="btn sm" onClick={() => { setSetting("onboarded", false); say("Tour replayed on the next route."); }}>Replay</button>
           </div>
           <div className="settings-row">
-            <div><b>Reset demo</b><span>Return the pack, events, memory and queue to the captured meeting.</span></div>
+            <div><b>Reset {settings.workspaceMode === "personal" ? "workspace" : "demo"}</b><span>{settings.workspaceMode === "personal" ? "Clears your notes, captures, events and memory. The synthetic pack is untouched." : "Return the pack, events, memory and queue to the captured meeting."}</span></div>
             <button className="btn sm danger" onClick={reset}><Icon name="refresh" size={12} /> Reset</button>
           </div>
         </Panel>

@@ -1,0 +1,114 @@
+{
+  "case_id": "case_helios_2026_11",
+  "title": "Helios rollout readiness review",
+  "occurred_at": "2026-11-04T09:00:00Z",
+  "duration_seconds": 2400,
+  "mode": "meeting",
+  "language": "en",
+  "jurisdiction": "DE",
+  "sensitivity": "personal",
+  "consent": {
+    "state": "all_notified",
+    "wording": "DE-2026-2",
+    "recorded_by": "owner"
+  },
+  "participants": [
+    { "name": "Dana Whitfield", "role": "Program lead" },
+    { "name": "Ravi Menon", "role": "Support lead" },
+    { "name": "Elena Sokolova", "role": "Security" },
+    { "name": "Tom Becker", "role": "Field operations" }
+  ],
+  "summary": "The enterprise pilot stays on 4 November, but self-serve onboarding slips two weeks to 18 November. The first release ships a read-only admin console; bulk import is deferred. Support cover for the pilot weekend and the two customers waiting on bulk import are the open risks.",
+  "decisions": [
+    {
+      "id": "d1",
+      "text": "Delay self-serve onboarding by two weeks to 18 November; keep the enterprise pilot on 4 November.",
+      "evidence_id": "e3",
+      "confidence": 0.94
+    },
+    {
+      "id": "d2",
+      "text": "Ship the read-only admin console in the first release; defer bulk import.",
+      "evidence_id": "e7",
+      "confidence": 0.88
+    }
+  ],
+  "actions": [
+    {
+      "id": "a1",
+      "text": "Send the revised support rota for the pilot weekend.",
+      "owner": "Ravi Menon",
+      "due": "2026-11-06",
+      "evidence_id": "e5",
+      "status": "open"
+    },
+    {
+      "id": "a2",
+      "text": "Complete the threat-model review for the admin console.",
+      "owner": "Elena Sokolova",
+      "due": "2026-11-08",
+      "evidence_id": "e9",
+      "status": "open"
+    },
+    {
+      "id": "a3",
+      "text": "Confirm the Berlin field team can run the 4 November pilot with two trainers.",
+      "owner": "Tom Becker",
+      "due": "2026-11-05",
+      "evidence_id": "e11",
+      "status": "open"
+    },
+    {
+      "id": "a4",
+      "text": "Publish the updated rollout note to affected customers.",
+      "owner": "Dana Whitfield",
+      "due": "2026-11-05",
+      "evidence_id": "e13",
+      "status": "open"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "text": "Do we need a second on-call engineer for the pilot weekend?",
+      "evidence_id": "e5"
+    },
+    {
+      "id": "q2",
+      "text": "Is the audit export required for the enterprise pilot, or can it wait for the self-serve launch?",
+      "evidence_id": "e15"
+    }
+  ],
+  "risks": [
+    {
+      "id": "r1",
+      "text": "Support cover is thin on the weekend of 8–9 November.",
+      "mitigation": "Borrow one engineer from the platform team for the weekend.",
+      "evidence_id": "e5"
+    },
+    {
+      "id": "r2",
+      "text": "Two customers waiting on bulk import may be blocked until the self-serve launch.",
+      "mitigation": "Run a manual concierge import for those two accounts.",
+      "evidence_id": "e7"
+    }
+  ],
+  "transcript": [
+    { "id": "e1", "start": 12, "speaker": "Dana Whitfield", "text": "The enterprise pilot is the fixed point. Everything else moves around it." },
+    { "id": "e2", "start": 41, "speaker": "Ravi Menon", "text": "Support can cover the pilot, but not the same week as self-serve onboarding." },
+    { "id": "e3", "start": 68, "speaker": "Dana Whitfield", "text": "Then we hold the enterprise pilot on the fourth and move self-serve onboarding to the eighteenth." },
+    { "id": "e4", "start": 96, "speaker": "Elena Sokolova", "text": "That gives security two extra weeks for the admin console review." },
+    { "id": "e5", "start": 118, "speaker": "Ravi Menon", "text": "I will send the revised support rota by Friday. The eighth and ninth are still thin." },
+    { "id": "e6", "start": 143, "speaker": "Dana Whitfield", "text": "Borrow one engineer from platform for that weekend if the rota does not close." },
+    { "id": "e7", "start": 171, "speaker": "Dana Whitfield", "text": "The first release ships the read-only admin console. Bulk import waits." },
+    { "id": "e8", "start": 196, "speaker": "Ravi Menon", "text": "Two customers will ask about bulk import as soon as the note goes out." },
+    { "id": "e9", "start": 220, "speaker": "Elena Sokolova", "text": "I will finish the threat model for the admin console by the eighth." },
+    { "id": "e10", "start": 244, "speaker": "Dana Whitfield", "text": "We will run the concierge import manually for those two accounts." },
+    { "id": "e11", "start": 266, "speaker": "Tom Becker", "text": "Berlin can run the pilot with two trainers. I will confirm that tomorrow." },
+    { "id": "e12", "start": 288, "speaker": "Tom Becker", "text": "The field team needs the updated runbook before the fifth." },
+    { "id": "e13", "start": 310, "speaker": "Dana Whitfield", "text": "I will publish the updated rollout note and runbook to customers by the fifth." },
+    { "id": "e14", "start": 336, "speaker": "Elena Sokolova", "text": "Do we need a second on-call engineer for the pilot weekend?" },
+    { "id": "e15", "start": 352, "speaker": "Dana Whitfield", "text": "The audit export is not required for the pilot. It can wait for self-serve." }
+  ],
+  "tags": ["example", "rollout", "support", "security"]
+}

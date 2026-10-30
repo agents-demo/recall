@@ -46,7 +46,16 @@ export default function Meetings() {
           </>
         }
       />
-      <DataNote seed={pack.meta.seed} />
+      <DataNote
+        seed={pack.meta.seed}
+        label={settings.workspaceMode === "personal" ? "My workspace" : undefined}
+        tone={settings.workspaceMode === "personal" ? "green" : "amber"}
+        note={
+          settings.workspaceMode === "personal"
+            ? "My workspace: the four synthetic meetings are hidden. Only captures and notes you create are listed."
+            : undefined
+        }
+      />
 
       <div className="filter-bar">
         <label className="filter-search">

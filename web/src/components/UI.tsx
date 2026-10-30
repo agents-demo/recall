@@ -277,11 +277,11 @@ export function Empty({ title, detail, icon = "quote" }: { title: string; detail
   );
 }
 
-export function DataNote({ seed, note }: { seed?: number; note?: string }) {
+export function DataNote({ seed, note, label, tone = "amber" }: { seed?: number; note?: string; label?: string; tone?: "amber" | "green" | "cyan" }) {
   const t = useT();
   return (
     <div className="data-note" role="note">
-      <Chip tone="amber" dot="warn">{t("data.reference")}</Chip>
+      <Chip tone={tone} dot={tone === "amber" ? "warn" : "live"}>{label ?? t("data.reference")}</Chip>
       <span>
         {note ??
           `Synthetic, generated in-house with a fixed seed${seed ? ` (${seed})` : ""}. No customer audio, transcript or personal data. The audio timeline is a visualisation; raw media is not in this build.`}

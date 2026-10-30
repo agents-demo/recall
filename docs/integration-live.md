@@ -103,9 +103,11 @@ $env:PYTHONIOENCODING = "utf-8"
   --query "What does PPMA remember from the RECALL captures?"
 ```
 
-The agent builds a real `openjiuwen` `Model`, registers three RECALL tools
-(`recall_memory`, `recall_search`, `recall_recent_events`), starts the global `Runner` and runs a
-`DeepAgent`. The script prints every tool call and the final answer.
+The agent builds a real `openjiuwen` `Model`, registers four RECALL tools
+(`recall_case`, `recall_memory`, `recall_search`, `recall_recent_events`), starts the global
+`Runner` and runs a `DeepAgent`. The script prints every tool call and the final answer. Set
+`RECALL_CASE_FILE` to a case file to let it analyse your own case alongside PPMA memory.
+See [`examples/real-case`](../examples/real-case/README.md).
 
 Observed run: model `deepseek-v4-pro`, six tool calls, and an answer that quoted PPMA’s memory
 statements. With the `--agent openai` profile PPMA held real extracted statements such as

@@ -77,6 +77,7 @@ export interface Settings {
   attentionBudget: number;
   quietHours: string;
   attentionThreshold: number;
+  workspaceMode: "demo" | "personal";
 }
 
 export interface ProjectState {
@@ -137,6 +138,7 @@ const DEFAULT_SETTINGS: Settings = {
   attentionBudget: 5,
   quietHours: "20:00–07:00",
   attentionThreshold: 0.5,
+  workspaceMode: "demo",
 };
 
 const EMPTY: Persisted = {
@@ -577,7 +579,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     root.dataset.font = state.settings.fontScale;
   }, [state.settings]);
 
-  const baseMeetings = useMemo(() => (pack ? [...pack.meetings, ...state.imported] : []), [pack, state.imported]);
+  const demoMode = state.settings.workspaceMode !== "personal";
+  const seedEventIds = useMemo(() => new Set((pack?.ppma.events ?? []).map((event) => event.event_id)), [pack]);
+  const seedMemoryIds = useMemo(() => new Set((pack?.ppma.memory ?? []).map((entry) => entry.id)), [pack]);
+  const seedCommandIds = useMemo(() => new Set((pack?.ppma.commands ?? []).map((command) => command.id)), [pack]);
+  const seedAuditIds = useMemo(() => new Set((pack?.admin.audit ?? []).map((entry) => entry.id)), [pack]);
+
+  const baseMeetings = useMemo(
+    () => (pack ? [...(demoMode ? pack.meetings : []), ...state.imported] : []),
+    [pack, state.imported, demoMode],
+  );
 
   const meetings = useMemo(() => {
     return baseMeetings.map((base) => {
@@ -611,16 +622,37 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const activeMeetings = useMemo(() => meetings.filter((m) => m.status !== "tombstoned"), [meetings]);
   const tombstoned = useMemo(() => meetings.filter((m) => m.status === "tombstoned"), [meetings]);
-  const notes = useMemo(() => (pack ? [...pack.notes, ...state.fieldNotes] : []), [pack, state.fieldNotes]);
-  const events = useMemo(() => state.events ?? [], [state.events]);
-  const memory = useMemo(() => state.memory ?? [], [state.memory]);
-  const commands = useMemo(() => state.commands ?? [], [state.commands]);
-  const audit = useMemo(() => state.audit, [state.audit]);
-  const queue = useMemo(() => events.filter((e) => e.delivery.status === "queued"), [events]);
-  const project = useMemo<ProjectState>(
-    () => state.project ?? { state: "", followup: "", last_event: null, updated_at: "" },
-    [state.project],
+  const notes = useMemo(
+    () => (pack ? [...(demoMode ? pack.notes : []), ...state.fieldNotes] : []),
+    [pack, state.fieldNotes, demoMode],
   );
+  const events = useMemo(() => {
+    const all = state.events ?? [];
+    return demoMode ? all : all.filter((event) => !seedEventIds.has(event.event_id));
+  }, [state.events, demoMode, seedEventIds]);
+  const memory = useMemo(() => {
+    const all = state.memory ?? [];
+    return demoMode ? all : all.filter((entry) => !seedMemoryIds.has(entry.id));
+  }, [state.memory, demoMode, seedMemoryIds]);
+  const commands = useMemo(() => {
+    const all = state.commands ?? [];
+    return demoMode ? all : all.filter((command) => !seedCommandIds.has(command.id));
+  }, [state.commands, demoMode, seedCommandIds]);
+  const audit = useMemo(
+    () => (demoMode ? state.audit : state.audit.filter((entry) => !seedAuditIds.has(entry.id))),
+    [state.audit, demoMode, seedAuditIds],
+  );
+  const queue = useMemo(() => events.filter((e) => e.delivery.status === "queued"), [events]);
+  const project = useMemo<ProjectState>(() => {
+    const current = state.project ?? { state: "", followup: "", last_event: null, updated_at: "" };
+    if (demoMode || events.length > 0) return current;
+    return {
+      state: "No captures yet. Your own notes and captures will appear here; the synthetic pack is available from Settings.",
+      followup: "",
+      last_event: null,
+      updated_at: "",
+    };
+  }, [state.project, demoMode, events.length]);
 
   const meetingById = useCallback((id: string) => meetings.find((m) => m.id === id), [meetings]);
   const noteById = useCallback((id: string) => notes.find((n) => n.id === id), [notes]);
@@ -1240,6 +1272,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       copy.deleted_reason = null;
       copy.tombstone_id = null;
       copy.tags = [...copy.tags, "new-capture"];
+      if (state.settings.workspaceMode === "personal") {
+        copy.started_at = ended;
+        copy.duration_s = 0;
+        copy.participants = [];
+        copy.utterances = [];
+        copy.decisions = [];
+        copy.actions = [];
+        copy.questions = [];
+        copy.evidence = [];
+        copy.redactions = [];
+        copy.summary = "Captured on this device with consent recorded. This public build does not run speech recognition, so there is no transcript or extracted fact yet.";
+        copy.tags = ["personal-capture"];
+      }
       setState((prev) => ({ ...prev, imported: [...prev.imported, copy] }));
       const event = buildEvent(
         "capture.recording.started",
@@ -1258,7 +1303,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       say("Recording started on device · consent recorded");
       return id;
     },
-    [pack, pushEvent, say],
+    [pack, pushEvent, say, state.settings.workspaceMode],
   );
 
   const completeRecording = useCallback(
@@ -1286,11 +1331,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       copy.ppma = { status: "pending", event_id: null, completed_at: null };
       copy.import = true;
       copy.summary = `Backfill import. ${scenario.summary} Transcribed locally after import.`;
+      if (state.settings.workspaceMode === "personal") {
+        copy.started_at = nowIso();
+        copy.ended_at = nowIso();
+        copy.duration_s = 0;
+        copy.participants = [];
+        copy.utterances = [];
+        copy.decisions = [];
+        copy.actions = [];
+        copy.questions = [];
+        copy.evidence = [];
+        copy.redactions = [];
+        copy.tags = ["personal-import"];
+        copy.summary = "Imported on this device. This public build does not run speech recognition, so the file was not transcribed and no synthetic transcript was substituted.";
+      }
       setState((prev) => ({ ...prev, imported: [...prev.imported, copy] }));
-      say(`Imported ${fileName} · transcribed locally. Original audio stayed in the file.`);
+      say(`Imported ${fileName} · original audio stayed in the file. No transcript was generated in this build.`);
       return id;
     },
-    [pack, say],
+    [pack, say, state.settings.workspaceMode],
   );
 
   const addFieldNote = useCallback(

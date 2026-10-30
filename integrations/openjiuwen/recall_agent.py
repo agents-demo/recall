@@ -31,6 +31,7 @@ import urllib.request
 from pathlib import Path
 
 BRIDGE = os.getenv("RECALL_BRIDGE", "http://127.0.0.1:8788").rstrip("/")
+CASE_FILE = os.getenv("RECALL_CASE_FILE", r"examples\real-case\case.json")
 TOOL_CALLS: list[dict] = []
 
 
@@ -89,6 +90,30 @@ def recall_recent_events(limit: int = 10) -> str:
     return json.dumps({"events": rows}, ensure_ascii=False)
 
 
+def recall_case() -> str:
+    """Read the local case file the operator is analysing.
+
+    Returns the case title, consent, participants, summary, decisions, actions, questions, risks and
+    transcript as JSON. Use this for the operator's own case file; use recall_memory for what PPMA
+    actually remembers. If the two disagree, say so.
+    """
+    path = Path(CASE_FILE)
+    if not path.is_absolute():
+        path = Path.cwd() / path
+    if not path.exists():
+        fallback = Path.cwd() / "examples" / "real-case" / "case.example.json"
+        path = fallback if fallback.exists() else path
+    try:
+        case = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as error:  # noqa: BLE001 - the agent gets the failure
+        TOOL_CALLS.append({"tool": "recall_case", "ok": False})
+        return json.dumps({"error": f"could not read {path}: {error}"})
+    fields = ["case_id", "title", "occurred_at", "consent", "participants", "summary", "decisions", "actions", "questions", "risks", "transcript"]
+    subset = {key: case.get(key) for key in fields if key in case}
+    TOOL_CALLS.append({"tool": "recall_case", "ok": True, "case_id": case.get("case_id"), "file": str(path)})
+    return json.dumps(subset, ensure_ascii=False)
+
+
 def build_agent():
     from openjiuwen.core.foundation.llm import Model, ModelClientConfig, ModelRequestConfig
     from openjiuwen.core.foundation.tool import tool
@@ -109,14 +134,14 @@ def build_agent():
     request = ModelRequestConfig(model=os.getenv("MODEL_NAME", ""), temperature=0.1, top_p=0.9)
     model = Model(model_client_config=client, model_config=request)
 
-    tools = [tool(recall_memory), tool(recall_search), tool(recall_recent_events)]
+    tools = [tool(recall_memory), tool(recall_search), tool(recall_recent_events), tool(recall_case)]
     agent = create_deep_agent(
         model=model,
         system_prompt=(
             "You are RECALL's capture agent. RECALL captures meetings and proves provenance; PPMA owns "
-            "memory, state and action. Use the tools to read PPMA memory before answering. Never invent "
-            "a memory entry. State plainly when PPMA holds no matching statement. You never send, delete "
-            "or execute project actions."
+            "memory, state and action. Use recall_case for the operator's local case file and recall_memory "
+            "for what PPMA holds. Never invent a memory entry. If the file and PPMA disagree, say so. "
+            "State plainly when a fact is absent. You never send, delete or execute project actions."
         ),
         tools=tools,
         max_iterations=4,
@@ -166,6 +191,7 @@ async def main() -> None:
         "model": os.getenv("MODEL_NAME", ""),
         "provider": os.getenv("MODEL_PROVIDER", "OpenAI"),
         "bridge": BRIDGE,
+        "case_file": CASE_FILE,
         "tool_calls": TOOL_CALLS,
         "answer": text,
     }

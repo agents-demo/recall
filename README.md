@@ -34,6 +34,19 @@ beginning of real integration). See [What’s new in v1.0](#whats-new-in-v10).
 The public site is a **static, offline build** of the product UI, driven by a deterministic synthetic
 pack. No customer audio, transcript or personal data is included. There is no network call after load by default; the optional local PPMA connection is explicitly configured by the user.
 
+## Workspace modes — demo or yours
+
+The app has two explicit modes, switchable in **Settings → Workspace data** and visible in the top bar:
+
+- **Synthetic demo** (default): the four scripted meetings, their transcripts, the seed events and the
+  PPMA demo memory. Anything you create is shown alongside them.
+- **My workspace (blank)**: only entries you create. The synthetic meetings, notes, events, memory and
+  audit are hidden, not deleted. Switch back at any time.
+
+A new capture in **My workspace** records consent, title and time but has **no transcript**, because
+this public build does not run speech recognition. Field notes are genuinely your text, location and
+optional photo filename. Nothing synthetic is substituted for your content.
+
 ---
 
 ## The 90-second stage piece
@@ -81,6 +94,25 @@ The admin surface is visible when the role selector is set to **Privacy / legal*
 deliberately hides what a role cannot act on.
 
 ---
+
+## What’s new in v1.4
+
+**A workspace that can be yours**
+
+- **Settings → Workspace data** switches between the synthetic demo pack and **My workspace (blank)**.
+- Personal mode hides every synthetic meeting, note, seed event, memory and audit entry; nothing is deleted.
+- A new capture in personal mode records consent, title and time but **no transcript** — this build does not run
+  ASR, so no synthetic transcript is substituted.
+- Field notes are genuinely your text, location and optional photo filename.
+- The top bar always shows which mode you are in.
+
+**A real-case workflow**
+
+- [`examples/real-case`](examples/real-case/README.md) includes a complete case: `case.example.json`,
+  `transcript.txt`, `actions.csv`, field notes, agent questions and a real upload file.
+- `scripts/ingest_case.py` turns your case into a real north-contract event, idempotently.
+- The openjiuwen agent now has a `recall_case` tool, so it can analyse **your case file** and compare it with
+  what PPMA actually kept.
 
 ## What’s new in v1.1
 
@@ -270,6 +302,7 @@ PPMA server suite.
 - [Manager proof](https://jiuwendemos.github.io/recall/#/proof) — the 90-second and 10-minute manager run, metrics, privacy and boundary.
 - [Naming decision](docs/naming.md) - RECALL vs the PPMA `recall` memory view.
 - [Live integration](docs/integration-live.md) - the exact commands that ran PPMA and the openjiuwen agent.
+- [Real-case example](examples/real-case/README.md) - what to fill in, which files to upload, and how to ingest and analyse your own case.
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
 - [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 392 implemented and 3 external validations.
 - [PPMA × RECALL contract](docs/integration-ppma.md) — events, commands, consent, deletion, idempotency.

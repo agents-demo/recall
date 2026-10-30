@@ -19,12 +19,12 @@ test("ulidFor returns a valid, deterministic 26-character ULID", () => {
 });
 
 test("toNorthMessage maps a RECALL event to the north envelope", () => {
-  const message = toNorthMessage(event, "me", "capture", "1.3.0");
+  const message = toNorthMessage(event, "me", "capture", "1.4.0");
   assert.equal(message.kind, "event");
   assert.equal(message.type, "capture.meeting.completed");
   assert.equal(message.space, "me");
   assert.equal(message.source.app, "capture");
-  assert.equal(message.source.app_version, "1.3.0");
+  assert.equal(message.source.app_version, "1.4.0");
   assert.equal(message.source.device, "recall-web");
   assert.equal(message.id, ulidFor(event.event_id, event.occurred_at));
   assert.deepEqual(message.payload, event.payload);

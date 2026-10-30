@@ -21,6 +21,12 @@ server/.ppma-app-token
 .env
 .env.local
 
+# Real case data (never commit customer content)
+examples/real-case/case.json
+examples/real-case/uploads/*
+!examples/real-case/uploads/README.md
+!examples/real-case/uploads/sample-upload.wav
+
 # Editors / OS
 .idea/
 .vscode/

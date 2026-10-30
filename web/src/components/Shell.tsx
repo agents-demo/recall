@@ -174,6 +174,14 @@ export function Shell({ children }: { children: ReactNode }) {
         </button>
 
         <div className="transport-status">
+          <button
+            className={classNames("live-pill", settings.workspaceMode === "personal" ? "ok" : "warn")}
+            onClick={() => navigate("/settings")}
+            title={settings.workspaceMode === "personal" ? "Only your own notes and captures are shown" : "The synthetic demo pack is shown"}
+          >
+            <i className={classNames("dot", settings.workspaceMode === "personal" ? "live" : "warn")} />
+            {settings.workspaceMode === "personal" ? "My workspace" : "Synthetic demo"}
+          </button>
           <span className="live-pill" title="Audio, transcript and evidence stay on this device by default">
             <i className="dot live" />
             {t("top.local")}

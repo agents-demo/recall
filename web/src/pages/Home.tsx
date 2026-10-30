@@ -70,7 +70,31 @@ export default function Home() {
         </div>
       </div>
 
-      <DataNote seed={pack.meta.seed} />
+      <DataNote
+        seed={pack.meta.seed}
+        label={settings.workspaceMode === "personal" ? "My workspace" : undefined}
+        tone={settings.workspaceMode === "personal" ? "green" : "amber"}
+        note={
+          settings.workspaceMode === "personal"
+            ? "My workspace: only entries you create are shown. The synthetic pack is available from Settings; nothing is deleted when you switch."
+            : undefined
+        }
+      />
+
+      {settings.workspaceMode === "personal" && activeMeetings.length === 0 && notes.length === 0 && (
+        <Panel title="Your workspace is blank" sub="Nothing synthetic is shown here">
+          <p className="small muted">
+            Add a field note with your own text, or open a capture to record consent and a local capture. This public
+            build does not run speech recognition, so a new capture has no transcript yet. Your entries persist in this
+            browser.
+          </p>
+          <div className="row gap8 mt12">
+            <Link className="btn primary" to="/field"><Icon name="pin" size={13} /> Capture a field note</Link>
+            <Link className="btn" to="/record"><Icon name="record" size={13} /> Open a capture</Link>
+            <Link className="btn ghost" to="/settings"><Icon name="settings" size={13} /> Show synthetic demo</Link>
+          </div>
+        </Panel>
+      )}
 
       {attention.length > 0 && (
         <section className="attention-strip" aria-label="Attention">
