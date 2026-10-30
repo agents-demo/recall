@@ -13,7 +13,7 @@ import type {
   SearchHit,
 } from "../types";
 
-export const APP_ID = "recall-capture";
+export const APP_ID = "capture";
 export const DEFAULT_SPACE = "ppma://spaces/northgate";
 
 const STOP = new Set([

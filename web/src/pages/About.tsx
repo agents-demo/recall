@@ -199,7 +199,7 @@ export default function About() {
 
       <div className="about-footer">
         <b>RECALL</b>
-        <span>Integration id <code className="mono">recall-capture</code> · event prefix <code className="mono">capture.*</code> · PPMA north contract v0</span>
+        <span>Integration id <code className="mono">capture</code> · event prefix <code className="mono">capture.*</code> · PPMA north contract v0</span>
         <span className="soft">The meeting is not lost.</span>
       </div>
     </>

@@ -87,7 +87,7 @@ def provenance(device="MacBook Pro 14 · M4", local=True, model="parakeet-tdt-0.
         "diarization_model": "pyannote-3.1-mini · int8",
         "vad_model": "silero-vad-5 · int8",
         "redaction_model": "redact-clf-0.4 · int8",
-        "app_version": "1.2.0",
+        "app_version": "1.3.0",
         "language": "en",
         "audio_sha256": sha(f"audio::{device}::{model}"),
         "local_only": local,
@@ -657,9 +657,9 @@ notes = [
 
 # --------------------------------------------------------------------------- PPMA contract
 manifest = {
-    "app_id": "recall-capture",
+    "app_id": "capture",
     "display_name": "RECALL",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "contract": "PPMA North Contract v0",
     "direction": "events out; limited commands in",
     "event_prefix": "capture.*",
@@ -687,7 +687,7 @@ manifest = {
 seed_events = [
     {
         "event_id": "evt_seed_kickoff",
-        "app_id": "recall-capture",
+        "app_id": "capture",
         "space": "ppma://spaces/northgate",
         "occurred_at": "2026-10-09T14:43:02Z",
         "type": "capture.meeting.completed",
@@ -708,12 +708,12 @@ seed_events = [
             "evidence": meeting_kickoff["evidence"],
             "provenance": meeting_kickoff["provenance"],
         },
-        "provenance": {"device": "iPhone 16 Pro · A18", "model": "parakeet-tdt-0.6b-int8", "app_version": "1.2.0", "local_only": True},
+        "provenance": {"device": "iPhone 16 Pro · A18", "model": "parakeet-tdt-0.6b-int8", "app_version": "1.3.0", "local_only": True},
         "delivery": {"status": "delivered", "attempts": 1, "delivered_at": "2026-10-09T14:43:09Z", "duplicate": False, "latency_ms": 7000},
     },
     {
         "event_id": "evt_seed_note",
-        "app_id": "recall-capture",
+        "app_id": "capture",
         "space": "ppma://spaces/northgate",
         "occurred_at": "2026-10-28T15:42:11Z",
         "type": "capture.note.created",
@@ -726,12 +726,12 @@ seed_events = [
             "evidence_ref": "ev_n01",
             "consent": notes[0]["consent"],
         },
-        "provenance": {"device": "iPhone 16 Pro · A18", "model": "ocr-small-v3", "app_version": "1.2.0", "local_only": True},
+        "provenance": {"device": "iPhone 16 Pro · A18", "model": "ocr-small-v3", "app_version": "1.3.0", "local_only": True},
         "delivery": {"status": "delivered", "attempts": 1, "delivered_at": "2026-10-28T15:42:18Z", "duplicate": False, "latency_ms": 7000},
     },
     {
         "event_id": "evt_seed_standup",
-        "app_id": "recall-capture",
+        "app_id": "capture",
         "space": "ppma://spaces/northgate",
         "occurred_at": "2026-10-23T07:48:20Z",
         "type": "capture.meeting.completed",
@@ -752,12 +752,12 @@ seed_events = [
             "evidence": meeting_standup["evidence"],
             "provenance": meeting_standup["provenance"],
         },
-        "provenance": {"device": "iPhone 16 Pro · A18", "model": "parakeet-tdt-0.6b-int8", "app_version": "1.2.0", "local_only": True},
+        "provenance": {"device": "iPhone 16 Pro · A18", "model": "parakeet-tdt-0.6b-int8", "app_version": "1.3.0", "local_only": True},
         "delivery": {"status": "queued", "attempts": 0, "delivered_at": None, "duplicate": False, "latency_ms": None},
     },
     {
         "event_id": "evt_seed_pricing",
-        "app_id": "recall-capture",
+        "app_id": "capture",
         "space": "ppma://spaces/northgate",
         "occurred_at": "2026-10-15T16:09:00Z",
         "type": "capture.meeting.completed",
@@ -778,12 +778,12 @@ seed_events = [
             "evidence": meeting_pricing["evidence"],
             "provenance": meeting_pricing["provenance"],
         },
-        "provenance": {"device": "MacBook Pro 14 · M4", "model": "parakeet-tdt-0.6b-int8", "app_version": "1.2.0", "local_only": True},
+        "provenance": {"device": "MacBook Pro 14 · M4", "model": "parakeet-tdt-0.6b-int8", "app_version": "1.3.0", "local_only": True},
         "delivery": {"status": "delivered", "attempts": 1, "delivered_at": "2026-10-15T16:09:08Z", "duplicate": False, "latency_ms": 8000},
     },
     {
         "event_id": "evt_seed_pricing_retention",
-        "app_id": "recall-capture",
+        "app_id": "capture",
         "space": "ppma://spaces/northgate",
         "occurred_at": "2026-10-29T09:02:00Z",
         "type": "capture.consent.changed",
@@ -794,7 +794,7 @@ seed_events = [
             "reason": "retention_review",
             "effective_at": "2026-10-29T09:02:00Z",
         },
-        "provenance": {"device": "MacBook Pro 14 · M4", "model": "consent-service", "app_version": "1.2.0", "local_only": True},
+        "provenance": {"device": "MacBook Pro 14 · M4", "model": "consent-service", "app_version": "1.3.0", "local_only": True},
         "delivery": {"status": "delivered", "attempts": 1, "delivered_at": "2026-10-29T09:02:01Z", "duplicate": False, "latency_ms": 1000},
     },
 ]
@@ -904,7 +904,7 @@ ppma_pack = {
         {
             "id": "cmd_01",
             "kind": "command",
-            "target": "recall-capture",
+            "target": "capture",
             "type": "capture.apply_retention",
             "received_at": "2026-10-29T09:05:00Z",
             "payload": {
@@ -918,7 +918,7 @@ ppma_pack = {
         {
             "id": "cmd_02",
             "kind": "command",
-            "target": "recall-capture",
+            "target": "capture",
             "type": "capture.forget",
             "received_at": "2026-10-30T08:12:00Z",
             "payload": {
@@ -1015,9 +1015,9 @@ team = {
         {"id": "user_admin", "name": "M. Okafor", "role": "admin", "initials": "MO", "email": "admin@example.com"},
     ],
     "devices": [
-        {"id": "dev_mac_01", "name": "MacBook Pro 14 · M4", "kind": "laptop", "owner": "Anna Voss", "status": "active", "last_seen": "2026-10-30T08:58:00Z", "app_version": "1.2.0", "npu": "Apple Neural Engine", "storage_used_pct": 38, "battery_pct": 72, "mic": "ok"},
-        {"id": "dev_iphone_01", "name": "iPhone 16 Pro · A18", "kind": "phone", "owner": "Tomás Rivera", "status": "active", "last_seen": "2026-10-30T08:41:00Z", "app_version": "1.2.0", "npu": "Apple Neural Engine", "storage_used_pct": 61, "battery_pct": 54, "mic": "ok"},
-        {"id": "dev_ipad_01", "name": "iPad Air · M2", "kind": "tablet", "owner": "Field team", "status": "field", "last_seen": "2026-10-28T15:42:00Z", "app_version": "1.2.0", "npu": "Apple Neural Engine", "storage_used_pct": 22, "battery_pct": 83, "mic": "ok"},
+        {"id": "dev_mac_01", "name": "MacBook Pro 14 · M4", "kind": "laptop", "owner": "Anna Voss", "status": "active", "last_seen": "2026-10-30T08:58:00Z", "app_version": "1.3.0", "npu": "Apple Neural Engine", "storage_used_pct": 38, "battery_pct": 72, "mic": "ok"},
+        {"id": "dev_iphone_01", "name": "iPhone 16 Pro · A18", "kind": "phone", "owner": "Tomás Rivera", "status": "active", "last_seen": "2026-10-30T08:41:00Z", "app_version": "1.3.0", "npu": "Apple Neural Engine", "storage_used_pct": 61, "battery_pct": 54, "mic": "ok"},
+        {"id": "dev_ipad_01", "name": "iPad Air · M2", "kind": "tablet", "owner": "Field team", "status": "field", "last_seen": "2026-10-28T15:42:00Z", "app_version": "1.3.0", "npu": "Apple Neural Engine", "storage_used_pct": 22, "battery_pct": 83, "mic": "ok"},
         {"id": "dev_pixel_01", "name": "Pixel 9 · Tensor G4", "kind": "phone", "owner": "Pilot spare", "status": "revoked", "last_seen": "2026-09-30T12:00:00Z", "app_version": "0.8.4", "npu": "Google TPU", "storage_used_pct": 9, "battery_pct": None, "mic": "unknown"},
     ],
 }
@@ -1071,7 +1071,7 @@ admin = {
         {"id": "mdl_asr", "name": "Parakeet TDT 0.6B", "version": "int8 · 0.9.0", "kind": "ASR", "inputs": "16 kHz mono audio, on device", "limits": "English-first; accented speech degrades below 0.8 confidence", "failure_modes": "overlapping speech, far-field, technical jargon", "owner": "Speech team", "last_validated": "2026-10-21", "status": "champion", "metric": "WER 6.8% (pilot set)"},
         {"id": "mdl_diar", "name": "pyannote 3.1 mini", "version": "int8 · 0.9.0", "kind": "Diarization", "inputs": "VAD segments, on device", "limits": "similar voices can swap; always correctable", "failure_modes": "crosstalk, remote audio, new speakers", "owner": "Speech team", "last_validated": "2026-10-21", "status": "champion", "metric": "DER 11.2% (pilot set)"},
         {"id": "mdl_vad", "name": "Silero VAD 5", "version": "int8 · 0.9.0", "kind": "VAD", "inputs": "audio frames", "limits": "low-energy speech can be trimmed", "failure_modes": "HVAC noise, very quiet speakers", "owner": "Speech team", "last_validated": "2026-10-20", "status": "champion", "metric": "0.4% missed speech"},
-        {"id": "mdl_ocr", "name": "OCR small v3", "version": "1.2.0", "kind": "OCR", "inputs": "camera frame, on device", "limits": "handwriting and glare", "failure_modes": "rotated signage, low light", "owner": "Vision team", "last_validated": "2026-10-18", "status": "champion", "metric": "0.97 CER on field set"},
+        {"id": "mdl_ocr", "name": "OCR small v3", "version": "1.3.0", "kind": "OCR", "inputs": "camera frame, on device", "limits": "handwriting and glare", "failure_modes": "rotated signage, low light", "owner": "Vision team", "last_validated": "2026-10-18", "status": "champion", "metric": "0.97 CER on field set"},
         {"id": "mdl_redact", "name": "Redact classifier 0.4", "version": "int8 · 0.4", "kind": "Redaction", "inputs": "transcript spans", "limits": "sarcasm and implied secrets; human review required", "failure_modes": "false negative on oblique references", "owner": "Trust team", "last_validated": "2026-10-22", "status": "champion", "metric": "P 0.94 / R 0.91"},
         {"id": "mdl_extract", "name": "Fact extractor 0.7", "version": "0.7.2", "kind": "Extraction", "inputs": "transcript + speakers", "limits": "decisions phrased as questions", "failure_modes": "multi-party hedged commitments", "owner": "Memory team", "last_validated": "2026-10-25", "status": "challenger", "metric": "P 0.90 / R 0.85"},
     ],
@@ -1122,12 +1122,12 @@ delivery_redactions[0]["utterance_id"] = next(
 
 pack = {
     "meta": {
-        "version": "1.2.0",
+        "version": "1.3.0",
         "generated": "2026-10-30T08:00:00Z",
         "anchor": ANCHOR,
         "seed": SEED,
         "product": "RECALL",
-        "app_id": "recall-capture",
+        "app_id": "capture",
         "model": "deterministic synthetic pack · no customer data",
         "note": "Every transcript, speaker and event in this pack is synthetic and generated in-house. Audio is not included; the player is a visualisation of the local transcript timeline.",
         "stage_meeting_id": DELIVERY,

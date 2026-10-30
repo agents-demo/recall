@@ -4,7 +4,7 @@
 Integration contract: [PPMA × RECALL](integration-ppma.md). Architecture: [architecture.md](architecture.md).*
 
 **Working name.** PPMA already has a planned memory view called `recall`. To avoid collision, this app
-uses the integration id `recall-capture` and the event prefix `capture.*`. The external product name
+uses the integration id `capture` and the event prefix `capture.*`. The external product name
 can change without changing the contract.
 
 **One line.** RECALL captures what was said, proves where it came from, and hands the facts to PPMA —

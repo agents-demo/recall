@@ -115,7 +115,7 @@ deliberately hides what a role cannot act on.
 - an email draft (never sent), browser extension and safe evidence API.
 
 **Still simulated:** ASR/diarization, NPU, OCR, vendor OAuth, billing and the synthetic meeting itself.
-391 of 394 checkboxes are now checked at the real, contract or simulator level. The three open items are human validations: the real team pilot, the five-stranger test and the unprompted manager boundary test.
+392 of 395 checkboxes are now checked at the real, contract or simulator level. The three open items are human validations: the real team pilot, the five-stranger test and the unprompted manager boundary test.
 
 ---
 
@@ -206,11 +206,17 @@ shell, deterministic tests, the attention engine, threaded recall, memory canvas
 expiring share links, AES-GCM encrypted local storage, the local PPMA server with signed events, and the
 openjiuwen adapter contract.
 
+**Verified live on 30 October 2026:** a running PPMA backend at `127.0.0.1:8770` accepted RECALL's
+north-contract manifest and a real `capture.meeting.completed` event, rejected a replay as a duplicate,
+and exposed its memory view; a local bridge carried the browser traffic; and a real openjiuwen DeepAgent
+(`deepseek-v4-pro`) called RECALL tools and answered from PPMA memory. Reproduce it with
+[`docs/integration-live.md`](docs/integration-live.md).
+
 **Simulated for the public demo:** the scripted 14-minute meeting and its 119 transcript rows, the
 ASR/diarization outputs, the on-device OCR result, the vendor OAuth connectors, pilot metrics and
 admin/billing data. The microphone is not opened, and the audio timeline is a visualisation - no audio is
-included. The PPMA server is real but the public GitHub Pages build uses the local fake by default because
-there is no hosted backend. Production swap points (real NPU runtime, host identity provider, vendor
+included. The public GitHub Pages build uses the local fake by default because it is static and cannot
+host PPMA or the model runtime. Production swap points (real NPU runtime, host identity provider, vendor
 credentials, multi-device sync, billing) are named in [`docs/architecture.md`](docs/architecture.md).
 
 **Never:** training on customer audio or transcripts, raw media in the cloud by default, silent
@@ -262,9 +268,10 @@ PPMA server suite.
 ## Documentation
 
 - [Manager proof](https://jiuwendemos.github.io/recall/#/proof) — the 90-second and 10-minute manager run, metrics, privacy and boundary.
-- [Naming decision](docs/naming.md) — RECALL vs the PPMA `recall` memory view.
+- [Naming decision](docs/naming.md) - RECALL vs the PPMA `recall` memory view.
+- [Live integration](docs/integration-live.md) - the exact commands that ran PPMA and the openjiuwen agent.
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
-- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 391 implemented and 3 external validations.
+- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 392 implemented and 3 external validations.
 - [PPMA × RECALL contract](docs/integration-ppma.md) — events, commands, consent, deletion, idempotency.
 - [Architecture](docs/architecture.md) — state machine, store, event pipeline, security, production swaps.
 - [Local PPMA server](server/README.md) — signed events, memory, commands, SSE and the openjiuwen adapter.

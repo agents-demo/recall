@@ -1,5 +1,5 @@
 {
-  "app_id": "recall-capture",
+  "app_id": "capture",
   "adapter": "openjiuwen/recall",
   "version": "1.0.0",
   "contract": "PPMA North Contract v0",

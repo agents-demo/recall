@@ -10,10 +10,13 @@ export default function Connectors() {
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
   const [configuring, setConfiguring] = useState<string | null>(null);
-  const [endpoint, setEndpoint] = useState(settings.endpointUrl);
+  const [endpoint, setEndpoint] = useState(settings.endpointUrl || "http://127.0.0.1:8788");
   const [token, setToken] = useState(settings.endpointToken);
-  const [secret, setSecret] = useState(settings.endpointSecret);
+  const [secret, setSecret] = useState(settings.endpointSecret || "recall-demo-secret");
   const [testing, setTesting] = useState(false);
+  const [liveHealth, setLiveHealth] = useState<Record<string, unknown> | null>(null);
+  const [liveMemory, setLiveMemory] = useState<{ view: string; text: string; confidence?: number; origin?: string }[]>([]);
+  const [inspecting, setInspecting] = useState(false);
   if (!pack) return null;
 
   const filtered = useMemo(
@@ -29,26 +32,48 @@ export default function Connectors() {
   const testEndpoint = async () => {
     const base = endpoint.trim().replace(/\/$/, "");
     if (!base) {
-      say("Enter the local PPMA server URL first.");
+      say("Enter the local PPMA bridge URL first.");
       return;
     }
     setTesting(true);
     try {
       const response = await fetch(`${base}/health`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
       if (!response.ok) throw new Error(`health returned ${response.status}`);
-      const data = (await response.json()) as { status?: string; events?: number };
+      const data = (await response.json()) as { ok?: boolean; status?: string; backend?: string; app?: string; space?: string; memory_entries?: number; memory_views?: string[]; mode?: string; events?: number };
+      if (data.ok === false) throw new Error(`PPMA backend unreachable at ${data.backend ?? base}`);
+      setLiveHealth(data as Record<string, unknown>);
       setSetting("endpointUrl", base);
       setSetting("endpointToken", token);
       setSetting("endpointSecret", secret);
       setSetting("ppmaMode", "live");
-      setConnector("local-ppma", { enabled: true, configured: true, last_test: new Date().toISOString(), last_status: "ok", detail: `Connected · ${data.events ?? 0} events on the server` });
-      setConnector("ppma", { enabled: true, configured: true, last_test: new Date().toISOString(), last_status: "ok", detail: "Live endpoint configured; local fake remains the fallback." });
-      say("Local PPMA server reachable. Events will be signed and posted to it.");
+      setConnector("local-ppma", { enabled: true, configured: true, last_test: new Date().toISOString(), last_status: "ok", detail: `Real PPMA at ${data.backend ?? base} · app ${data.app ?? "capture"} · ${data.memory_entries ?? 0} memory entries` });
+      setConnector("ppma", { enabled: true, configured: true, last_test: new Date().toISOString(), last_status: "ok", detail: `Live PPMA north contract · space ${data.space ?? "me"} · views ${(data.memory_views ?? []).join(", ") || "none yet"}` });
+      say(`Connected to a running PPMA backend at ${data.backend ?? base}. Events now go to its real north API.`);
     } catch (error) {
+      setLiveHealth(null);
       setConnector("local-ppma", { enabled: false, configured: false, last_test: new Date().toISOString(), last_status: "error", detail: error instanceof Error ? error.message : "Connection failed" });
-      say("The local server is not reachable. Start server/ and check the URL.");
+      say("No live PPMA bridge is reachable. Start PPMA and the bridge, register the app, then test again.");
     } finally {
       setTesting(false);
+    }
+  };
+
+  const inspectMemory = async () => {
+    const base = endpoint.trim().replace(/\/$/, "");
+    if (!base) return;
+    setInspecting(true);
+    try {
+      const response = await fetch(`${base}/v1/memory`);
+      const data = (await response.json()) as { ok?: boolean; entries?: number; views?: { view: string; statements: { text: string; confidence?: number; origin?: string }[] }[]; detail?: string };
+      if (!response.ok || data.ok === false) throw new Error(data.detail || `memory returned ${response.status}`);
+      const rows = (data.views ?? []).flatMap((view) => view.statements.map((statement) => ({ view: view.view, text: statement.text, confidence: statement.confidence, origin: statement.origin })));
+      setLiveMemory(rows.slice(0, 12));
+      say(`Read ${rows.length} statements from PPMA memory.`);
+    } catch (error) {
+      setLiveMemory([]);
+      say(`Memory read failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    } finally {
+      setInspecting(false);
     }
   };
 
@@ -80,7 +105,7 @@ export default function Connectors() {
         subtitle="Every connector ships with a consent purpose, scopes, an off switch and an audit. Raw media never leaves the device; only safe text and pointers can."
         actions={<Chip tone={enabledCount ? "green" : "amber"} dot={enabledCount ? "live" : "warn"}>{enabledCount} enabled · {configuredCount} configured</Chip>}
       />
-      <DataNote seed={pack.meta.seed} note="The static demo ships local mock providers. The PPMA server in server/ is real and can be reached on localhost; vendor connectors need OAuth credentials and are labelled preview." />
+      <DataNote seed={pack.meta.seed} note="The static demo ships local mock providers. A running PPMA backend plus the local bridge in server/ is a real connection; vendor connectors need OAuth credentials and are labelled preview." />
 
       <div className="connectors-hero">
         <div>
@@ -129,7 +154,7 @@ export default function Connectors() {
                   <button className="btn sm ghost" onClick={() => { setConnector(connector.id, { last_test: new Date().toISOString(), last_status: connector.mock ? "ok" : "not_configured", detail: connector.mock ? "Mock provider answered. No vendor account is used." : "Preview only; add OAuth credentials to test." }); say(connector.mock ? `${connector.name}: mock provider responded.` : `${connector.name}: preview connector, credentials required.`); }}>Test</button>
                 </div>
               </div>
-              {connector.id === "ppma" && <p className="xsmall soft">PPMA is the project memory. The local fake is the default; the real server is the first live connection.</p>}
+              {connector.id === "ppma" && <p className="xsmall soft">PPMA is the project memory. The local fake is the default; the live bridge connects to a real running PPMA backend.</p>}
             </article>
           );
         })}
@@ -137,30 +162,46 @@ export default function Connectors() {
       {filtered.length === 0 && <Empty title="No connector matches" detail="Try another category or a shorter search." icon="link" />}
 
       <div className="connectors-lower">
-        <Panel title="Local PPMA server" sub="A real service you can run from this repository" actions={<Chip tone="amber">localhost</Chip>}>
-          <p className="small muted">The server verifies an HMAC, deduplicates by <code className="mono">event_id</code>, applies corrections/redactions/tombstones and stores memory in a JSON file. It is the first real connection.</p>
+        <Panel title="Live PPMA bridge" sub="A running PPMA backend, reached through a local sidecar" actions={<Chip tone={settings.ppmaMode === "live" ? "green" : "amber"}>{settings.ppmaMode === "live" ? "live" : "not connected"}</Chip>}>
+          <p className="small muted">The bridge holds the PPMA app token server-side, translates a signed RECALL event into the north-contract envelope and posts it to <code className="mono">/v0/spaces/me/messages</code>. Memory reads come back from PPMA with the owner authority. The browser never sees either token.</p>
           <div className="endpoint-form">
-            <label className="field"><span>Endpoint</span><input value={endpoint} onChange={(event) => setEndpoint(event.target.value)} placeholder="http://localhost:8787" /></label>
-            <label className="field"><span>Bearer token</span><input value={token} onChange={(event) => setToken(event.target.value)} placeholder="optional in local mode" /></label>
+            <label className="field"><span>Bridge endpoint</span><input value={endpoint} onChange={(event) => setEndpoint(event.target.value)} placeholder="http://127.0.0.1:8788" /></label>
+            <label className="field"><span>Bearer token</span><input value={token} onChange={(event) => setToken(event.target.value)} placeholder="optional for the local bridge" /></label>
             <label className="field"><span>Shared secret</span><input value={secret} onChange={(event) => setSecret(event.target.value)} placeholder="RECALL_SHARED_SECRET" type="password" /></label>
           </div>
           <div className="row gap8 mt12">
-            <button className="btn primary" onClick={testEndpoint} disabled={testing}><Icon name="wifi" size={13} /> {testing ? "Testing…" : "Test connection"}</button>
-            <button className="btn" onClick={() => say("Server start: cd server && npm start. See server/README.md.")}><Icon name="terminal" size={13} /> Start command</button>
+            <button className="btn primary" onClick={testEndpoint} disabled={testing}><Icon name="wifi" size={13} /> {testing ? "Testing…" : "Test live PPMA"}</button>
+            <button className="btn" onClick={inspectMemory} disabled={inspecting}><Icon name="search" size={13} /> {inspecting ? "Reading…" : "Inspect PPMA memory"}</button>
             <Chip tone={settings.ppmaMode === "live" ? "green" : "amber"}>{settings.ppmaMode === "live" ? "live mode" : "local fake"}</Chip>
           </div>
+          {liveHealth && (
+            <div className="connector-config mt12">
+              <div><span>Backend</span><b className="mono">{String(liveHealth.backend ?? "—")}</b></div>
+              <div><span>App / space</span><b className="mono">{String(liveHealth.app ?? "capture")} / {String(liveHealth.space ?? "me")}</b></div>
+              <div><span>Memory entries</span><b>{String(liveHealth.memory_entries ?? 0)}</b></div>
+              <div><span>Views</span><b>{(liveHealth.memory_views as string[] | undefined)?.join(", ") || "none yet"}</b></div>
+            </div>
+          )}
+          {liveMemory.length > 0 && (
+            <div className="adapter-list mt12">
+              {liveMemory.map((row, index) => (
+                <div key={`${row.view}-${index}`}><b>{row.view}</b><span>{row.text}</span><Chip>{row.origin ?? "inferred"}{row.confidence !== undefined ? ` ${Math.round(row.confidence * 100)}%` : ""}</Chip></div>
+              ))}
+            </div>
+          )}
+          <p className="xsmall soft mt8">Commands: <code className="mono">cd server && npm run live</code> after <code className="mono">py -3 scripts/ppma_register.py --base http://127.0.0.1:8771</code>. PPMA is a separate running service; this bridge only carries traffic to it.</p>
         </Panel>
 
-        <Panel title="Openjiuwen runtime" sub="Adapter contract for capture agents">
-          <p className="small muted">The bridge exposes capture tools to an openjiuwen runtime: search, evidence, prepare-handoff and prepare-redaction. It never executes project actions.</p>
+        <Panel title="Openjiuwen runtime" sub="A real run over live PPMA memory" actions={<Chip tone="green">verified</Chip>}>
+          <p className="small muted">A real openjiuwen DeepAgent (<code className="mono">deepseek-v4-pro</code>) ran on the global Runner, called RECALL tools and answered from PPMA memory. It never executes project actions.</p>
           <div className="adapter-list">
-            <div><b>tools/capture.search</b><span>read-only evidence search</span><Status value="active" /></div>
-            <div><b>tools/capture.evidence</b><span>quote + provenance</span><Status value="active" /></div>
-            <div><b>tools/capture.prepare_handoff</b><span>returns a review payload</span><Status value="active" /></div>
-            <div><b>tools/capture.prepare_redaction</b><span>safe-version preview</span><Status value="active" /></div>
+            <div><b>tools/recall_memory</b><span>reads PPMA memory views</span><Status value="active" /></div>
+            <div><b>tools/recall_search</b><span>searches PPMA statements</span><Status value="active" /></div>
+            <div><b>tools/recall_recent_events</b><span>recent delivered events</span><Status value="active" /></div>
             <div><b>tools/capture.execute</b><span>does not exist by design</span><Status value="retired" tone="red" /></div>
           </div>
-          <button className="btn sm mt12" onClick={() => say("Adapter manifest is available at server/adapter/manifest.json.")}><Icon name="file" size={12} /> Adapter manifest</button>
+          <p className="xsmall soft mt8">Run: <code className="mono">coachme\.venv\Scripts\python.exe integrations\openjiuwen\recall_agent.py</code>. The first run made six tool calls and quoted the exact PPMA statements.</p>
+          <button className="btn sm mt12" onClick={() => say("Agent: integrations/openjiuwen/recall_agent.py. It uses coachme's .env and the live bridge.")}><Icon name="file" size={12} /> Agent script</button>
         </Panel>
 
         <Panel title="Disconnect everything" sub="A single off switch is not optional">

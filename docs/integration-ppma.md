@@ -9,7 +9,7 @@ competing.
 **Names.** RECALL is the working product name. PPMA already has a planned memory view called `recall`.
 To avoid collision:
 
-- PPMA app id: `recall-capture`
+- PPMA app id: `capture`
 - Event prefix: `capture.*`
 - PPMA memory view: `recall` (unchanged; a read API, not this app)
 
@@ -60,7 +60,7 @@ RECALL registers as a north app with PPMA.
 
 | Field | Value |
 |---|---|
-| `app_id` | `recall-capture` |
+| `app_id` | `capture` |
 | Display name | RECALL |
 | Direction | events out; limited commands in |
 | Event prefix | `capture.*` |
@@ -265,7 +265,7 @@ PPMA asks RECALL to delete a memory after a user `forget` correction or a retent
 ```json
 {
   "kind": "command",
-  "target": "recall-capture",
+  "target": "capture",
   "type": "capture.forget",
   "payload": {
     "capture_id": "cap_01J...",
@@ -286,7 +286,7 @@ PPMA passes a retention policy for a capture.
 ```json
 {
   "kind": "command",
-  "target": "recall-capture",
+  "target": "capture",
   "type": "capture.apply_retention",
   "payload": {
     "capture_id": "cap_01J...",

@@ -483,7 +483,7 @@ export default function Stage() {
         <span><kbd>R</kbd> reset</span>
         <span><kbd>Esc</kbd> exit</span>
         <span className="stage-foot-line">{t("stage.line")}</span>
-        <span className="stage-foot-meta">{pack.meta.model} · no microphone · recall-capture</span>
+        <span className="stage-foot-meta">{pack.meta.model} · no microphone · capture</span>
       </footer>
     </div>
   );

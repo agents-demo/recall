@@ -1,5 +1,47 @@
 # RECALL local PPMA server
 
+Two modes share this folder:
+
+| Mode | Entry | What it is |
+|---|---|---|
+| **Reference server** | `npm start` (`src/server.mjs`) | a self-contained implementation of the north-contract subset |
+| **Live bridge** | `npm run live` (`src/ppmaLive.mjs`) | a sidecar in front of a **running PPMA backend** |
+
+## Live bridge
+
+Use this when PPMA itself is running (for example
+`uv run ppma serve --profile fake --agent openai --host 127.0.0.1 --port 8771 --auth strict`).
+
+```bash
+cd C:/Workspace/openjiuwendemos/recall
+py -3 scripts/ppma_register.py --base http://127.0.0.1:8771   # manifest + app token + one event
+cd server
+set PPMA_BASE_URL=http://127.0.0.1:8771
+npm run live                                                   # http://127.0.0.1:8788
+```
+
+The bridge holds the PPMA app token and the owner token server-side, verifies RECALL's HMAC, maps a
+capture event to the north `Message` envelope (deterministic ULID per `event_id`), posts it to
+`/v0/spaces/me/messages`, and reads memory views back with the owner authority. It is transport,
+not a replacement: accepted and duplicate counts come from PPMA.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `PORT` | `8788` | bridge port |
+| `PPMA_BASE_URL` | `http://127.0.0.1:8770` | running PPMA backend |
+| `PPMA_SPACE` | `me` | PPMA space |
+| `PPMA_APP_ID` | `capture` | registered app id |
+| `PPMA_APP_TOKEN_FILE` | `server/.ppma-app-token` | token written by `scripts/ppma_register.py` |
+| `PPMA_OWNER_TOKEN_FILE` | `~/.config/ppma/setup-token` | owner authority for memory reads |
+| `RECALL_SHARED_SECRET` | `recall-demo-secret` | HMAC secret the browser signs with |
+
+In the app, open **Connections**, set the bridge to `http://127.0.0.1:8788`, then **Test live
+PPMA** and **Inspect PPMA memory**. See `../docs/integration-live.md` for the full run.
+
+---
+
+## Reference server
+
 A real local service for the first live connection. It implements the PPMA north-contract subset:
 signed events, idempotency, memory projection, corrections, redactions, tombstones, consent
 suppression, commands, evidence search and an openjiuwen adapter manifest.

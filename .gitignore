@@ -17,6 +17,7 @@ dist-ssr/
 runtime/
 logs/
 server/data/
+server/.ppma-app-token
 .env
 .env.local
 

@@ -1,0 +1,187 @@
+{
+  "app": "capture",
+  "version": "1.3.0",
+  "display_name": "RECALL",
+  "emits": [
+    {
+      "type": "capture.recording.started",
+      "description": "Metadata only: a capture started on a device. No transcript and no audio.",
+      "payload_schema": {
+        "type": "object"
+      },
+      "sensitivity": "personal"
+    },
+    {
+      "type": "capture.meeting.completed",
+      "description": "The main event: decisions, actions, questions, evidence, consent, redactions and provenance.",
+      "payload_schema": {
+        "type": "object"
+      },
+      "sensitivity": "personal"
+    },
+    {
+      "type": "capture.call.completed",
+      "description": "The same shape as a meeting with mode=call; phone numbers are hashed.",
+      "payload_schema": {
+        "type": "object"
+      },
+      "sensitivity": "personal"
+    },
+    {
+      "type": "capture.note.created",
+      "description": "A field note, photo note or observation.",
+      "payload_schema": {
+        "type": "object"
+      },
+      "sensitivity": "personal"
+    },
+    {
+      "type": "capture.correction",
+      "description": "A human corrected a speaker, quote or extracted item.",
+      "payload_schema": {
+        "type": "object"
+      },
+      "sensitivity": "personal"
+    },
+    {
+      "type": "capture.redaction.applied",
+      "description": "A passage was redacted before sharing.",
+      "payload_schema": {
+        "type": "object"
+      },
+      "sensitivity": "personal"
+    },
+    {
+      "type": "capture.memory.deleted",
+      "description": "A tombstone: deletion is not a silent drop.",
+      "payload_schema": {
+        "type": "object"
+      },
+      "sensitivity": "personal"
+    },
+    {
+      "type": "capture.consent.changed",
+      "description": "Consent was withdrawn or changed.",
+      "payload_schema": {
+        "type": "object"
+      },
+      "sensitivity": "personal"
+    }
+  ],
+  "tools": [
+    {
+      "name": "capture.search",
+      "description": "Read-only evidence search across this device's captures.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "effect": "none",
+      "reversible": true
+    },
+    {
+      "name": "capture.evidence",
+      "description": "Quote, speaker, time, confidence and provenance for one evidence id.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "evidence_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence_id"
+        ]
+      },
+      "effect": "none",
+      "reversible": true
+    },
+    {
+      "name": "capture.prepare_handoff",
+      "description": "Return a review payload for PPMA; never sends anything.",
+      "input_schema": {
+        "type": "object"
+      },
+      "effect": "none",
+      "reversible": true
+    },
+    {
+      "name": "capture.prepare_redaction",
+      "description": "Return the safe-version preview; never applies or sends.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "evidence_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence_id"
+        ]
+      },
+      "effect": "none",
+      "reversible": true
+    },
+    {
+      "name": "capture.apply_retention",
+      "description": "Apply a retention policy PPMA passes for one capture.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "capture_id": {
+            "type": "string"
+          },
+          "retain_days": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "capture_id"
+        ]
+      },
+      "effect": "update",
+      "reversible": true
+    },
+    {
+      "name": "capture.forget",
+      "description": "Delete a capture's derived memory after a forget correction or retention decision.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "capture_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "capture_id"
+        ]
+      },
+      "effect": "delete",
+      "reversible": false,
+      "requires_confirmation": true
+    }
+  ],
+  "resources": [
+    {
+      "uri_template": "capture://evidence/{evidence_id}",
+      "name": "Evidence",
+      "description": "A signed evidence pointer with a local-only transcript excerpt.",
+      "mime_type": "application/json"
+    }
+  ],
+  "ui_commands": [
+    "ui.notify",
+    "ui.ask",
+    "ui.deliver_brief"
+  ]
+}

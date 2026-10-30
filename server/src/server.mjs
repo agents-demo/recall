@@ -363,7 +363,7 @@ function route(req, res) {
   if (req.method === "POST" && url.pathname === "/v1/commands") {
     return readBody(req).then((raw) => {
       const body = raw ? JSON.parse(raw) : {};
-      const command = { id: `cmd_${randomUUID()}`, kind: "command", target: body.target || "recall-capture", type: body.type, payload: body.payload || {}, received_at: new Date().toISOString(), status: "pending" };
+      const command = { id: `cmd_${randomUUID()}`, kind: "command", target: body.target || "capture", type: body.type, payload: body.payload || {}, received_at: new Date().toISOString(), status: "pending" };
       if (command.type === "capture.forget" && command.payload?.capture_id) {
         command.status = "applied";
         const captureId = command.payload.capture_id;

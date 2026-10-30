@@ -41,7 +41,7 @@ async function post(path, body, { signed = true } = {}) {
 
 const baseEvent = (type, payload) => ({
   event_id: `evt_test_${type.replace(/\W/g, "_")}`,
-  app_id: "recall-capture",
+  app_id: "capture",
   space: "ppma://spaces/test",
   occurred_at: new Date().toISOString(),
   type,
@@ -136,7 +136,7 @@ test("redaction replaces the safe text and deletion leaves a tombstone", async (
 });
 
 test("accepts a retention command into the inbox", async () => {
-  const response = await post("/v1/commands", { type: "capture.forget", target: "recall-capture", payload: { capture_id: "cap_test_1", reason: "user_forget" } });
+  const response = await post("/v1/commands", { type: "capture.forget", target: "capture", payload: { capture_id: "cap_test_1", reason: "user_forget" } });
   assert.equal(response.status, 202);
   const body = await response.json();
   assert.equal(body.accepted, true);

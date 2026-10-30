@@ -44,7 +44,7 @@ consulting, journalism, field operations.
 **The sentence the audience repeats.** *"The meeting is not lost."*
 
 **Working name.** PPMA already has a planned memory view called `recall`. RECALL uses the integration
-id `recall-capture` and the event prefix `capture.*`; the external name can change without changing the
+id `capture` and the event prefix `capture.*`; the external name can change without changing the
 contract.
 
 Read first: [The Stage Playbook](https://github.com/jiuwendemos/rootcause). This roadmap follows its 10 criteria,
@@ -204,7 +204,7 @@ allowed but visibly weaker on battery and latency. PPMA is not NPU-native; RECAL
 
 ### PPMA integration in the demo
 
-- Register as `recall-capture`; publish a manifest with `capture.*` events.
+- Register as `capture`; publish a manifest with `capture.*` events.
 - Emit `capture.meeting.completed` after consent and redaction.
 - Include consent, confidence, speaker map, redactions and a provenance pointer.
 - Receive `ppma.memory_updated` to show project context.
@@ -283,7 +283,7 @@ memory that the team acts on.
 
 ### 1.5 PPMA integration
 
-- [x] Register `recall-capture` and publish the manifest **(M)**
+- [x] Register `capture` and publish the manifest **(M)**
 - [x] Emit `capture.meeting.completed` and `capture.correction` **(M)**
 - [x] Emit `capture.redaction.applied` and `capture.memory.deleted` **(M)**
 - [x] Consume `ppma.memory_updated` for project context **(S)**
@@ -347,7 +347,7 @@ Goal: a team product, not a personal recorder. Multiple devices, shared memory, 
 
 ### 2.5 PPMA at team scale
 
-- [x] Per-team `recall-capture` credentials **(M)**
+- [x] Per-team `capture` credentials **(M)**
 - [x] Event volume limits and backpressure **(S)**
 - [x] PPMA memory mapping per project/team **(M)**
 - [x] Deletion and retention propagation at team scale **(M)**
@@ -800,6 +800,7 @@ the real, contract or simulator level except where a human test or physical hard
 
 - [ ] Run one real team pilot with on-device ASR and diarization; measure time-to-quote and useful extraction **(L)**
 - [x] Prove the PPMA contract end to end: signed events, idempotency, queue, deletion/forget **(M)**
+- [x] Verify it against a running PPMA backend (manifest, app token, ingestion, duplicate replay, memory read) and a real openjiuwen DeepAgent run — see `docs/integration-live.md` **(M)**
 - [x] Add SSO, retention, legal hold and team roles for the pilot at contract level **(L)**
 - [x] Add capture health: WER, diarization, redaction precision/recall, model cards and drift **(M)**
 - [x] Add onboarding with a sample meeting and a first-run path **(S)**

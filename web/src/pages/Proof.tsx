@@ -150,16 +150,16 @@ export default function Proof() {
         <Panel title="Naming resolution" sub="The product and the PPMA view are different things">
           <div className="naming">
             <div><span>Product</span><b>RECALL</b><small>the capture layer</small></div>
-            <div><span>PPMA app id</span><b className="mono">recall-capture</b><small>events out; commands in</small></div>
+            <div><span>PPMA app id</span><b className="mono">capture</b><small>events out; commands in</small></div>
             <div><span>Event prefix</span><b className="mono">capture.*</b><small>stable even if the name changes</small></div>
             <div><span>PPMA view</span><b className="mono">recall</b><small>a read API, not this app</small></div>
           </div>
-          <p className="xsmall soft mt8">Decision: the external product can remain RECALL because the PPMA memory view is a read surface, not a competing app. The contract keeps <code className="mono">recall-capture</code> and <code className="mono">capture.*</code> stable. The UI says “RECALL” and the integration surfaces say “PPMA north app”. See <Link to="/lab">the Lab</Link> and the naming note in docs.</p>
+          <p className="xsmall soft mt8">Decision: the external product remains RECALL because the PPMA memory view is a read surface, not a competing app. PPMA requires every declared event and tool to sit inside the app id namespace, so keeping the stable <code className="mono">capture.*</code> events fixes the app id at <code className="mono">capture</code> (a hyphenated or <code className="mono">recallcapture</code> id is rejected). The UI says “RECALL”; the integration surfaces say “PPMA north app”. See <Link to="/lab">the Lab</Link> and the naming note in docs.</p>
         </Panel>
 
         <Panel title="Demo status" sub="Real, contract or simulator — no ambiguity">
           <div className="proof-status">
-            <div><Chip tone="green">real</Chip><span>attention, recall thread, canvas, comments, encryption, local PPMA server, signed client, SSE, commands, openjiuwen adapter</span></div>
+            <div><Chip tone="green">real</Chip><span>attention, recall thread, canvas, comments, encryption, live PPMA north contract (manifest, app token, ingestion, dedupe, memory read), the local bridge, and a real openjiuwen DeepAgent run</span></div>
             <div><Chip tone="cyan">contract</Chip><span>vendor OAuth connectors, calendar/meetings/CRM, OIDC/SCIM, Stripe, device lifecycle, hosted sync</span></div>
             <div><Chip tone="amber">simulator</Chip><span>ASR, diarization, VAD, OCR, live captions, translation, screen/whiteboard, wearable, AR</span></div>
           </div>

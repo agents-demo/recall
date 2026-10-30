@@ -77,7 +77,7 @@ export async function sendCommand(config: EndpointConfig, command: { type: strin
     const response = await fetch(`${base(config)}/v1/commands`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}) },
-      body: JSON.stringify({ kind: "command", target: command.target ?? "recall-capture", ...command }),
+      body: JSON.stringify({ kind: "command", target: command.target ?? "capture", ...command }),
     });
     return { ok: response.ok, detail: response.ok ? "command accepted" : `HTTP ${response.status}` };
   } catch (error) {
