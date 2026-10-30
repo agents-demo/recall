@@ -1,0 +1,135 @@
+1
+00:00:00,550 --> 00:00:01,273
+RECALL.
+
+2
+00:00:01,273 --> 00:00:03,535
+From a raw transcript to a decision.
+
+3
+00:00:04,050 --> 00:00:05,750
+A forty-minute rollout meeting.
+
+4
+00:00:05,750 --> 00:00:07,404
+Fifteen lines that matter.
+
+5
+00:00:07,404 --> 00:00:11,678
+No decisions written down, no action list, no risk register.
+
+6
+00:00:11,678 --> 00:00:12,928
+Just what people said.
+
+7
+00:00:19,050 --> 00:00:21,083
+The agent reads every line.
+
+8
+00:00:21,083 --> 00:00:25,976
+It extracts decisions, actions, risks, gaps and open questions.
+
+9
+00:00:25,976 --> 00:00:29,964
+Each one must point to the exact quote it came from, or it is not shown.
+
+10
+00:00:39,050 --> 00:00:40,142
+Four decisions.
+
+11
+00:00:40,142 --> 00:00:42,238
+Four actions with owners and dates.
+
+12
+00:00:42,238 --> 00:00:43,809
+Three delivery risks.
+
+13
+00:00:43,809 --> 00:00:46,357
+An unanswered question about on-call cover.
+
+14
+00:00:46,357 --> 00:00:48,714
+And a gap: nobody owns the answer.
+
+15
+00:00:59,050 --> 00:01:01,214
+This is the part a notebook cannot do.
+
+16
+00:01:01,214 --> 00:01:09,988
+It raises the runbook the field team needs, the support rota that is still thin, the two customers waiting on bulk import, and the question nobody answered.
+
+17
+00:01:09,988 --> 00:01:13,821
+Five things need a human, each with evidence and a reason.
+
+18
+00:01:21,050 --> 00:01:23,238
+Connect the live PPMA first.
+
+19
+00:01:23,238 --> 00:01:25,500
+The bridge keeps the tokens server side.
+
+20
+00:01:25,500 --> 00:01:29,035
+Then approve the findings: only the approved facts leave.
+
+21
+00:01:29,035 --> 00:01:30,833
+PPMA accepts the event.
+
+22
+00:01:51,050 --> 00:01:55,345
+The approved event is in the delivery log, and the live backend acknowledged it.
+
+23
+00:01:55,345 --> 00:01:57,535
+PPMA owns project state from here.
+
+24
+00:02:09,050 --> 00:02:09,892
+Ask later.
+
+25
+00:02:09,892 --> 00:02:11,654
+What did we decide about onboarding?
+
+26
+00:02:11,654 --> 00:02:15,083
+The answer cites the exact quote, speaker and time.
+
+27
+00:02:15,083 --> 00:02:17,750
+If the evidence is absent, it refuses.
+
+28
+00:02:25,050 --> 00:02:31,785
+A second, real openjiuwen agent can analyse the same case and PPMA memory through four read-only tools.
+
+29
+00:02:31,785 --> 00:02:34,714
+It never sends, deletes or executes.
+
+30
+00:02:41,050 --> 00:02:42,500
+This is the honest split.
+
+31
+00:02:42,500 --> 00:02:49,309
+The analysis runtime, PPMA, the bridge, openjiuwen and the model endpoint are real and local.
+
+32
+00:02:49,309 --> 00:02:55,654
+ASR, vendor connectors, identity, billing and cloud storage are still contracts or simulators.
+
+33
+00:02:59,050 --> 00:03:04,821
+From a raw transcript to evidence-linked decisions, proactive risk and a human-approved handoff.
+
+34
+00:03:04,821 --> 00:03:05,857
+That is RECALL.

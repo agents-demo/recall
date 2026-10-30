@@ -145,6 +145,68 @@ export interface Meeting {
   tombstone_id?: string | null;
 }
 
+export interface AnalysisDecision {
+  text: string;
+  evidence_id: string;
+  confidence: number;
+}
+
+export interface AnalysisAction {
+  text: string;
+  owner: string;
+  due: string;
+  evidence_id: string;
+  confidence: number;
+}
+
+export interface AnalysisCommitment extends AnalysisAction {}
+
+export interface AnalysisRisk {
+  text: string;
+  severity: "high" | "warning" | "info";
+  evidence_id: string;
+  why: string;
+  mitigation: string;
+}
+
+export interface AnalysisContradiction {
+  text: string;
+  evidence_a: string;
+  evidence_b: string;
+  why: string;
+}
+
+export interface AnalysisQuestion {
+  text: string;
+  evidence_id: string;
+  answered: boolean;
+}
+
+export interface AnalysisGap {
+  text: string;
+  why: string;
+  evidence_id: string;
+}
+
+export interface AnalysisResult {
+  summary: string;
+  decisions: AnalysisDecision[];
+  actions: AnalysisAction[];
+  commitments: AnalysisCommitment[];
+  risks: AnalysisRisk[];
+  contradictions: AnalysisContradiction[];
+  questions: AnalysisQuestion[];
+  gaps: AnalysisGap[];
+  trace: {
+    model: string;
+    provider: string;
+    latency_ms: number;
+    prompt_tokens: number | null;
+    completion_tokens: number | null;
+    transcript_lines: number;
+  };
+}
+
 export interface Note {
   id: string;
   note_id: string;
@@ -479,7 +541,11 @@ export type AttentionKind =
   | "queue_stuck"
   | "handoff_failed"
   | "note_unsent"
-  | "device_health";
+  | "device_health"
+  | "risk"
+  | "contradiction"
+  | "gap"
+  | "commitment";
 
 export type AttentionState = "dismissed" | "snoozed" | "accepted" | "wrong" | "assigned";
 

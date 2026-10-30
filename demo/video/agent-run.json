@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "query": "For the Helios rollout case, list the two decisions, the four open actions with owners and due dates, and the top risk. Quote the exact text. Then say what PPMA memory adds or misses.",
+  "model": "deepseek-v4-pro",
+  "provider": "OpenAI",
+  "bridge": "http://127.0.0.1:8788",
+  "case_file": "examples\\real-case\\case.example.json",
+  "tool_calls": [
+    {
+      "tool": "recall_case",
+      "ok": true,
+      "case_id": "case_helios_2026_11",
+      "file": "C:\\Workspace\\openjiuwendemos\\recall\\examples\\real-case\\case.example.json"
+    },
+    {
+      "tool": "recall_memory",
+      "ok": true,
+      "entries": 7
+    },
+    {
+      "tool": "recall_memory",
+      "ok": true,
+      "entries": 7
+    },
+    {
+      "tool": "recall_search",
+      "query": "Helios rollout onboarding pilot bulk import admin console",
+      "hits": 0
+    }
+  ],
+  "answer": "Here's what the local case file (`case_helios_2026_11`, \"Helios rollout readiness review\") holds.\n\n## Decisions (2)\n\n1. **d1** — *\"Delay self-serve onboarding by two weeks to 18 November; keep the enterprise pilot on 4 November.\"*\n2. **d2** — *\"Ship the read-only admin console in the first release; defer bulk import.\"*\n\n## Open actions (4) — owner and due date\n\n1. **a1** — *\"Send the revised support rota for the pilot weekend.\"* → Owner: **Ravi Menon**, due **2026-11-06**\n2. **a2** — *\"Complete the threat-model review for the admin console.\"* → Owner: **Elena Sokolova**, due **2026-11-08**\n3. **a3** — *\"Confirm the Berlin field team can run the 4 November pilot with two trainers.\"* → Owner: **Tom Becker**, due **2026-11-05**\n4. **a4** — *\"Publish the updated rollout note to affected customers.\"* → Owner: **Dana Whitfield**, due **2026-11-05**\n\n## Top risk\n\nOne caveat up front: the case file lists **two** risks and does not attach a severity/priority field or an explicit \"top\" label to either, so \"top\" is an interpretation. The first-listed risk (r1), and the one named first in the summary, is:\n\n> **r1** — *\"Support cover is thin on the weekend of 8–9 November.\"* (mitigation: *\"Borrow one engineer from the platform team for the weekend.\"*)\n\nThe second risk (r2) is: *\"Two customers waiting on bulk import may be blocked until the self-serve launch.\"* (mitigation: *\"Run a manual concierge import for those two accounts.\"*)\n\n## What PPMA memory adds or misses\n\n**PPMA memory misses the entire Helios case.** None of the 7 statements it currently holds relate to Helios. A search for Helios terms returned zero hits.\n\nThe statements PPMA memory does hold appear to belong to unrelated meetings:\n\n- *\"Hold the 14 November delivery date; the second line slips to December.\"*\n- *\"Marek sends the revised schedule by Friday.\"*\n- *\"Northgate delivery review meeting occurred.\"*\n- *\"Meeting: Bridge verification capture\"*\n- *\"Ship the bridge before the demo.\"*\n- *\"Marek confirmed full building access.\"*\n- *\"The loading bay is clear at 07:00.\"*\n\nSo, to be explicit: **PPMA memory adds nothing to the Helios rollout case, and it disagrees with the case file only in the sense that they cover different subject matter — there is no overlapping or contradictory fact between them.** All decisions, actions, and risks above come solely from the local case file, not from PPMA memory."
+}

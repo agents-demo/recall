@@ -121,11 +121,13 @@ export default function Ppma() {
         <Panel title="Project state" sub="PPMA owns this; RECALL only links to evidence" actions={<SourceChip />}>
           <div className="project-state">
             <span className="kicker">{project.last_event ? `Last event ${project.last_event}` : "No handoff yet"}</span>
-            <p>{project.state || pack.ppma.project.state_before}</p>
-            <div className="project-after">
-              <span className="xsmall soft">After the delivery handoff</span>
-              <p>{pack.ppma.project.state_after}</p>
-            </div>
+            <p>{project.state || (settings.workspaceMode === "demo" ? pack.ppma.project.state_before : "No capture has been handed to PPMA yet.")}</p>
+            {settings.workspaceMode === "demo" && (
+              <div className="project-after">
+                <span className="xsmall soft">After the delivery handoff</span>
+                <p>{pack.ppma.project.state_after}</p>
+              </div>
+            )}
             {project.followup && (
               <div className="draft-box">
                 <div className="row between"><span className="kicker">Follow-up drafted · not sent</span><Chip tone="amber">approval required</Chip></div>
@@ -134,7 +136,7 @@ export default function Ppma() {
             )}
           </div>
           <div className="approval-row">
-            <div><b>{pack.ppma.project.proposed_action}</b><span className="xsmall soft">The human approves in PPMA. RECALL has no action endpoint and never sends a message.</span></div>
+            <div><b>{settings.workspaceMode === "demo" ? pack.ppma.project.proposed_action : "PPMA owns project state and action."}</b><span className="xsmall soft">The human approves in PPMA. RECALL has no action endpoint and never sends a message.</span></div>
             <button className="btn" disabled title="RECALL cannot act on project state — this button exists only to show the boundary">Approve in PPMA <Icon name="external" size={12} /></button>
           </div>
         </Panel>

@@ -27,7 +27,16 @@ export default function SettingsPage() {
         subtitle={t("settings.subtitle")}
         actions={<Chip tone="green" dot="live">all data local</Chip>}
       />
-      <DataNote seed={pack.meta.seed} />
+      <DataNote
+        seed={pack.meta.seed}
+        label={settings.workspaceMode === "personal" ? "My workspace" : undefined}
+        tone={settings.workspaceMode === "personal" ? "green" : "amber"}
+        note={
+          settings.workspaceMode === "personal"
+            ? "My workspace: only entries you create are shown. The synthetic pack is hidden, not deleted; switch back at any time."
+            : undefined
+        }
+      />
 
       <div className="settings-grid">
         <Panel

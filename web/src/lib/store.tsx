@@ -10,6 +10,7 @@ import {
 } from "react";
 import type {
   AmbientState,
+  AnalysisResult,
   Answer,
   AttentionFeedback,
   AttentionItem,
@@ -101,6 +102,8 @@ interface Persisted {
   fieldNotes: Note[];
   audit: AuditEntry[];
   project: ProjectState | null;
+  analysisByMeeting: Record<string, AnalysisResult>;
+  analysisApproved: Record<string, boolean>;
   settings: Settings;
   killSwitch: boolean;
   lastReplay: { event_id: string; at: string; result: string } | null;
@@ -155,6 +158,8 @@ const EMPTY: Persisted = {
   fieldNotes: [],
   audit: [],
   project: null,
+  analysisByMeeting: {},
+  analysisApproved: {},
   settings: DEFAULT_SETTINGS,
   killSwitch: false,
   lastReplay: null,
@@ -308,12 +313,12 @@ function applyDelivered(prev: Persisted, event: PpmaEvent, pack: Pack): Pick<Per
     const captureId = String(event.payload.capture_id ?? "");
     const newEntries = memoryFromPayload(event, now);
     memory = [...(prev.memory ?? pack.ppma.memory).filter((m) => m.capture_id !== captureId), ...newEntries];
+    const isStageMeeting = String(event.payload.capture_id) === pack.meetings[0].capture_id;
     project = {
-      state:
-        String(event.payload.capture_id) === pack.meetings[0].capture_id
-          ? pack.ppma.project.state_after
-          : `${String(event.payload.title ?? "Capture")} added to project memory.`,
-      followup: pack.ppma.project.followup_draft,
+      state: isStageMeeting
+        ? pack.ppma.project.state_after
+        : `${String(event.payload.title ?? "Capture")} added to project memory.`,
+      followup: isStageMeeting ? pack.ppma.project.followup_draft : "",
       last_event: event.event_id,
       updated_at: now,
     };
@@ -432,6 +437,11 @@ interface StoreValue {
   completeRecording: (meetingId: string) => void;
   importAudio: (fileName: string) => string;
   importCaseFile: (fileName: string, text: string, consent: Consent) => string;
+  analysisFor: (meetingId: string) => AnalysisResult | null;
+  analyzeMeeting: (meetingId: string) => Promise<AnalysisResult | null>;
+  approveAnalysis: (meetingId: string) => void;
+  isAnalysisApproved: (meetingId: string) => boolean;
+  analysisRunning: string | null;
   addFieldNote: (text: string, location: string, photo?: { label: string; ocr: string }) => string;
   setSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
   setSettings: (patch: Partial<Settings>) => void;
@@ -455,6 +465,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [encryption, setEncryption] = useState<"on" | "migrating" | "unavailable">(encryptionAvailable() ? "migrating" : "unavailable");
   const [collabPeers, setCollabPeers] = useState<{ id: string; name: string; role: Role; at: number }[]>([]);
+  const [analysisRunning, setAnalysisRunning] = useState<string | null>(null);
   const channelRef = useRef<BroadcastChannel | null>(null);
 
   const say = useCallback((message: string) => {
@@ -540,12 +551,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           audit: prev.audit.length ? prev.audit : data.admin.audit,
           project:
             prev.project ??
-            {
-              state: data.ppma.project.state_before,
-              followup: "",
-              last_event: null,
-              updated_at: data.ppma.project.updated_at,
-            },
+            (prev.settings.workspaceMode === "personal"
+              ? null
+              : {
+                  state: data.ppma.project.state_before,
+                  followup: "",
+                  last_event: null,
+                  updated_at: data.ppma.project.updated_at,
+                }),
         }));
         setLoading(false);
       } catch (err) {
@@ -617,10 +630,62 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       );
       if (sent) next = { ...next, status: "sent", ppma: { status: "sent", event_id: sent.event_id, completed_at: sent.delivery.delivered_at } };
       else if (queued) next = { ...next, status: "queued", ppma: { status: "queued", event_id: queued.event_id, completed_at: null } };
+      const analysis = state.analysisByMeeting[next.id];
+      if (analysis) {
+        const evidence = new Map<string, import("../types").Evidence>();
+        const addEvidence = (utteranceId: string, kind: import("../types").EvidenceKind, confidence: number) => {
+          const line = next.utterances.find((row) => row.id === utteranceId);
+          if (!line) return "";
+          const id = `ev_${line.id}`;
+          if (!evidence.has(id)) {
+            evidence.set(id, {
+              id,
+              kind,
+              quote: line.text,
+              speaker_id: line.speaker_id,
+              start: line.start,
+              end: line.end,
+              confidence,
+              attribution_confidence: line.confidence ?? 0.9,
+              utterance_id: line.id,
+              sensitivity: next.sensitivity,
+            });
+          }
+          return id;
+        };
+        const decisions = analysis.decisions
+          .map((item, index) => {
+            const evidenceId = addEvidence(item.evidence_id, "decision", item.confidence);
+            return evidenceId ? { id: `ad${index + 1}`, text: item.text, evidence_id: evidenceId, confidence: item.confidence, status: "open" } : null;
+          })
+          .filter((item): item is NonNullable<typeof item> => Boolean(item));
+        const actions = analysis.actions
+          .map((item, index) => {
+            const evidenceId = addEvidence(item.evidence_id, "action", item.confidence);
+            return evidenceId
+              ? { id: `aa${index + 1}`, text: item.text, owner: item.owner, due: item.due, evidence_id: evidenceId, confidence: item.confidence, status: "open" }
+              : null;
+          })
+          .filter((item): item is NonNullable<typeof item> => Boolean(item));
+        const questions = analysis.questions
+          .map((item, index) => {
+            const evidenceId = addEvidence(item.evidence_id, "question", 0.9);
+            return evidenceId ? { id: `aq${index + 1}`, text: item.text, evidence_id: evidenceId, confidence: 0.9, status: item.answered ? "answered" : "open" } : null;
+          })
+          .filter((item): item is NonNullable<typeof item> => Boolean(item));
+        next = {
+          ...next,
+          summary: analysis.summary || next.summary,
+          decisions,
+          actions,
+          questions,
+          evidence: [...evidence.values()],
+        };
+      }
       if (state.tombstones[next.id]) next = tombstoneMeeting(next, state.tombstones[next.id]);
       return next;
     });
-  }, [baseMeetings, state.corrections, state.redactionPatches, state.consentOverrides, state.retentionOverrides, state.events, state.tombstones]);
+  }, [baseMeetings, state.corrections, state.redactionPatches, state.consentOverrides, state.retentionOverrides, state.events, state.tombstones, state.analysisByMeeting]);
 
   const activeMeetings = useMemo(() => meetings.filter((m) => m.status !== "tombstoned"), [meetings]);
   const tombstoned = useMemo(() => meetings.filter((m) => m.status === "tombstoned"), [meetings]);
@@ -659,17 +724,128 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const meetingById = useCallback((id: string) => meetings.find((m) => m.id === id), [meetings]);
   const noteById = useCallback((id: string) => notes.find((n) => n.id === id), [notes]);
 
-  const attention = useMemo(
-    () => (pack ? deriveAttention(pack, activeMeetings, notes, events, state.attentionFeedback) : []),
-    [pack, activeMeetings, notes, events, state.attentionFeedback],
-  );
+  const analysisAttention = useMemo<AttentionItem[]>(() => {
+    const items: AttentionItem[] = [];
+    const now = Date.now();
+    const allowed = (id: string) => {
+      const feedback = state.attentionFeedback[id];
+      if (!feedback) return true;
+      if (feedback.state === "dismissed" || feedback.state === "wrong") return false;
+      if (feedback.state === "snoozed" && feedback.until && Date.parse(feedback.until) > now) return false;
+      return true;
+    };
+    for (const meeting of activeMeetings) {
+      const analysis = state.analysisByMeeting[meeting.id];
+      if (!analysis) continue;
+      const route = `/meetings/${meeting.id}?tab=intelligence`;
+      analysis.risks.forEach((risk, index) => {
+        const id = `risk:${meeting.id}:${index}`;
+        if (!allowed(id)) return;
+        items.push({
+          id,
+          kind: "risk",
+          severity: risk.severity,
+          title: risk.text,
+          detail: risk.why,
+          why: `${risk.text} Evidence: “${risk.why}” Mitigation: ${risk.mitigation || "none recorded"}.`,
+          meeting_id: meeting.id,
+          route,
+          action_label: "Review risk",
+          confidence: 0.92,
+          score: (risk.severity === "high" ? 96 : risk.severity === "warning" ? 82 : 64) + index,
+        });
+      });
+      analysis.contradictions.forEach((item, index) => {
+        const id = `contradiction:${meeting.id}:${index}`;
+        if (!allowed(id)) return;
+        items.push({
+          id,
+          kind: "contradiction",
+          severity: "critical",
+          title: item.text,
+          detail: item.why,
+          why: `${item.text} Two statements cannot both stand: ${item.evidence_a} vs ${item.evidence_b}.`,
+          meeting_id: meeting.id,
+          route,
+          action_label: "Resolve contradiction",
+          confidence: 0.9,
+          score: 100 - index,
+        });
+      });
+      analysis.gaps.forEach((item, index) => {
+        const id = `gap:${meeting.id}:${index}`;
+        if (!allowed(id)) return;
+        items.push({
+          id,
+          kind: "gap",
+          severity: "warning",
+          title: item.text,
+          detail: item.why,
+          why: `${item.text} ${item.why}`,
+          meeting_id: meeting.id,
+          route,
+          action_label: "Assign an owner",
+          confidence: 0.88,
+          score: 78 - index,
+        });
+      });
+      analysis.actions.forEach((item, index) => {
+        const unowned = !item.owner || item.owner === "Unassigned";
+        const dueSoon = item.due && Date.parse(item.due) - now < 3 * 24 * 3600 * 1000;
+        if (!unowned && !dueSoon) return;
+        const id = `commitment:${meeting.id}:${index}`;
+        if (!allowed(id)) return;
+        items.push({
+          id,
+          kind: "commitment",
+          severity: dueSoon ? "high" : "warning",
+          title: unowned ? `Action has no owner: ${item.text}` : `Commitment due soon: ${item.text}`,
+          detail: `${item.owner || "Unassigned"}${item.due ? ` · due ${item.due}` : " · no date"}`,
+          why: `The agent extracted this commitment from the transcript; ${unowned ? "nobody owns it" : "the deadline is close"}.`,
+          meeting_id: meeting.id,
+          route,
+          action_label: "Review commitment",
+          confidence: item.confidence ?? 0.88,
+          score: dueSoon ? 88 - index : 72 - index,
+          due: item.due,
+        });
+      });
+      analysis.questions.filter((item) => !item.answered).forEach((item, index) => {
+        const id = `question:${meeting.id}:${index}`;
+        if (!allowed(id)) return;
+        items.push({
+          id,
+          kind: "unanswered_question",
+          severity: "info",
+          title: item.text,
+          detail: "Raised in the meeting, not answered in the transcript.",
+          why: `${item.text} The agent found no answer in the transcript.`,
+          meeting_id: meeting.id,
+          route,
+          action_label: "Answer or assign",
+          confidence: 0.85,
+          score: 60 - index,
+        });
+      });
+    }
+    return items;
+  }, [activeMeetings, state.analysisByMeeting, state.attentionFeedback]);
+
+  const attention = useMemo(() => {
+    const base = pack ? deriveAttention(pack, activeMeetings, notes, events, state.attentionFeedback) : [];
+    const seen = new Set(base.map((item) => item.id));
+    return [...analysisAttention, ...base.filter((item) => !seen.has(item.id))].sort((a, b) => b.score - a.score);
+  }, [pack, activeMeetings, notes, events, state.attentionFeedback, analysisAttention]);
   const attentionMetrics = useMemo(() => nudgeMetrics(state.attentionFeedback), [state.attentionFeedback]);
   const attentionForMeeting = useCallback(
     (meetingId: string) => {
       const meeting = meetings.find((item) => item.id === meetingId);
-      return pack && meeting ? attentionForMeetingEngine(pack, meeting, events, state.attentionFeedback) : [];
+      if (!pack || !meeting) return [];
+      const base = attentionForMeetingEngine(pack, meeting, events, state.attentionFeedback);
+      const extra = analysisAttention.filter((item) => item.meeting_id === meetingId);
+      return [...extra, ...base].sort((a, b) => b.score - a.score);
     },
-    [pack, meetings, events, state.attentionFeedback],
+    [pack, meetings, events, state.attentionFeedback, analysisAttention],
   );
 
   const feedbackAttention = useCallback(
@@ -1370,6 +1546,81 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [pack, say],
   );
 
+  const analysisFor = useCallback(
+    (meetingId: string) => state.analysisByMeeting[meetingId] ?? null,
+    [state.analysisByMeeting],
+  );
+
+  const analyzeMeeting = useCallback(
+    async (meetingId: string) => {
+      const meeting = meetingById(meetingId);
+      if (!meeting) return null;
+      if (!meeting.utterances.length) {
+        say("This capture has no transcript. Import a transcript or connect real ASR first.");
+        return null;
+      }
+      const base = (state.settings.endpointUrl || "http://127.0.0.1:8788").replace(/\/$/, "");
+      setAnalysisRunning(meetingId);
+      say("Agent is reading the transcript · extracting decisions, actions, risks and gaps");
+      try {
+        const response = await fetch(`${base}/v1/analyze`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            meeting: {
+              title: meeting.title,
+              occurred_at: meeting.started_at,
+              participants: meeting.participants.map((person) => ({ name: person.name, role: person.role })),
+              consent: meeting.consent,
+              transcript: meeting.utterances.map((line) => ({
+                id: line.id,
+                speaker: meeting.participants.find((person) => person.id === line.speaker_id)?.name ?? "Speaker",
+                start: line.start,
+                text: line.text,
+              })),
+            },
+          }),
+        });
+        const data = (await response.json()) as { ok?: boolean; analysis?: AnalysisResult; error?: string };
+        if (!response.ok || !data.ok || !data.analysis) {
+          throw new Error(data.error || `analysis returned ${response.status}`);
+        }
+        setState((prev) => ({
+          ...prev,
+          analysisByMeeting: { ...prev.analysisByMeeting, [meetingId]: data.analysis! },
+          analysisApproved: { ...prev.analysisApproved, [meetingId]: false },
+        }));
+        const found =
+          data.analysis.decisions.length +
+          data.analysis.actions.length +
+          data.analysis.risks.length +
+          data.analysis.gaps.length +
+          data.analysis.questions.length;
+        say(`Agent found ${found} findings in ${Math.round(data.analysis.trace.latency_ms / 100) / 10}s · every one linked to a quote`);
+        return data.analysis;
+      } catch (error) {
+        say(`Analysis unavailable: ${error instanceof Error ? error.message : "unknown error"}. Start the local analysis runtime.`);
+        return null;
+      } finally {
+        setAnalysisRunning(null);
+      }
+    },
+    [meetingById, say, state.settings.endpointUrl],
+  );
+
+  const approveAnalysis = useCallback(
+    (meetingId: string) => {
+      setState((prev) => ({ ...prev, analysisApproved: { ...prev.analysisApproved, [meetingId]: true } }));
+      say("Findings approved by a human. The agent proposed; you decided.");
+    },
+    [say],
+  );
+
+  const isAnalysisApproved = useCallback(
+    (meetingId: string) => Boolean(state.analysisApproved[meetingId]),
+    [state.analysisApproved],
+  );
+
   const addFieldNote = useCallback(
     (text: string, location: string, photo?: { label: string; ocr: string }) => {
       if (!pack) return "";
@@ -1587,6 +1838,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     completeRecording,
     importAudio,
     importCaseFile,
+    analysisFor,
+    analyzeMeeting,
+    approveAnalysis,
+    isAnalysisApproved,
+    analysisRunning,
     addFieldNote,
     setSetting,
     setSettings,

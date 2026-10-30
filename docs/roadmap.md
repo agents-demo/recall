@@ -801,6 +801,7 @@ the real, contract or simulator level except where a human test or physical hard
 - [ ] Run one real team pilot with on-device ASR and diarization; measure time-to-quote and useful extraction **(L)**
 - [x] Prove the PPMA contract end to end: signed events, idempotency, queue, deletion/forget **(M)**
 - [x] Verify it against a running PPMA backend (manifest, app token, ingestion, duplicate replay, memory read) and a real openjiuwen DeepAgent run — see `docs/integration-live.md` **(M)**
+- [x] Build the intelligence loop: raw transcript → evidence-linked decisions, actions, risks and gaps → proactive attention → human approval → PPMA **(M)**
 - [x] Add SSO, retention, legal hold and team roles for the pilot at contract level **(L)**
 - [x] Add capture health: WER, diarization, redaction precision/recall, model cards and drift **(M)**
 - [x] Add onboarding with a sample meeting and a first-run path **(S)**

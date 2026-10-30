@@ -23,6 +23,7 @@ UI/API shape exists but no vendor account is connected; “simulator” means de
 | **PPMA backend** | **Local real** — `127.0.0.1:8771`, strict auth | PPMA owns project memory, state and action; RECALL is the capture layer and must hand facts to it | Registers the `capture` manifest, mints an app token, posts `capture.*` north events to `/v0/spaces/me/messages`, reads memory views and receives commands |
 | **PPMA bridge** (`server/src/ppmaLive.mjs`) | **Local real** — `127.0.0.1:8788` | The browser cannot call PPMA directly: no CORS and the owner token must never reach the client | Verifies RECALL’s HMAC, translates a capture event into the north `Message` envelope with a deterministic ULID, holds tokens server-side, exposes `/health`, `/v1/events`, `/v1/memory` |
 | **PPMA memory extraction agent** | **Local real, partial** | Turning raw events into durable statements is PPMA’s job, not the app’s | PPMA’s own model agent derives statements; RECALL displays them via the bridge. A large case hit PPMA’s jurisdiction shape error, so extraction was incomplete — the event was still accepted |
+| **RECALL analysis runtime** | **Local real** — `server/src/analyzer.mjs` | Turn a raw transcript into decisions, actions, commitments, risks, contradictions, questions and gaps | Sends the transcript to the configured model, enforces a strict JSON schema, links every finding to a transcript line, and returns the model/latency trace |
 | **openjiuwen runtime** | **Local real** | The agent runtime analyses the case and answers questions over memory | Runs a real DeepAgent (`deepseek-v4-pro`) with `recall_case`, `recall_memory`, `recall_search`, `recall_recent_events`; read-only, never sends or executes |
 | **Model / LLM endpoint** | **Real** — coachme `.env` | Both the openjiuwen agent and PPMA’s extraction need inference | Uses `API_BASE`, `API_KEY`, `MODEL_NAME`, `LLM_TIMEOUT`; no credential is stored in the RECALL repo |
 | **Local reference PPMA server** (`server/src/server.mjs`) | **Local real** | A lightweight service to develop against without the full PPMA stack | HMAC-signed ingestion, dedupe, memory projection, corrections, redactions, tombstones, commands, SSE, evidence API |
@@ -52,6 +53,7 @@ UI/API shape exists but no vendor account is connected; “simulator” means de
 ## Related documents
 
 - [Live integration commands](integration-live.md)
+- [End-to-end demo video](../demo/video/README.md)
 - [PPMA contract](integration-ppma.md)
 - [Naming decision](naming.md)
 - [Real-case example](../examples/real-case/README.md)

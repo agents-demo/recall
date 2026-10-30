@@ -1,0 +1,93 @@
+{
+  "total": 192.0,
+  "scenes": [
+    {
+      "key": "00_title",
+      "label": "Title",
+      "audio": 3.1,
+      "duration": 4.0,
+      "start": 0.0,
+      "end": 4.0
+    },
+    {
+      "key": "01_raw",
+      "label": "A raw transcript",
+      "audio": 8.98,
+      "duration": 15.0,
+      "start": 4.0,
+      "end": 19.0
+    },
+    {
+      "key": "02_analyze",
+      "label": "The agent reads it",
+      "audio": 11.02,
+      "duration": 20.0,
+      "start": 19.0,
+      "end": 39.0
+    },
+    {
+      "key": "03_findings",
+      "label": "What it found",
+      "audio": 9.77,
+      "duration": 20.0,
+      "start": 39.0,
+      "end": 59.0
+    },
+    {
+      "key": "04_proactive",
+      "label": "Bounded proactivity",
+      "audio": 14.88,
+      "duration": 22.0,
+      "start": 59.0,
+      "end": 81.0
+    },
+    {
+      "key": "05_approve",
+      "label": "Human authority",
+      "audio": 9.89,
+      "duration": 30.0,
+      "start": 81.0,
+      "end": 111.0
+    },
+    {
+      "key": "06_ppma",
+      "label": "The approved event",
+      "audio": 6.6,
+      "duration": 18.0,
+      "start": 111.0,
+      "end": 129.0
+    },
+    {
+      "key": "07_recall",
+      "label": "Ask the evidence",
+      "audio": 8.81,
+      "duration": 16.0,
+      "start": 129.0,
+      "end": 145.0
+    },
+    {
+      "key": "08_agent",
+      "label": "A real openjiuwen agent",
+      "audio": 9.77,
+      "duration": 16.0,
+      "start": 145.0,
+      "end": 161.0
+    },
+    {
+      "key": "09_status",
+      "label": "What is real",
+      "audio": 14.71,
+      "duration": 18.0,
+      "start": 161.0,
+      "end": 179.0
+    },
+    {
+      "key": "10_close",
+      "label": "From transcript to decision",
+      "audio": 6.91,
+      "duration": 12.0,
+      "start": 179.0,
+      "end": 191.0
+    }
+  ]
+}

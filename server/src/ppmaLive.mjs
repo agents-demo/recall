@@ -15,7 +15,7 @@
  *   PPMA_BASE_URL              default http://127.0.0.1:8770
  *   PPMA_SPACE                 default me
  *   PPMA_APP_ID                default capture
- *   PPMA_APP_VERSION           default 1.5.0
+ *   PPMA_APP_VERSION           default 1.6.0
  *   PPMA_APP_TOKEN_FILE        default ../.ppma-app-token
  *   PPMA_OWNER_TOKEN_FILE      default ~/.config/ppma/setup-token
  *   RECALL_SHARED_SECRET       HMAC secret the browser signs with (default recall-demo-secret)
@@ -27,6 +27,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { analyze as analyzeTranscript } from "./analyzer.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = Number(process.env.PORT || 8788);
@@ -34,14 +35,26 @@ const HOST = process.env.HOST || "127.0.0.1";
 const PPMA_BASE = (process.env.PPMA_BASE_URL || "http://127.0.0.1:8770").replace(/\/$/, "");
 const SPACE = process.env.PPMA_SPACE || "me";
 const APP_ID = process.env.PPMA_APP_ID || "capture";
-const APP_VERSION = process.env.PPMA_APP_VERSION || "1.5.0";
+const APP_VERSION = process.env.PPMA_APP_VERSION || "1.6.0";
 const SECRET = process.env.RECALL_SHARED_SECRET || "recall-demo-secret";
 const TOKEN = process.env.RECALL_TOKEN || "";
 const TOKEN_FILE = resolve(ROOT, process.env.PPMA_APP_TOKEN_FILE || ".ppma-app-token");
 const OWNER_FILE = process.env.PPMA_OWNER_TOKEN_FILE || join(homedir(), ".config", "ppma", "setup-token");
 
 const recent = [];
+const streams = new Set();
 let metrics = { received: 0, accepted: 0, duplicates: 0, rejected: 0, memory_reads: 0 };
+
+function broadcast(message) {
+  const payload = `data: ${JSON.stringify(message)}\n\n`;
+  for (const stream of streams) {
+    try {
+      stream.write(payload);
+    } catch {
+      streams.delete(stream);
+    }
+  }
+}
 
 function readSecret(path) {
   try {
@@ -203,6 +216,30 @@ async function handle(req, res, url) {
     return;
   }
 
+  if (req.method === "GET" && url.pathname === "/v1/stream") {
+    cors(res);
+    res.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-store",
+      Connection: "keep-alive",
+    });
+    res.write(`data: ${JSON.stringify({ type: "ppma.stream.connected", at: new Date().toISOString() })}\n\n`);
+    streams.add(res);
+    const heartbeat = setInterval(() => {
+      try {
+        res.write(": keepalive\n\n");
+      } catch {
+        clearInterval(heartbeat);
+        streams.delete(res);
+      }
+    }, 15000);
+    req.on("close", () => {
+      clearInterval(heartbeat);
+      streams.delete(res);
+    });
+    return;
+  }
+
   if (req.method === "GET" && url.pathname === "/health") {
     json(res, 200, await health());
     return;
@@ -216,6 +253,7 @@ async function handle(req, res, url) {
         "/health": { get: { summary: "Bridge and PPMA reachability" } },
         "/v1/events": { post: { summary: "Signed RECALL event -> PPMA north message" } },
         "/v1/memory": { get: { summary: "PPMA memory views read through the owner authority" } },
+        "/v1/analyze": { post: { summary: "Raw transcript -> structured findings with evidence" } },
         "/v1/metrics": { get: { summary: "Delivery counters" } },
       },
     });
@@ -278,6 +316,7 @@ async function handle(req, res, url) {
     else metrics.accepted += 1;
     recent.unshift({ event_id: event.event_id, message_id: message.id, type: event.type, duplicate, at: new Date().toISOString() });
     recent.splice(60);
+    broadcast({ type: "ppma.memory_updated", view: "about_me", event_id: event.event_id, at: new Date().toISOString() });
     const memory = await readMemory().catch(() => ({ ok: false, entries: 0 }));
     json(res, 202, {
       accepted: !duplicate,
@@ -288,6 +327,31 @@ async function handle(req, res, url) {
       memory_entries: memory.ok ? memory.entries : 0,
       views: memory.ok ? memory.views.map((view) => view.view) : [],
     });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/analyze") {
+    const raw = await readBody(req);
+    let body;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      json(res, 400, { ok: false, error: "invalid JSON" });
+      return;
+    }
+    const meeting = body?.meeting;
+    if (!meeting?.transcript?.length) {
+      json(res, 400, { ok: false, error: "meeting.transcript is required" });
+      return;
+    }
+    try {
+      const analysis = await analyzeTranscript(meeting);
+      recent.unshift({ kind: "analysis", title: meeting.title, findings: analysis.decisions.length + analysis.actions.length + analysis.risks.length, at: new Date().toISOString() });
+      recent.splice(60);
+      json(res, 200, { ok: true, analysis });
+    } catch (error) {
+      json(res, 502, { ok: false, error: error instanceof Error ? error.message : "analysis failed" });
+    }
     return;
   }
 

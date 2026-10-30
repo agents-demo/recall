@@ -168,6 +168,7 @@ async def main() -> None:
     parser.add_argument("--query", default="What does PPMA remember from the RECALL captures? List the statements.")
     parser.add_argument("--env", default=os.getenv("COACHME_ENV", r"C:\Workspace\openjiuwendemos\coachme\.env"))
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--out", default="", help="write the JSON result to this file (UTF-8)")
     args = parser.parse_args()
 
     load_env(Path(args.env))
@@ -195,6 +196,10 @@ async def main() -> None:
         "tool_calls": TOOL_CALLS,
         "answer": text,
     }
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
     if args.json:
         print(json.dumps(payload, ensure_ascii=False))
     else:

@@ -12,6 +12,7 @@ own facts; do not put real customer data in a public repo.
 | File | What it is | What you do with it |
 |---|---|---|
 | `case.example.json` | the machine-readable case: title, consent, participants, summary, decisions, actions, questions, risks, transcript | copy to `case.json`, edit it |
+| `case.raw.json` | the same transcript with **no** decisions/actions/risks | import it, then press **Analyze this capture** |
 | `transcript.txt` | a plain transcript you can read, paste or compare | replace with your own transcript |
 | `actions.csv` | the action list in a spreadsheet-friendly form | open in Excel/Sheets, edit, keep or ignore |
 | `field-notes.md` | short notes to paste into the app's Field page | paste one note at a time |
@@ -106,6 +107,25 @@ The agent has four tools:
 
 That split is deliberate: you can see the difference between “what I submitted” and “what PPMA kept”.
 If PPMA has not extracted a detail yet, the agent says so instead of pretending.
+
+## Path C — raw transcript → intelligence (the recommended demo)
+
+Use `case.raw.json`. It has the same 15 transcript lines but **no decisions, actions or risks**.
+
+1. **Settings → My workspace.**
+2. **Record → Import a case → `case.raw.json`.** The meeting opens with **0 decisions and 0 actions** —
+   only the transcript.
+3. Open **Intelligence → Analyze this capture**.
+   The local analysis runtime extracts the decisions, actions, risks, gaps and open questions, and
+   links each one to a quote.
+4. Go to **Home**. The attention strip now shows what needs a human: the runbook blocking the field
+   team, the thin support rota, the bulk-import customers, the unanswered on-call question, the
+   unowned gap.
+5. Back in the meeting, **Approve findings & send to PPMA**.
+6. Open **Connections → Test live PPMA → Inspect PPMA memory**.
+
+That is the actual product loop. `case.example.json` is still useful for the older “pre-structured
+case” import and for the `scripts/ingest_case.py` path.
 
 ## What to fill in `case.json`
 

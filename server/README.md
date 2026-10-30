@@ -25,6 +25,10 @@ capture event to the north `Message` envelope (deterministic ULID per `event_id`
 `/v0/spaces/me/messages`, and reads memory views back with the owner authority. It is transport,
 not a replacement: accepted and duplicate counts come from PPMA.
 
+The same bridge also exposes `/v1/analyze` (raw transcript → evidence-linked findings) and
+`/v1/stream` (SSE `ppma.memory_updated`), so the app has one local origin for delivery, memory and
+analysis.
+
 | Variable | Default | Meaning |
 |---|---|---|
 | `PORT` | `8788` | bridge port |

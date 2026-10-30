@@ -34,7 +34,7 @@ import {
 } from "../components/UI";
 import { Icon } from "../components/Icon";
 
-type Tab = "transcript" | "extracted" | "ppma" | "comments" | "rights";
+type Tab = "transcript" | "intelligence" | "extracted" | "ppma" | "comments" | "rights";
 
 export default function Meeting() {
   const { meetingId = "" } = useParams();
@@ -68,6 +68,11 @@ export default function Meeting() {
     addComment,
     resolveComment,
     corrections,
+    analysisFor,
+    analyzeMeeting,
+    approveAnalysis,
+    isAnalysisApproved,
+    analysisRunning,
     say,
   } = store;
 
@@ -106,7 +111,7 @@ export default function Meeting() {
   useEffect(() => {
     if (!meeting) return;
     const requestedTab = params.get("tab");
-    if (requestedTab && ["transcript", "extracted", "ppma", "comments", "rights"].includes(requestedTab)) {
+    if (requestedTab && ["transcript", "intelligence", "extracted", "ppma", "comments", "rights"].includes(requestedTab)) {
       setTab(requestedTab as Tab);
     } else {
       setTab("transcript");
@@ -161,6 +166,9 @@ export default function Meeting() {
   const meetingMemory = memory.filter((entry) => entry.capture_id === meeting.capture_id);
   const meetingAudit = audit.filter((entry) => entry.object === meeting.capture_id || entry.detail.includes(meeting.capture_id));
   const appliedRedactions = meeting.redactions.filter((r) => r.status === "applied");
+  const analysis = analysisFor(meeting.id);
+  const approved = isAnalysisApproved(meeting.id);
+  const quoteFor = (utteranceId: string) => meeting.utterances.find((row) => row.id === utteranceId);
 
   if (meeting.status === "tombstoned") {
     return (
@@ -315,6 +323,7 @@ export default function Meeting() {
       <div className="tabs">
         {([
           ["transcript", "Transcript", "wave"],
+          ["intelligence", "Intelligence", "spark"],
           ["extracted", "Extracted facts", "spark"],
           ["ppma", "PPMA", "send"],
           ["comments", `Comments${meetingComments.length ? ` (${meetingComments.length})` : ""}`, "list"],
@@ -326,6 +335,144 @@ export default function Meeting() {
           </button>
         ))}
       </div>
+
+      {tab === "intelligence" && (
+        <div className="workspace">
+          <Panel
+            className="span-2"
+            title={analysis ? "What the agent found" : "Understand this capture"}
+            sub={analysis ? `Derived from ${analysis.trace.transcript_lines} transcript lines · every finding links to a quote` : "Raw transcript in · evidence-linked facts out"}
+            actions={<Chip tone={analysis ? "green" : "amber"} dot={analysis ? "live" : "warn"}>{analysis ? "analysed" : "not analysed"}</Chip>}
+          >
+            {!analysis ? (
+              <div className="analysis-empty">
+                <p className="small muted">
+                  This capture is a raw transcript. Nothing below is pre-filled. The agent reads the transcript and
+                  extracts decisions, actions, risks, gaps and open questions — each one linked to the exact line it
+                  came from.
+                </p>
+                <div className="row gap8 mt12">
+                  <button className="btn primary" onClick={() => void analyzeMeeting(meeting.id)} disabled={analysisRunning === meeting.id}>
+                    <Icon name="spark" size={14} /> {analysisRunning === meeting.id ? "Reading the transcript…" : "Analyze this capture"}
+                  </button>
+                  <Chip tone="violet">local analysis runtime</Chip>
+                </div>
+                <p className="xsmall soft mt8">
+                  The transcript is sent to the configured model endpoint for analysis. No raw media is attached.
+                  The findings are proposals until a human approves them.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="analysis-summary">
+                  <b>{analysis.summary}</b>
+                  <div className="analysis-trace">
+                    <Chip tone="violet">{analysis.trace.model}</Chip>
+                    <Chip>{Math.round(analysis.trace.latency_ms / 100) / 10}s</Chip>
+                    <Chip>{analysis.trace.transcript_lines} lines</Chip>
+                    <Chip tone={approved ? "green" : "amber"}>{approved ? "approved by human" : "awaiting human approval"}</Chip>
+                  </div>
+                </div>
+
+                <div className="analysis-grid">
+                  <section className="analysis-card">
+                    <h3>Decisions <span>{analysis.decisions.length}</span></h3>
+                    {analysis.decisions.length === 0 && <p className="soft xsmall">No decision found in the transcript.</p>}
+                    {analysis.decisions.map((item, index) => {
+                      const line = quoteFor(item.evidence_id);
+                      return (
+                        <div className="analysis-item" key={`d-${index}`}>
+                          <b>{item.text}</b>
+                          {line && <span className="analysis-quote">“{line.text}” — {speakerName(meeting, line.speaker_id)}, {fmtTime(line.start)}</span>}
+                          <Chip tone="green">{Math.round(item.confidence * 100)}%</Chip>
+                        </div>
+                      );
+                    })}
+                  </section>
+
+                  <section className="analysis-card">
+                    <h3>Actions <span>{analysis.actions.length}</span></h3>
+                    {analysis.actions.length === 0 && <p className="soft xsmall">No action found in the transcript.</p>}
+                    {analysis.actions.map((item, index) => {
+                      const line = quoteFor(item.evidence_id);
+                      return (
+                        <div className="analysis-item" key={`a-${index}`}>
+                          <b>{item.text}</b>
+                          <span className="analysis-meta">{item.owner} · {item.due || "no date"}</span>
+                          {line && <span className="analysis-quote">“{line.text}” — {speakerName(meeting, line.speaker_id)}, {fmtTime(line.start)}</span>}
+                        </div>
+                      );
+                    })}
+                  </section>
+
+                  <section className="analysis-card danger">
+                    <h3>Risks <span>{analysis.risks.length}</span></h3>
+                    {analysis.risks.length === 0 && <p className="soft xsmall">No delivery risk found.</p>}
+                    {analysis.risks.map((item, index) => {
+                      const line = quoteFor(item.evidence_id);
+                      return (
+                        <div className="analysis-item" key={`r-${index}`}>
+                          <div className="row between"><b>{item.text}</b><Chip tone={item.severity === "high" ? "red" : "amber"}>{item.severity}</Chip></div>
+                          <span className="analysis-meta">{item.why}</span>
+                          <span className="analysis-meta">Mitigation: {item.mitigation || "none recorded"}</span>
+                          {line && <span className="analysis-quote">“{line.text}” — {speakerName(meeting, line.speaker_id)}, {fmtTime(line.start)}</span>}
+                        </div>
+                      );
+                    })}
+                  </section>
+
+                  <section className="analysis-card">
+                    <h3>Questions & gaps <span>{analysis.questions.filter((q) => !q.answered).length + analysis.gaps.length + analysis.contradictions.length}</span></h3>
+                    {analysis.contradictions.map((item, index) => (
+                      <div className="analysis-item" key={`c-${index}`}>
+                        <div className="row between"><b>{item.text}</b><Chip tone="red">contradiction</Chip></div>
+                        <span className="analysis-meta">{item.why}</span>
+                      </div>
+                    ))}
+                    {analysis.questions.filter((item) => !item.answered).map((item, index) => {
+                      const line = quoteFor(item.evidence_id);
+                      return (
+                        <div className="analysis-item" key={`q-${index}`}>
+                          <div className="row between"><b>{item.text}</b><Chip tone="amber">unanswered</Chip></div>
+                          {line && <span className="analysis-quote">“{line.text}” — {speakerName(meeting, line.speaker_id)}, {fmtTime(line.start)}</span>}
+                        </div>
+                      );
+                    })}
+                    {analysis.gaps.map((item, index) => {
+                      const line = quoteFor(item.evidence_id);
+                      return (
+                        <div className="analysis-item" key={`g-${index}`}>
+                          <div className="row between"><b>{item.text}</b><Chip tone="amber">gap</Chip></div>
+                          <span className="analysis-meta">{item.why}</span>
+                          {line && <span className="analysis-quote">“{line.text}” — {speakerName(meeting, line.speaker_id)}, {fmtTime(line.start)}</span>}
+                        </div>
+                      );
+                    })}
+                    {analysis.questions.every((q) => q.answered) && analysis.gaps.length === 0 && analysis.contradictions.length === 0 && <p className="soft xsmall">No open question, gap or contradiction.</p>}
+                  </section>
+                </div>
+
+                <div className="analysis-actions">
+                  <button
+                    className="btn primary"
+                    onClick={() => {
+                      approveAnalysis(meeting.id);
+                      sendMeeting(meeting.id, { safe: true });
+                    }}
+                    disabled={meeting.ppma.status === "sent"}
+                  >
+                    <Icon name="send" size={14} /> {meeting.ppma.status === "sent" ? "PPMA has the approved facts" : "Approve findings & send to PPMA"}
+                  </button>
+                  <button className="btn" onClick={() => void analyzeMeeting(meeting.id)} disabled={analysisRunning === meeting.id}>
+                    <Icon name="refresh" size={13} /> Re-run analysis
+                  </button>
+                  <span className="xsmall soft">The agent proposes; a human approves. No finding is written to project memory without this step.</span>
+                </div>
+              </>
+            )}
+          </Panel>
+        </div>
+      )}
 
       {tab === "transcript" && (
         <div className="workspace">

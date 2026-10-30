@@ -32,7 +32,7 @@ py scripts/build_demo_pack.py       # or python3
 cd web && npm ci && npm test && npm run build
 ```
 
-Pack version `1.5.0`, anchor `2026-10-30T09:00:00Z`, seed `20261030`.
+Pack version `1.6.0`, anchor `2026-10-30T09:00:00Z`, seed `20261030`.
 
 ## Data rights
 

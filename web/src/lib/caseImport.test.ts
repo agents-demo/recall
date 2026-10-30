@@ -82,6 +82,21 @@ describe("parseCaseFile", () => {
     expect(parseCaseFile("bad.json", "{")).toBeNull();
   });
 
+  it("keeps a raw transcript unstructured", () => {
+    const parsed = parseCaseFile(
+      "case.raw.json",
+      JSON.stringify({
+        title: "Helios raw",
+        consent: { state: "all_notified" },
+        participants: [{ name: "Dana Whitfield" }],
+        transcript: [{ id: "e1", start: 12, speaker: "Dana Whitfield", text: "We hold the fourth." }],
+      }),
+    );
+    expect(parsed?.decisions).toHaveLength(0);
+    expect(parsed?.actions).toHaveLength(0);
+    expect(parsed?.transcript).toHaveLength(1);
+  });
+
   it("builds a meeting with utterances and evidence from the case", () => {
     const parsed = parseCaseFile(
       "case.json",

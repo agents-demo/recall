@@ -27,6 +27,15 @@ examples/real-case/uploads/*
 !examples/real-case/uploads/README.md
 !examples/real-case/uploads/sample-upload.wav
 
+# Video build intermediates
+demo/video/audio/
+demo/video/raw/
+demo/video/*.wav
+demo/video/title.html
+demo/video/agent.html
+demo/video/status.html
+demo/video/close.html
+
 # Editors / OS
 .idea/
 .vscode/

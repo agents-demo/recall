@@ -1,0 +1,40 @@
+{
+  "case_id": "case_helios_raw_2026_11",
+  "title": "Helios rollout readiness review",
+  "occurred_at": "2026-11-04T09:00:00Z",
+  "duration_seconds": 2400,
+  "mode": "meeting",
+  "language": "en",
+  "jurisdiction": "DE",
+  "sensitivity": "personal",
+  "consent": {
+    "state": "all_notified",
+    "wording": "DE-2026-2",
+    "recorded_by": "owner"
+  },
+  "participants": [
+    { "name": "Dana Whitfield", "role": "Program lead" },
+    { "name": "Ravi Menon", "role": "Support lead" },
+    { "name": "Elena Sokolova", "role": "Security" },
+    { "name": "Tom Becker", "role": "Field operations" }
+  ],
+  "summary": "Raw transcript only. No decisions, actions or risks are pre-filled; the analysis runtime derives them.",
+  "transcript": [
+    { "id": "e1", "start": 12, "speaker": "Dana Whitfield", "text": "The enterprise pilot is the fixed point. Everything else moves around it." },
+    { "id": "e2", "start": 41, "speaker": "Ravi Menon", "text": "Support can cover the pilot, but not the same week as self-serve onboarding." },
+    { "id": "e3", "start": 68, "speaker": "Dana Whitfield", "text": "Then we hold the enterprise pilot on the fourth and move self-serve onboarding to the eighteenth." },
+    { "id": "e4", "start": 96, "speaker": "Elena Sokolova", "text": "That gives security two extra weeks for the admin console review." },
+    { "id": "e5", "start": 118, "speaker": "Ravi Menon", "text": "I will send the revised support rota by Friday. The eighth and ninth are still thin." },
+    { "id": "e6", "start": 143, "speaker": "Dana Whitfield", "text": "Borrow one engineer from platform for that weekend if the rota does not close." },
+    { "id": "e7", "start": 171, "speaker": "Dana Whitfield", "text": "The first release ships the read-only admin console. Bulk import waits." },
+    { "id": "e8", "start": 196, "speaker": "Ravi Menon", "text": "Two customers will ask about bulk import as soon as the note goes out." },
+    { "id": "e9", "start": 220, "speaker": "Elena Sokolova", "text": "I will finish the threat model for the admin console by the eighth." },
+    { "id": "e10", "start": 244, "speaker": "Dana Whitfield", "text": "We will run the concierge import manually for those two accounts." },
+    { "id": "e11", "start": 266, "speaker": "Tom Becker", "text": "Berlin can run the pilot with two trainers. I will confirm that tomorrow." },
+    { "id": "e12", "start": 288, "speaker": "Tom Becker", "text": "The field team needs the updated runbook before the fifth." },
+    { "id": "e13", "start": 310, "speaker": "Dana Whitfield", "text": "I will publish the updated rollout note and runbook to customers by the fifth." },
+    { "id": "e14", "start": 336, "speaker": "Elena Sokolova", "text": "Do we need a second on-call engineer for the pilot weekend?" },
+    { "id": "e15", "start": 352, "speaker": "Dana Whitfield", "text": "The audit export is not required for the pilot. It can wait for self-serve." }
+  ],
+  "tags": ["example", "raw-transcript", "rollout"]
+}

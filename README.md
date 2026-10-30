@@ -34,6 +34,10 @@ beginning of real integration). See [What’s new in v1.0](#whats-new-in-v10).
 The public site is a **static, offline build** of the product UI, driven by a deterministic synthetic
 pack. No customer audio, transcript or personal data is included. There is no network call after load by default; the optional local PPMA connection is explicitly configured by the user.
 
+**Watch the end-to-end demo:** [`demo/video/recall-demo-en.mp4`](demo/video/recall-demo-en.mp4) — the
+real Helios case, imported in **My workspace**, searched in Recall, sent to a running PPMA, and
+analysed by a real openjiuwen agent.
+
 ## Workspace modes — demo or yours
 
 The app has two explicit modes, switchable in **Settings → Workspace data** and visible in the top bar:
@@ -94,6 +98,25 @@ The admin surface is visible when the role selector is set to **Privacy / legal*
 deliberately hides what a role cannot act on.
 
 ---
+
+## What’s new in v1.6
+
+**A real intelligence layer**
+
+- **Intelligence tab** in the meeting workspace. Import a raw transcript, press **Analyze this
+  capture**, and the local analysis runtime extracts decisions, actions, commitments, risks,
+  contradictions, questions and gaps.
+- **Every finding links to a quote**, speaker and timestamp. Missing owners and dates become gaps,
+  not invented answers.
+- **Proactivity from the analysis**: “N things need a human” on Home — runbook risk, thin support
+  rota, unowned action, unanswered question.
+- **Human authority**: approve findings, then send the safe facts to PPMA. The agent never writes to
+  project memory on its own.
+- The runtime is real and local: `server/src/analyzer.mjs` + `/v1/analyze` on the bridge, model
+  `deepseek-v4-pro`, with latency and transcript-line trace shown in the app.
+
+See [`docs/intelligence.md`](docs/intelligence.md) and the raw example
+[`examples/real-case/case.raw.json`](examples/real-case/case.raw.json).
 
 ## What’s new in v1.5
 
@@ -156,7 +179,7 @@ deliberately hides what a role cannot act on.
 - an email draft (never sent), browser extension and safe evidence API.
 
 **Still simulated:** ASR/diarization, NPU, OCR, vendor OAuth, billing and the synthetic meeting itself.
-392 of 395 checkboxes are now checked at the real, contract or simulator level. The three open items are human validations: the real team pilot, the five-stranger test and the unprompted manager boundary test.
+393 of 396 checkboxes are now checked at the real, contract or simulator level. The three open items are human validations: the real team pilot, the five-stranger test and the unprompted manager boundary test.
 
 ---
 
@@ -312,9 +335,10 @@ PPMA server suite.
 - [Naming decision](docs/naming.md) - RECALL vs the PPMA `recall` memory view.
 - [Live integration](docs/integration-live.md) - the exact commands that ran PPMA and the openjiuwen agent.
 - [Integration status](docs/integration-status.md) - every external dependency, why it is needed and what the app does with it.
+- [Intelligence layer](docs/intelligence.md) - raw transcript → evidence-linked findings → proactive risk → human approval → PPMA.
 - [Real-case example](examples/real-case/README.md) - what to fill in, which files to upload, and how to ingest and analyse your own case.
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
-- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 392 implemented and 3 external validations.
+- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 393 implemented and 3 external validations.
 - [PPMA × RECALL contract](docs/integration-ppma.md) — events, commands, consent, deletion, idempotency.
 - [Architecture](docs/architecture.md) — state machine, store, event pipeline, security, production swaps.
 - [Local PPMA server](server/README.md) — signed events, memory, commands, SSE and the openjiuwen adapter.

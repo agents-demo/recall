@@ -313,6 +313,10 @@ export function attentionKindLabel(kind: AttentionKind): string {
     handoff_failed: "delivery",
     note_unsent: "field note",
     device_health: "device",
+    risk: "risk",
+    contradiction: "contradiction",
+    gap: "gap",
+    commitment: "commitment",
   };
   return labels[kind];
 }
