@@ -1,0 +1,3667 @@
+{
+ "meta": {
+  "version": "0.9.0",
+  "generated": "2026-10-30T08:00:00Z",
+  "anchor": "2026-10-30T09:00:00Z",
+  "seed": 20261030,
+  "product": "RECALL",
+  "app_id": "recall-capture",
+  "model": "deterministic synthetic pack · no customer data",
+  "note": "Every transcript, speaker and event in this pack is synthetic and generated in-house. Audio is not included; the player is a visualisation of the local transcript timeline.",
+  "stage_meeting_id": "mtg_delivery_1030",
+  "scenario_ids": [
+   "mtg_delivery_1030",
+   "mtg_kickoff_1009",
+   "mtg_standup_1023",
+   "mtg_pricing_1015"
+  ]
+ },
+ "team": {
+  "id": "team_northgate",
+  "name": "Northgate project team",
+  "space": "ppma://spaces/northgate",
+  "plan": "PPMA bundle",
+  "seats": 12,
+  "jurisdiction": "DE",
+  "retention_days": 365,
+  "consent_model": "all_participants_notified",
+  "members": [
+   {
+    "id": "user_anna",
+    "name": "Anna Voss",
+    "role": "team_lead",
+    "initials": "AV",
+    "email": "anna@example.com"
+   },
+   {
+    "id": "user_marek",
+    "name": "Marek Nowak",
+    "role": "team_member",
+    "initials": "MN",
+    "email": "marek@example.com"
+   },
+   {
+    "id": "user_sandra",
+    "name": "Sandra Klein",
+    "role": "client_guest",
+    "initials": "SK",
+    "email": "sandra@client.example"
+   },
+   {
+    "id": "user_tomas",
+    "name": "Tomás Rivera",
+    "role": "field",
+    "initials": "TR",
+    "email": "tomas@example.com"
+   },
+   {
+    "id": "user_lena",
+    "name": "Lena Hoffmann",
+    "role": "privacy_legal",
+    "initials": "LH",
+    "email": "lena@example.com"
+   },
+   {
+    "id": "user_admin",
+    "name": "M. Okafor",
+    "role": "admin",
+    "initials": "MO",
+    "email": "admin@example.com"
+   }
+  ],
+  "devices": [
+   {
+    "id": "dev_mac_01",
+    "name": "MacBook Pro 14 · M4",
+    "kind": "laptop",
+    "owner": "Anna Voss",
+    "status": "active",
+    "last_seen": "2026-10-30T08:58:00Z",
+    "app_version": "0.9.0",
+    "npu": "Apple Neural Engine",
+    "storage_used_pct": 38,
+    "battery_pct": 72,
+    "mic": "ok"
+   },
+   {
+    "id": "dev_iphone_01",
+    "name": "iPhone 16 Pro · A18",
+    "kind": "phone",
+    "owner": "Tomás Rivera",
+    "status": "active",
+    "last_seen": "2026-10-30T08:41:00Z",
+    "app_version": "0.9.0",
+    "npu": "Apple Neural Engine",
+    "storage_used_pct": 61,
+    "battery_pct": 54,
+    "mic": "ok"
+   },
+   {
+    "id": "dev_ipad_01",
+    "name": "iPad Air · M2",
+    "kind": "tablet",
+    "owner": "Field team",
+    "status": "field",
+    "last_seen": "2026-10-28T15:42:00Z",
+    "app_version": "0.9.0",
+    "npu": "Apple Neural Engine",
+    "storage_used_pct": 22,
+    "battery_pct": 83,
+    "mic": "ok"
+   },
+   {
+    "id": "dev_pixel_01",
+    "name": "Pixel 9 · Tensor G4",
+    "kind": "phone",
+    "owner": "Pilot spare",
+    "status": "revoked",
+    "last_seen": "2026-09-30T12:00:00Z",
+    "app_version": "0.8.4",
+    "npu": "Google TPU",
+    "storage_used_pct": 9,
+    "battery_pct": null,
+    "mic": "unknown"
+   }
+  ]
+ },
+ "meetings": [
+  {
+   "id": "mtg_delivery_1030",
+   "capture_id": "cap_01J9Q4M2R7X8K3N5V6B1C0D",
+   "title": "Client delivery call — Northgate",
+   "mode": "meeting",
+   "started_at": "2026-10-30T09:00:00Z",
+   "ended_at": "2026-10-30T09:13:42Z",
+   "duration_s": 822,
+   "language": "en",
+   "jurisdiction": "DE",
+   "sensitivity": "client_confidential",
+   "status": "captured",
+   "participants": [
+    {
+     "id": "p1",
+     "name": "Anna Voss",
+     "role": "Account lead",
+     "initials": "AV",
+     "color": "amber"
+    },
+    {
+     "id": "p2",
+     "name": "Marek Nowak",
+     "role": "Delivery lead",
+     "initials": "MN",
+     "color": "cyan"
+    },
+    {
+     "id": "p3",
+     "name": "Sandra Klein",
+     "role": "Client operations",
+     "initials": "SK",
+     "color": "violet"
+    },
+    {
+     "id": "p4",
+     "name": "Tomás Rivera",
+     "role": "Installation lead",
+     "initials": "TR",
+     "color": "green"
+    }
+   ],
+   "consent": {
+    "state": "granted",
+    "basis": "all_participants_notified",
+    "jurisdiction": "DE",
+    "participants_notified": true,
+    "evidence_ref": "consent_01",
+    "wording_version": "DE-2026-2",
+    "recorded_at": "2026-10-30T08:59:12Z",
+    "recorded_by": "user_anna"
+   },
+   "summary": "Delivery date moved to the 14th; the 12th is not achievable. Installation starts at 07:00 with full building access. Written confirmation before 17:00, training date to be confirmed. The client flagged Saturday overtime internally.",
+   "utterances": [
+    {
+     "id": "u_1030_001",
+     "speaker_id": "p1",
+     "start": 0,
+     "end": 8.8,
+     "text": "Recording is on. Everyone has been told this is for the project record — Sandra, Tomás, you're both fine with that?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_002",
+     "speaker_id": "p3",
+     "start": 8,
+     "end": 15.1,
+     "text": "Fine by me. Let's keep it to the delivery question; I have another call at half past.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_003",
+     "speaker_id": "p2",
+     "start": 15,
+     "end": 20.0,
+     "text": "I'll share the schedule so we're all looking at the same thing.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_004",
+     "speaker_id": "p1",
+     "start": 21,
+     "end": 27.7,
+     "text": "Good. The question from the client this morning was whether we can still make the 12th.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_005",
+     "speaker_id": "p2",
+     "start": 28,
+     "end": 32.2,
+     "text": "Right. The install crew is the constraint, not the hardware.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_006",
+     "speaker_id": "p4",
+     "start": 34,
+     "end": 40.7,
+     "text": "The crew finishes the Bracknell job on the 10th. After that we have two vans free.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_007",
+     "speaker_id": "p3",
+     "start": 42,
+     "end": 47.9,
+     "text": "And the building access? We only have the loading bay from seven until ten.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_008",
+     "speaker_id": "p4",
+     "start": 49,
+     "end": 55.3,
+     "text": "That's workable if we start on the Tuesday. It is not workable on the Thursday.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_009",
+     "speaker_id": "p1",
+     "start": 57,
+     "end": 59.4,
+     "text": "So the 12th is Thursday.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_010",
+     "speaker_id": "p4",
+     "start": 61,
+     "end": 65.6,
+     "text": "Correct. And the 14th is Saturday — quieter building, full access.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_011",
+     "speaker_id": "p3",
+     "start": 69,
+     "end": 74.9,
+     "text": "Saturday costs us overtime for our own team. I need to flag that internally.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_012",
+     "speaker_id": "p2",
+     "start": 77,
+     "end": 80.4,
+     "text": "Understood. Let's be explicit about the trade-off, then.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_013",
+     "speaker_id": "p1",
+     "start": 84,
+     "end": 88.6,
+     "text": "Let's walk the scope first, so the date decision is grounded.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_014",
+     "speaker_id": "p2",
+     "start": 90,
+     "end": 93.8,
+     "text": "Three parts: hardware delivery, installation, and the two-hour training.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_015",
+     "speaker_id": "p4",
+     "start": 98,
+     "end": 102.6,
+     "text": "Hardware is already in the warehouse. That is not the risk.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_016",
+     "speaker_id": "p3",
+     "start": 104,
+     "end": 108.2,
+     "text": "The risk is our access window and the lift booking.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_017",
+     "speaker_id": "p4",
+     "start": 111,
+     "end": 116.5,
+     "text": "The lift is booked for the Tuesday and the Saturday. Not the Thursday.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_018",
+     "speaker_id": "p1",
+     "start": 119,
+     "end": 125.7,
+     "text": "Okay. So if we say the 12th, we are promising a day the building cannot support.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_019",
+     "speaker_id": "p2",
+     "start": 127,
+     "end": 129.5,
+     "text": "That is how I read it.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_020",
+     "speaker_id": "p3",
+     "start": 131,
+     "end": 135.2,
+     "text": "I would rather move the date than run a half-install.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_021",
+     "speaker_id": "p1",
+     "start": 138,
+     "end": 140.4,
+     "text": "Agreed. Nobody wants a half-install.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_022",
+     "speaker_id": "p2",
+     "start": 144,
+     "end": 149.5,
+     "text": "The hardware is fine. The crew is fine. The building is the constraint.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_023",
+     "speaker_id": "p4",
+     "start": 151,
+     "end": 156.0,
+     "text": "And the crew needs a clear twelve-hour window. Two vans, four people.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_024",
+     "speaker_id": "p3",
+     "start": 159,
+     "end": 163.2,
+     "text": "On the Saturday we can give you seven until seven.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_025",
+     "speaker_id": "p4",
+     "start": 166,
+     "end": 171.9,
+     "text": "That works. On the Thursday we would lose the afternoon to the school run.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_026",
+     "speaker_id": "p1",
+     "start": 174,
+     "end": 177.8,
+     "text": "Let's put the access question in writing as well.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_027",
+     "speaker_id": "p2",
+     "start": 180,
+     "end": 182.5,
+     "text": "I'll add it to the confirmation.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_028",
+     "speaker_id": "p1",
+     "start": 185,
+     "end": 190.0,
+     "text": "Now the training. Is that the same visit or a separate one?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_029",
+     "speaker_id": "p2",
+     "start": 192,
+     "end": 200.4,
+     "text": "It was quoted as a separate visit, but we can fold it into the Saturday if the room is free.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_030",
+     "speaker_id": "p3",
+     "start": 201,
+     "end": 205.6,
+     "text": "The room is free on the Saturday. The trainer is not.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_031",
+     "speaker_id": "p4",
+     "start": 208,
+     "end": 211.4,
+     "text": "Our trainer is on another site that week.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_032",
+     "speaker_id": "p1",
+     "start": 214,
+     "end": 219.9,
+     "text": "So the 14th can include installation but not training, unless we move the trainer.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_033",
+     "speaker_id": "p3",
+     "start": 223,
+     "end": 225.4,
+     "text": "That is my understanding.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_034",
+     "speaker_id": "p2",
+     "start": 228,
+     "end": 232.2,
+     "text": "Let's not create a promise we cannot keep on training.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_035",
+     "speaker_id": "p1",
+     "start": 235,
+     "end": 239.2,
+     "text": "Agreed. Installation on the 14th, training to be confirmed separately.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_036",
+     "speaker_id": "p4",
+     "start": 243,
+     "end": 248.0,
+     "text": "If training is separate, I need one more van on the 17th.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_037",
+     "speaker_id": "p2",
+     "start": 251,
+     "end": 254.4,
+     "text": "Noted. I'll check availability and come back tomorrow.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_038",
+     "speaker_id": "p3",
+     "start": 259,
+     "end": 262.8,
+     "text": "And who covers the Saturday overtime for our team?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_039",
+     "speaker_id": "p1",
+     "start": 266,
+     "end": 270.6,
+     "text": "That is a commercial question. I'll take it offline with Sandra.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_040",
+     "speaker_id": "p3",
+     "start": 274,
+     "end": 278.2,
+     "text": "Thank you. I don't want my team out of pocket.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_041",
+     "speaker_id": "p2",
+     "start": 281,
+     "end": 283.4,
+     "text": "Fair.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_042",
+     "speaker_id": "p1",
+     "start": 286,
+     "end": 288.9,
+     "text": "Let's look at the support window next.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_043",
+     "speaker_id": "p2",
+     "start": 292,
+     "end": 296.2,
+     "text": "Thirty days from handover, remote first, one site visit included.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_044",
+     "speaker_id": "p3",
+     "start": 300,
+     "end": 305.5,
+     "text": "Does the thirty days start on the 14th or on the training day?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_045",
+     "speaker_id": "p2",
+     "start": 308,
+     "end": 310.4,
+     "text": "On handover. The 14th.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_046",
+     "speaker_id": "p3",
+     "start": 314,
+     "end": 317.8,
+     "text": "Then if training slips, our support is already running.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_047",
+     "speaker_id": "p1",
+     "start": 321,
+     "end": 324.8,
+     "text": "That's a fair point. We should align those dates.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_048",
+     "speaker_id": "p2",
+     "start": 329,
+     "end": 334.9,
+     "text": "I can start support on the training day instead. It is a small change.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_049",
+     "speaker_id": "p3",
+     "start": 337,
+     "end": 339.4,
+     "text": "That would be cleaner.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_050",
+     "speaker_id": "p1",
+     "start": 342,
+     "end": 346.2,
+     "text": "Let's note it as a proposed change, not agreed yet.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_051",
+     "speaker_id": "p2",
+     "start": 349,
+     "end": 351.4,
+     "text": "Proposed. I'll confirm with finance.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_052",
+     "speaker_id": "p4",
+     "start": 356,
+     "end": 361.5,
+     "text": "While we're on dates — the Bracknell job could slip by a day.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_053",
+     "speaker_id": "p1",
+     "start": 363,
+     "end": 365.4,
+     "text": "How likely is that?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_054",
+     "speaker_id": "p4",
+     "start": 368,
+     "end": 373.9,
+     "text": "Twenty percent. If it slips, the 14th is still safe. The 12th is not.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_055",
+     "speaker_id": "p2",
+     "start": 377,
+     "end": 379.4,
+     "text": "That reinforces the recommendation.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_056",
+     "speaker_id": "p3",
+     "start": 382,
+     "end": 386.6,
+     "text": "Then I think we should stop pretending the 12th is possible.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_057",
+     "speaker_id": "p1",
+     "start": 390,
+     "end": 392.9,
+     "text": "I agree. Let's make that the decision.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_058",
+     "speaker_id": "p2",
+     "start": 396,
+     "end": 401.9,
+     "text": "For the record: the 12th is not achievable with the current access and crew.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_059",
+     "speaker_id": "p3",
+     "start": 405,
+     "end": 409.2,
+     "text": "And the 14th is achievable if we confirm by Friday.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_060",
+     "speaker_id": "p1",
+     "start": 413,
+     "end": 415.4,
+     "text": "Confirm by Friday. Understood.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_061",
+     "speaker_id": "p4",
+     "start": 419,
+     "end": 423.2,
+     "text": "I'll hold the crew for the 14th until Friday noon.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_062",
+     "speaker_id": "p2",
+     "start": 427,
+     "end": 430.8,
+     "text": "Please do. We don't want to lose the slot.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_063",
+     "speaker_id": "p1",
+     "start": 433,
+     "end": 435.9,
+     "text": "Now the internal bit before we close.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_064",
+     "speaker_id": "p3",
+     "start": 439,
+     "end": 441.5,
+     "text": "Should I drop off for that?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_065",
+     "speaker_id": "p1",
+     "start": 443,
+     "end": 445.5,
+     "text": "No, stay — it's only scheduling.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_066",
+     "speaker_id": "p1",
+     "start": 449,
+     "end": 457.0,
+     "text": "Between us, Sandra's team is chaotic — they will not have the access list ready by the 12th anyway.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_067",
+     "speaker_id": "p3",
+     "start": 460,
+     "end": 462.4,
+     "text": "I heard that.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_068",
+     "speaker_id": "p1",
+     "start": 464,
+     "end": 470.3,
+     "text": "I'm sorry, that was unhelpful. Let me rephrase: the access list is the critical path.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_069",
+     "speaker_id": "p2",
+     "start": 474,
+     "end": 477.8,
+     "text": "Let's keep it factual. Access list owner and date.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_070",
+     "speaker_id": "p3",
+     "start": 482,
+     "end": 485.8,
+     "text": "I'll own it. Tuesday the 27th, end of day.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_071",
+     "speaker_id": "p4",
+     "start": 490,
+     "end": 493.4,
+     "text": "That gives us time to plan the vans.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_072",
+     "speaker_id": "p1",
+     "start": 496,
+     "end": 498.4,
+     "text": "Good. Tuesday the 27th.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_073",
+     "speaker_id": "p2",
+     "start": 502,
+     "end": 504.5,
+     "text": "I'll put that in the note.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_074",
+     "speaker_id": "p3",
+     "start": 508,
+     "end": 510.5,
+     "text": "And I'll copy my facilities lead.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_075",
+     "speaker_id": "p1",
+     "start": 514,
+     "end": 516.9,
+     "text": "Let's go back to the client-facing summary.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_076",
+     "speaker_id": "p2",
+     "start": 520,
+     "end": 523.8,
+     "text": "We need one sentence the client can forward internally.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_077",
+     "speaker_id": "p1",
+     "start": 527,
+     "end": 532.0,
+     "text": "Something like: installation moves to the 14th, access confirmed, training to follow.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_078",
+     "speaker_id": "p3",
+     "start": 536,
+     "end": 538.4,
+     "text": "That is accurate.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_079",
+     "speaker_id": "p4",
+     "start": 541,
+     "end": 543.9,
+     "text": "And the crew is held until Friday.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_080",
+     "speaker_id": "p2",
+     "start": 547,
+     "end": 549.4,
+     "text": "Good.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_081",
+     "speaker_id": "p1",
+     "start": 552,
+     "end": 557.5,
+     "text": "Now the commercial framing. The client asked whether the move costs them anything.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_082",
+     "speaker_id": "p2",
+     "start": 560,
+     "end": 564.6,
+     "text": "The install itself does not. The Saturday overtime is their side.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_083",
+     "speaker_id": "p3",
+     "start": 569,
+     "end": 573.6,
+     "text": "And our overtime is ours to absorb. I've already flagged it.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_084",
+     "speaker_id": "p1",
+     "start": 578,
+     "end": 581.4,
+     "text": "So we are not asking for more money.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_085",
+     "speaker_id": "p2",
+     "start": 584,
+     "end": 586.5,
+     "text": "Not for installation. Training is separate.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_086",
+     "speaker_id": "p3",
+     "start": 591,
+     "end": 594.4,
+     "text": "If training moves, that is a change order.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_087",
+     "speaker_id": "p1",
+     "start": 598,
+     "end": 600.4,
+     "text": "Understood. I'll say that plainly.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_088",
+     "speaker_id": "p2",
+     "start": 604,
+     "end": 607.4,
+     "text": "Do we need legal to review the confirmation?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_089",
+     "speaker_id": "p1",
+     "start": 610,
+     "end": 615.5,
+     "text": "No, it's an operational note. But keep the change-order language out of it.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_090",
+     "speaker_id": "p3",
+     "start": 619,
+     "end": 621.4,
+     "text": "Agreed.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_091",
+     "speaker_id": "p4",
+     "start": 623,
+     "end": 628.5,
+     "text": "One more thing — the loading bay has a 900 kilo lift limit.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_092",
+     "speaker_id": "p2",
+     "start": 631,
+     "end": 633.5,
+     "text": "The racks are 780. We're fine.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_093",
+     "speaker_id": "p4",
+     "start": 637,
+     "end": 640.4,
+     "text": "Fine on paper. I'll measure on the day.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_094",
+     "speaker_id": "p1",
+     "start": 643,
+     "end": 645.4,
+     "text": "Good. Any other risks?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_095",
+     "speaker_id": "p3",
+     "start": 648,
+     "end": 653.0,
+     "text": "Parking for the vans. Saturday is better, but we need two permits.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_096",
+     "speaker_id": "p2",
+     "start": 656,
+     "end": 658.5,
+     "text": "I'll add permits to the confirmation.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_097",
+     "speaker_id": "p1",
+     "start": 663,
+     "end": 666.8,
+     "text": "So the action list is growing. Let's capture it.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_098",
+     "speaker_id": "p2",
+     "start": 670,
+     "end": 672.4,
+     "text": "Confirmation, permits, schedule, crew hold.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_099",
+     "speaker_id": "p1",
+     "start": 677,
+     "end": 679.4,
+     "text": "And training date.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_100",
+     "speaker_id": "p4",
+     "start": 681,
+     "end": 684.4,
+     "text": "And the 17th van if training is separate.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_101",
+     "speaker_id": "p1",
+     "start": 684,
+     "end": 688.6,
+     "text": "On delivery: we can hold the 14th, but not the 12th.",
+     "confidence": 0.71,
+     "attribution_hint": "low confidence: voiceprint ambiguity (Anna / Marek)"
+    },
+    {
+     "id": "u_1030_102",
+     "speaker_id": "p3",
+     "start": 694,
+     "end": 696.5,
+     "text": "Say that again for the record.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_103",
+     "speaker_id": "p2",
+     "start": 699,
+     "end": 704.9,
+     "text": "We can hold the 14th, but not the 12th. The 12th is not achievable.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_104",
+     "speaker_id": "p3",
+     "start": 710,
+     "end": 714.2,
+     "text": "Thank you. That is what I will tell my board.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_105",
+     "speaker_id": "p1",
+     "start": 719,
+     "end": 722.4,
+     "text": "And we will put it in writing today.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_106",
+     "speaker_id": "p3",
+     "start": 726,
+     "end": 729.4,
+     "text": "Before five, please. Their board meets at six.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_107",
+     "speaker_id": "p1",
+     "start": 733,
+     "end": 735.4,
+     "text": "Before five. Understood.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_108",
+     "speaker_id": "p2",
+     "start": 738,
+     "end": 741.4,
+     "text": "I'll update the schedule and tell the crew.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_109",
+     "speaker_id": "p4",
+     "start": 745,
+     "end": 747.9,
+     "text": "I'll hold the vans until Friday noon.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_110",
+     "speaker_id": "p3",
+     "start": 752,
+     "end": 758.7,
+     "text": "One open question: does the 14th include the training session, or is that a separate visit?",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_111",
+     "speaker_id": "p1",
+     "start": 762,
+     "end": 767.0,
+     "text": "Installation on the 14th. Training is separate until we confirm the trainer.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_112",
+     "speaker_id": "p3",
+     "start": 772,
+     "end": 777.0,
+     "text": "Then I need that in the written note, with the change-order caveat.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_113",
+     "speaker_id": "p1",
+     "start": 781,
+     "end": 786.0,
+     "text": "I'll phrase it as: training date to be confirmed, commercial terms unchanged.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_114",
+     "speaker_id": "p3",
+     "start": 791,
+     "end": 793.4,
+     "text": "Good.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_115",
+     "speaker_id": "p4",
+     "start": 795,
+     "end": 800.0,
+     "text": "If training is separate, I need one more van on the 17th.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_116",
+     "speaker_id": "p2",
+     "start": 803,
+     "end": 805.4,
+     "text": "I'll confirm the van today.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_117",
+     "speaker_id": "p1",
+     "start": 810,
+     "end": 815.5,
+     "text": "Okay, we're done. Thanks everyone — I'll circulate the confirmation within the hour.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_118",
+     "speaker_id": "p3",
+     "start": 818,
+     "end": 820.4,
+     "text": "Thanks. Bye.",
+     "confidence": 0.95
+    },
+    {
+     "id": "u_1030_119",
+     "speaker_id": "p4",
+     "start": 821,
+     "end": 823.4,
+     "text": "Bye.",
+     "confidence": 0.95
+    }
+   ],
+   "decisions": [
+    {
+     "id": "dec_01",
+     "text": "Hold the 14th, not the 12th.",
+     "evidence_id": "ev_01",
+     "confidence": 0.91,
+     "status": "accepted"
+    },
+    {
+     "id": "dec_02",
+     "text": "The 12th is not achievable with the current access and crew.",
+     "evidence_id": "ev_08",
+     "confidence": 0.9,
+     "status": "accepted"
+    },
+    {
+     "id": "dec_03",
+     "text": "Installation starts at 07:00 with full building access.",
+     "evidence_id": "ev_04",
+     "confidence": 0.86,
+     "status": "accepted"
+    },
+    {
+     "id": "dec_04",
+     "text": "Training stays separate until the trainer is confirmed.",
+     "evidence_id": "ev_03",
+     "confidence": 0.84,
+     "status": "proposed"
+    }
+   ],
+   "actions": [
+    {
+     "id": "act_01",
+     "text": "Send written confirmation to the client before 17:00.",
+     "owner": "Anna",
+     "due": "2026-10-30",
+     "evidence_id": "ev_02",
+     "confidence": 0.94,
+     "status": "open"
+    },
+    {
+     "id": "act_02",
+     "text": "Update the install schedule and notify the crew.",
+     "owner": "Marek",
+     "due": "2026-10-30",
+     "evidence_id": "ev_06",
+     "confidence": 0.93,
+     "status": "open"
+    },
+    {
+     "id": "act_03",
+     "text": "Confirm whether training is included on the 14th.",
+     "owner": "Anna",
+     "due": "2026-10-31",
+     "evidence_id": "ev_03",
+     "confidence": 0.88,
+     "status": "open"
+    },
+    {
+     "id": "act_04",
+     "text": "Check van availability for a separate training visit.",
+     "owner": "Tomás",
+     "due": "2026-10-31",
+     "evidence_id": "ev_07",
+     "confidence": 0.9,
+     "status": "open"
+    }
+   ],
+   "questions": [
+    {
+     "id": "q_01",
+     "text": "Does the 14th include the training session, or is that a separate visit?",
+     "evidence_id": "ev_03",
+     "confidence": 0.95,
+     "status": "open"
+    },
+    {
+     "id": "q_02",
+     "text": "Who covers the Saturday overtime for the client's team?",
+     "evidence_id": "ev_05",
+     "confidence": 0.72,
+     "status": "open"
+    }
+   ],
+   "evidence": [
+    {
+     "id": "ev_01",
+     "kind": "promise",
+     "quote": "We can hold the 14th, but not the 12th.",
+     "speaker_id": "p1",
+     "start": 684,
+     "end": 688.6,
+     "confidence": 0.93,
+     "attribution_confidence": 0.71,
+     "utterance_id": "u_1030_101",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_02",
+     "kind": "action",
+     "quote": "I'll circulate the confirmation within the hour.",
+     "speaker_id": "p1",
+     "start": 810,
+     "end": 815.5,
+     "confidence": 0.9,
+     "attribution_confidence": 0.96,
+     "utterance_id": "u_1030_117",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_03",
+     "kind": "question",
+     "quote": "Does the 14th include the training session, or is that a separate visit?",
+     "speaker_id": "p3",
+     "start": 752,
+     "end": 758.7,
+     "confidence": 0.95,
+     "attribution_confidence": 0.97,
+     "utterance_id": "u_1030_110",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_04",
+     "kind": "decision",
+     "quote": "Saturday — quieter building, full access.",
+     "speaker_id": "p4",
+     "start": 61,
+     "end": 65.6,
+     "confidence": 0.88,
+     "attribution_confidence": 0.94,
+     "utterance_id": "u_1030_010",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_05",
+     "kind": "note",
+     "quote": "Between us, Sandra's team is chaotic — they will not have the access list ready by the 12th anyway.",
+     "speaker_id": "p1",
+     "start": 449,
+     "end": 457.0,
+     "confidence": 0.96,
+     "attribution_confidence": 0.98,
+     "utterance_id": "u_1030_066",
+     "sensitivity": "client_confidential",
+     "redaction_id": "red_01"
+    },
+    {
+     "id": "ev_06",
+     "kind": "action",
+     "quote": "I'll update the schedule and tell the crew.",
+     "speaker_id": "p2",
+     "start": 738,
+     "end": 741.4,
+     "confidence": 0.94,
+     "attribution_confidence": 0.95,
+     "utterance_id": "u_1030_108",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_07",
+     "kind": "action",
+     "quote": "If training is separate, I need one more van on the 17th.",
+     "speaker_id": "p4",
+     "start": 795,
+     "end": 800.0,
+     "confidence": 0.92,
+     "attribution_confidence": 0.93,
+     "utterance_id": "u_1030_115",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_08",
+     "kind": "decision",
+     "quote": "The 12th is not achievable with the current access and crew.",
+     "speaker_id": "p2",
+     "start": 396,
+     "end": 401.9,
+     "confidence": 0.91,
+     "attribution_confidence": 0.96,
+     "utterance_id": "u_1030_058",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    }
+   ],
+   "redactions": [
+    {
+     "id": "red_01",
+     "evidence_id": "ev_05",
+     "utterance_id": "u_1030_066",
+     "reason": "client_confidential",
+     "label": "Internal client comment",
+     "safe_text": "[redacted — internal client comment]",
+     "detected_by": "redact-clf-0.4",
+     "confidence": 0.96,
+     "status": "detected",
+     "applied_at": null,
+     "applied_by": null
+    }
+   ],
+   "provenance": {
+    "device": "MacBook Pro 14 · M4",
+    "npu": "Apple Neural Engine · 16-core",
+    "asr_model": "parakeet-tdt-0.6b-int8",
+    "diarization_model": "pyannote-3.1-mini · int8",
+    "vad_model": "silero-vad-5 · int8",
+    "redaction_model": "redact-clf-0.4 · int8",
+    "app_version": "0.9.0",
+    "language": "en",
+    "audio_sha256": "c60d1d9c6eb91bd87b5d713766dfe250afd22b5f83d669c0d44e88ccfa1189f2",
+    "local_only": true,
+    "encrypted_at_rest": "AES-256-GCM · device key",
+    "retention": "team_default",
+    "network": "offline"
+   },
+   "retention": {
+    "retain_until": "2027-10-30T00:00:00Z",
+    "policy": "team_default",
+    "legal_hold": false
+   },
+   "tags": [
+    "northgate",
+    "delivery",
+    "client"
+   ],
+   "baseline_lookup_min": 26,
+   "ppma": {
+    "status": "pending",
+    "event_id": null,
+    "completed_at": null
+   },
+   "import": false
+  },
+  {
+   "id": "mtg_kickoff_1009",
+   "capture_id": "cap_01J8Z1P4T6R2M9K3L5N7Q0S",
+   "title": "Kickoff call — Northgate fit-out",
+   "mode": "call",
+   "started_at": "2026-10-09T14:00:00Z",
+   "ended_at": "2026-10-09T14:42:18Z",
+   "duration_s": 2538,
+   "language": "en",
+   "jurisdiction": "DE",
+   "sensitivity": "client_confidential",
+   "status": "sent",
+   "participants": [
+    {
+     "id": "p1",
+     "name": "Anna Voss",
+     "role": "Account lead",
+     "initials": "AV",
+     "color": "amber"
+    },
+    {
+     "id": "p2",
+     "name": "Marek Nowak",
+     "role": "Delivery lead",
+     "initials": "MN",
+     "color": "cyan"
+    },
+    {
+     "id": "p3",
+     "name": "Sandra Klein",
+     "role": "Client operations",
+     "initials": "SK",
+     "color": "violet"
+    },
+    {
+     "id": "p4",
+     "name": "Tomás Rivera",
+     "role": "Installation lead",
+     "initials": "TR",
+     "color": "green"
+    }
+   ],
+   "consent": {
+    "state": "granted",
+    "basis": "all_participants_notified",
+    "jurisdiction": "DE",
+    "participants_notified": true,
+    "evidence_ref": "consent_k01",
+    "wording_version": "DE-2026-2",
+    "recorded_at": "2026-10-30T08:59:12Z",
+    "recorded_by": "user_anna"
+   },
+   "summary": "Kickoff for the Northgate fit-out. Handover targeted for the 12th, access survey due 16 October, training kept separate. A survey slip triggers a date review.",
+   "utterances": [
+    {
+     "id": "u_1009_001",
+     "speaker_id": "p1",
+     "start": 0,
+     "end": 5.5,
+     "text": "Welcome, everyone. This is the Northgate fit-out kickoff. Recording for the project record.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_002",
+     "speaker_id": "p3",
+     "start": 9,
+     "end": 11.5,
+     "text": "Thanks. I'll represent the client side.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_003",
+     "speaker_id": "p2",
+     "start": 15,
+     "end": 19.6,
+     "text": "I'll run through the plan, then we can challenge the dates.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_004",
+     "speaker_id": "p4",
+     "start": 22,
+     "end": 24.5,
+     "text": "I have the install plan open.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_005",
+     "speaker_id": "p2",
+     "start": 28,
+     "end": 33.0,
+     "text": "The working assumption is a handover in the week of the 12th.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_006",
+     "speaker_id": "p3",
+     "start": 36,
+     "end": 41.5,
+     "text": "The 12th is a board commitment. It needs to be real, not aspirational.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_007",
+     "speaker_id": "p4",
+     "start": 44,
+     "end": 49.5,
+     "text": "The crew can be on site from the 8th if access is ready.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_008",
+     "speaker_id": "p3",
+     "start": 52,
+     "end": 57.0,
+     "text": "Access is the thing I cannot promise until the survey is done.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_009",
+     "speaker_id": "p2",
+     "start": 60,
+     "end": 62.9,
+     "text": "Then the survey is the first milestone.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_010",
+     "speaker_id": "p1",
+     "start": 67,
+     "end": 69.4,
+     "text": "Who owns the access survey?",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_011",
+     "speaker_id": "p3",
+     "start": 72,
+     "end": 75.4,
+     "text": "My facilities lead, but I need your checklist.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_012",
+     "speaker_id": "p4",
+     "start": 80,
+     "end": 82.4,
+     "text": "I'll send the checklist today.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_013",
+     "speaker_id": "p2",
+     "start": 86,
+     "end": 91.9,
+     "text": "Target the 12th for handover, with the survey complete by the 16th of October.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_014",
+     "speaker_id": "p3",
+     "start": 96,
+     "end": 98.5,
+     "text": "The 16th is tight but possible.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_015",
+     "speaker_id": "p1",
+     "start": 103,
+     "end": 108.5,
+     "text": "Let's write both dates down: survey by the 16th, handover on the 12th.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_016",
+     "speaker_id": "p2",
+     "start": 112,
+     "end": 114.4,
+     "text": "Agreed.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_017",
+     "speaker_id": "p4",
+     "start": 116,
+     "end": 121.0,
+     "text": "I need to know whether the loading bay is available on Saturdays.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_018",
+     "speaker_id": "p3",
+     "start": 124,
+     "end": 126.9,
+     "text": "It normally is, but I will confirm.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_019",
+     "speaker_id": "p1",
+     "start": 131,
+     "end": 133.9,
+     "text": "That could matter if the date moves.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_020",
+     "speaker_id": "p2",
+     "start": 137,
+     "end": 139.9,
+     "text": "Let's not plan around a move yet.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_021",
+     "speaker_id": "p3",
+     "start": 143,
+     "end": 145.4,
+     "text": "I'd rather plan around reality.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_022",
+     "speaker_id": "p2",
+     "start": 149,
+     "end": 154.9,
+     "text": "Fair. The 12th is the earliest we can commit. Anything earlier is not honest.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_023",
+     "speaker_id": "p3",
+     "start": 159,
+     "end": 162.8,
+     "text": "Then we commit to the 12th and protect it.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_024",
+     "speaker_id": "p4",
+     "start": 166,
+     "end": 169.4,
+     "text": "And if the survey slips, we revisit immediately.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_025",
+     "speaker_id": "p2",
+     "start": 174,
+     "end": 178.2,
+     "text": "Agreed. Survey slip is a trigger for a date review.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_026",
+     "speaker_id": "p1",
+     "start": 182,
+     "end": 184.4,
+     "text": "Anything else before we close?",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_027",
+     "speaker_id": "p3",
+     "start": 187,
+     "end": 191.2,
+     "text": "Training is still quoted separately. Keep it separate for now.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_028",
+     "speaker_id": "p2",
+     "start": 195,
+     "end": 197.4,
+     "text": "Noted. Training separate.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_029",
+     "speaker_id": "p1",
+     "start": 201,
+     "end": 203.9,
+     "text": "I'll circulate the plan and the trigger.",
+     "confidence": 0.96
+    },
+    {
+     "id": "u_1009_030",
+     "speaker_id": "p3",
+     "start": 207,
+     "end": 209.4,
+     "text": "Thank you. Bye.",
+     "confidence": 0.96
+    }
+   ],
+   "decisions": [
+    {
+     "id": "dec_k01",
+     "text": "Target handover for the 12th with a survey review trigger.",
+     "evidence_id": "ev_k01",
+     "confidence": 0.93,
+     "status": "accepted"
+    },
+    {
+     "id": "dec_k02",
+     "text": "Keep training as a separate visit.",
+     "evidence_id": "ev_k03",
+     "confidence": 0.84,
+     "status": "accepted"
+    }
+   ],
+   "actions": [
+    {
+     "id": "act_k01",
+     "text": "Complete the access survey by 16 October.",
+     "owner": "Sandra",
+     "due": "2026-10-16",
+     "evidence_id": "ev_k02",
+     "confidence": 0.9,
+     "status": "done"
+    },
+    {
+     "id": "act_k02",
+     "text": "Circulate the plan and the date-review trigger.",
+     "owner": "Anna",
+     "due": "2026-10-10",
+     "evidence_id": "ev_k04",
+     "confidence": 0.94,
+     "status": "done"
+    }
+   ],
+   "questions": [
+    {
+     "id": "q_k01",
+     "text": "Is the loading bay available on Saturdays?",
+     "evidence_id": "ev_k03",
+     "confidence": 0.93,
+     "status": "answered"
+    }
+   ],
+   "evidence": [
+    {
+     "id": "ev_k01",
+     "kind": "decision",
+     "quote": "The 12th is the earliest we can commit. Anything earlier is not honest.",
+     "speaker_id": "p2",
+     "start": 149,
+     "end": 154.9,
+     "confidence": 0.95,
+     "attribution_confidence": 0.97,
+     "utterance_id": "u_1009_022",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_k02",
+     "kind": "action",
+     "quote": "Survey complete by the 16th of October.",
+     "speaker_id": "p3",
+     "start": 96,
+     "end": 98.5,
+     "confidence": 0.9,
+     "attribution_confidence": 0.91,
+     "utterance_id": "u_1009_014",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_k03",
+     "kind": "question",
+     "quote": "Is the loading bay available on Saturdays?",
+     "speaker_id": "p4",
+     "start": 116,
+     "end": 121.0,
+     "confidence": 0.93,
+     "attribution_confidence": 0.95,
+     "utterance_id": "u_1009_017",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_k04",
+     "kind": "action",
+     "quote": "I'll circulate the plan and the trigger.",
+     "speaker_id": "p1",
+     "start": 201,
+     "end": 203.9,
+     "confidence": 0.92,
+     "attribution_confidence": 0.96,
+     "utterance_id": "u_1009_029",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    }
+   ],
+   "redactions": [],
+   "provenance": {
+    "device": "iPhone 16 Pro · A18",
+    "npu": "Apple Neural Engine · 16-core",
+    "asr_model": "parakeet-tdt-0.6b-int8",
+    "diarization_model": "pyannote-3.1-mini · int8",
+    "vad_model": "silero-vad-5 · int8",
+    "redaction_model": "redact-clf-0.4 · int8",
+    "app_version": "0.9.0",
+    "language": "en",
+    "audio_sha256": "91052a749bdf9acb7453dddc6b2474c1895402755c1bb709a34b8c1be8bf0ad9",
+    "local_only": true,
+    "encrypted_at_rest": "AES-256-GCM · device key",
+    "retention": "team_default",
+    "network": "offline"
+   },
+   "retention": {
+    "retain_until": "2027-10-09T00:00:00Z",
+    "policy": "team_default",
+    "legal_hold": false
+   },
+   "tags": [
+    "northgate",
+    "kickoff"
+   ],
+   "baseline_lookup_min": 26,
+   "ppma": {
+    "status": "sent",
+    "event_id": "evt_seed_kickoff",
+    "completed_at": "2026-10-09T14:43:02Z"
+   },
+   "import": false
+  },
+  {
+   "id": "mtg_standup_1023",
+   "capture_id": "cap_01J9A2B3C4D5E6F7G8H9J0K",
+   "title": "Install crew stand-up",
+   "mode": "meeting",
+   "started_at": "2026-10-23T07:30:00Z",
+   "ended_at": "2026-10-23T07:48:02Z",
+   "duration_s": 1082,
+   "language": "en",
+   "jurisdiction": "DE",
+   "sensitivity": "personal",
+   "status": "queued",
+   "participants": [
+    {
+     "id": "p2",
+     "name": "Marek Nowak",
+     "role": "Delivery lead",
+     "initials": "MN",
+     "color": "cyan"
+    },
+    {
+     "id": "p4",
+     "name": "Tomás Rivera",
+     "role": "Installation lead",
+     "initials": "TR",
+     "color": "green"
+    },
+    {
+     "id": "p5",
+     "name": "Priya Shah",
+     "role": "Crew scheduler",
+     "initials": "PS",
+     "color": "blue"
+    }
+   ],
+   "consent": {
+    "state": "granted",
+    "basis": "all_participants_notified",
+    "jurisdiction": "DE",
+    "participants_notified": true,
+    "evidence_ref": "consent_s01",
+    "wording_version": "DE-2026-2",
+    "recorded_at": "2026-10-30T08:59:12Z",
+    "recorded_by": "user_anna"
+   },
+   "summary": "Crew and van status for Northgate. Bracknell finishes on the 10th; one van is in service on the 11th. The four-person rota is held until Friday. The access list remains the critical path.",
+   "utterances": [
+    {
+     "id": "u_1023_001",
+     "speaker_id": "p2",
+     "start": 0,
+     "end": 5.0,
+     "text": "Quick stand-up on Northgate. Recording so the crew has the same facts.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_002",
+     "speaker_id": "p4",
+     "start": 8,
+     "end": 11.8,
+     "text": "Bracknell is on plan. We finish the 10th, mid-afternoon.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_003",
+     "speaker_id": "p2",
+     "start": 16,
+     "end": 19.4,
+     "text": "That keeps both vans free for the 12th.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_004",
+     "speaker_id": "p4",
+     "start": 22,
+     "end": 28.3,
+     "text": "One van is in for service on the 11th. It is back the same day.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_005",
+     "speaker_id": "p5",
+     "start": 31,
+     "end": 36.9,
+     "text": "I have the crew rota. Four people on the 12th, three on the 14th.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_006",
+     "speaker_id": "p2",
+     "start": 40,
+     "end": 45.5,
+     "text": "The client may move to the 14th. Hold the four-person rota until Friday.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_007",
+     "speaker_id": "p5",
+     "start": 50,
+     "end": 54.2,
+     "text": "Holding costs us a small cancellation fee if it moves.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_008",
+     "speaker_id": "p2",
+     "start": 58,
+     "end": 60.9,
+     "text": "That is cheaper than losing the slot.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_009",
+     "speaker_id": "p4",
+     "start": 65,
+     "end": 69.6,
+     "text": "The 12th depends on the Bracknell job finishing on the 10th.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_010",
+     "speaker_id": "p2",
+     "start": 74,
+     "end": 76.9,
+     "text": "And the access list is still outstanding.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_011",
+     "speaker_id": "p5",
+     "start": 80,
+     "end": 83.8,
+     "text": "I need the list before I confirm the 14th.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_012",
+     "speaker_id": "p2",
+     "start": 87,
+     "end": 89.9,
+     "text": "Sandra owns it. Due Tuesday the 27th.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_013",
+     "speaker_id": "p4",
+     "start": 94,
+     "end": 98.2,
+     "text": "If it lands late, we lose the Saturday planning window.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_014",
+     "speaker_id": "p2",
+     "start": 102,
+     "end": 106.6,
+     "text": "Escalate to me if it is not in by Tuesday noon.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_015",
+     "speaker_id": "p5",
+     "start": 111,
+     "end": 113.9,
+     "text": "I'll put a reminder in the rota.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_016",
+     "speaker_id": "p4",
+     "start": 117,
+     "end": 122.9,
+     "text": "Training is still separate, so we may need the extra van on the 17th.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_017",
+     "speaker_id": "p2",
+     "start": 126,
+     "end": 128.5,
+     "text": "Confirm that with Marek by tomorrow.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_018",
+     "speaker_id": "p4",
+     "start": 132,
+     "end": 134.4,
+     "text": "Will do.",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_019",
+     "speaker_id": "p5",
+     "start": 136,
+     "end": 138.4,
+     "text": "Anything else?",
+     "confidence": 0.94
+    },
+    {
+     "id": "u_1023_020",
+     "speaker_id": "p2",
+     "start": 140,
+     "end": 143.8,
+     "text": "No. Keep the 14th warm and the 12th honest.",
+     "confidence": 0.94
+    }
+   ],
+   "decisions": [
+    {
+     "id": "dec_s01",
+     "text": "Hold the four-person rota until Friday.",
+     "evidence_id": "ev_s01",
+     "confidence": 0.9,
+     "status": "accepted"
+    }
+   ],
+   "actions": [
+    {
+     "id": "act_s01",
+     "text": "Escalate the access list if it is not in by Tuesday noon.",
+     "owner": "Marek",
+     "due": "2026-10-27",
+     "evidence_id": "ev_s02",
+     "confidence": 0.92,
+     "status": "open"
+    },
+    {
+     "id": "act_s02",
+     "text": "Confirm the extra van for 17 November.",
+     "owner": "Tomás",
+     "due": "2026-10-24",
+     "evidence_id": "ev_s03",
+     "confidence": 0.87,
+     "status": "open"
+    }
+   ],
+   "questions": [
+    {
+     "id": "q_s01",
+     "text": "Do we need the extra van on the 17th?",
+     "evidence_id": "ev_s03",
+     "confidence": 0.88,
+     "status": "open"
+    }
+   ],
+   "evidence": [
+    {
+     "id": "ev_s01",
+     "kind": "decision",
+     "quote": "Hold the four-person rota until Friday.",
+     "speaker_id": "p2",
+     "start": 40,
+     "end": 45.5,
+     "confidence": 0.9,
+     "attribution_confidence": 0.94,
+     "utterance_id": "u_1023_006",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_s02",
+     "kind": "action",
+     "quote": "Escalate the access list to Marek by Tuesday noon.",
+     "speaker_id": "p2",
+     "start": 102,
+     "end": 106.6,
+     "confidence": 0.92,
+     "attribution_confidence": 0.95,
+     "utterance_id": "u_1023_014",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_s03",
+     "kind": "question",
+     "quote": "Do we need the extra van on the 17th?",
+     "speaker_id": "p4",
+     "start": 117,
+     "end": 122.9,
+     "confidence": 0.88,
+     "attribution_confidence": 0.93,
+     "utterance_id": "u_1023_016",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    }
+   ],
+   "redactions": [],
+   "provenance": {
+    "device": "iPhone 16 Pro · A18",
+    "npu": "Apple Neural Engine · 16-core",
+    "asr_model": "parakeet-tdt-0.6b-int8",
+    "diarization_model": "pyannote-3.1-mini · int8",
+    "vad_model": "silero-vad-5 · int8",
+    "redaction_model": "redact-clf-0.4 · int8",
+    "app_version": "0.9.0",
+    "language": "en",
+    "audio_sha256": "91052a749bdf9acb7453dddc6b2474c1895402755c1bb709a34b8c1be8bf0ad9",
+    "local_only": true,
+    "encrypted_at_rest": "AES-256-GCM · device key",
+    "retention": "team_default",
+    "network": "offline"
+   },
+   "retention": {
+    "retain_until": "2027-10-23T00:00:00Z",
+    "policy": "team_default",
+    "legal_hold": false
+   },
+   "tags": [
+    "northgate",
+    "crew"
+   ],
+   "baseline_lookup_min": 26,
+   "ppma": {
+    "status": "queued",
+    "event_id": "evt_seed_standup",
+    "completed_at": null
+   },
+   "import": false
+  },
+  {
+   "id": "mtg_pricing_1015",
+   "capture_id": "cap_01J9P1R2I3C4I5N6G7X8Y9Z",
+   "title": "Internal pricing review — Northgate",
+   "mode": "meeting",
+   "started_at": "2026-10-15T16:00:00Z",
+   "ended_at": "2026-10-15T16:08:12Z",
+   "duration_s": 492,
+   "language": "en",
+   "jurisdiction": "DE",
+   "sensitivity": "financial",
+   "status": "sent",
+   "participants": [
+    {
+     "id": "p1",
+     "name": "Anna Voss",
+     "role": "Account lead",
+     "initials": "AV",
+     "color": "amber"
+    },
+    {
+     "id": "p2",
+     "name": "Marek Nowak",
+     "role": "Delivery lead",
+     "initials": "MN",
+     "color": "cyan"
+    }
+   ],
+   "consent": {
+    "state": "granted",
+    "basis": "all_participants_notified",
+    "jurisdiction": "DE",
+    "participants_notified": true,
+    "evidence_ref": "consent_p01",
+    "wording_version": "DE-2026-2",
+    "recorded_at": "2026-10-30T08:59:12Z",
+    "recorded_by": "user_anna"
+   },
+   "summary": "Internal margin review. The install margin is 12% at the current crew rate and 8% if Saturday overtime is absorbed. Do not include margins in the client confirmation.",
+   "utterances": [
+    {
+     "id": "u_1015_001",
+     "speaker_id": "p1",
+     "start": 0,
+     "end": 4.6,
+     "text": "Internal pricing review for Northgate. Sensitive. No client on the call.",
+     "confidence": 0.93
+    },
+    {
+     "id": "u_1015_002",
+     "speaker_id": "p2",
+     "start": 10,
+     "end": 14.6,
+     "text": "The install margin is twelve percent at the current crew rate.",
+     "confidence": 0.93
+    },
+    {
+     "id": "u_1015_003",
+     "speaker_id": "p1",
+     "start": 20,
+     "end": 24.2,
+     "text": "If we absorb the Saturday overtime it drops to eight.",
+     "confidence": 0.93
+    },
+    {
+     "id": "u_1015_004",
+     "speaker_id": "p2",
+     "start": 30,
+     "end": 32.5,
+     "text": "Eight is still above the floor.",
+     "confidence": 0.93
+    },
+    {
+     "id": "u_1015_005",
+     "speaker_id": "p1",
+     "start": 38,
+     "end": 41.8,
+     "text": "Let's not put the margin in the client confirmation.",
+     "confidence": 0.93
+    },
+    {
+     "id": "u_1015_006",
+     "speaker_id": "p2",
+     "start": 47,
+     "end": 49.4,
+     "text": "Agreed. Operational note only.",
+     "confidence": 0.93
+    },
+    {
+     "id": "u_1015_007",
+     "speaker_id": "p1",
+     "start": 55,
+     "end": 57.9,
+     "text": "Okay, that's all. Keep this one internal.",
+     "confidence": 0.93
+    }
+   ],
+   "decisions": [
+    {
+     "id": "dec_p01",
+     "text": "Keep commercial margin out of the client confirmation.",
+     "evidence_id": "ev_p01",
+     "confidence": 0.91,
+     "status": "accepted"
+    }
+   ],
+   "actions": [],
+   "questions": [],
+   "evidence": [
+    {
+     "id": "ev_p01",
+     "kind": "decision",
+     "quote": "Let's not put the margin in the client confirmation.",
+     "speaker_id": "p1",
+     "start": 38,
+     "end": 41.8,
+     "confidence": 0.93,
+     "attribution_confidence": 0.96,
+     "utterance_id": "u_1015_005",
+     "sensitivity": "client_confidential",
+     "redaction_id": null
+    },
+    {
+     "id": "ev_p02",
+     "kind": "note",
+     "quote": "The install margin is twelve percent at the current crew rate.",
+     "speaker_id": "p2",
+     "start": 10,
+     "end": 14.6,
+     "confidence": 0.94,
+     "attribution_confidence": 0.95,
+     "utterance_id": "u_1015_002",
+     "sensitivity": "financial",
+     "redaction_id": null
+    }
+   ],
+   "redactions": [],
+   "provenance": {
+    "device": "MacBook Pro 14 · M4",
+    "npu": "Apple Neural Engine · 16-core",
+    "asr_model": "parakeet-tdt-0.6b-int8",
+    "diarization_model": "pyannote-3.1-mini · int8",
+    "vad_model": "silero-vad-5 · int8",
+    "redaction_model": "redact-clf-0.4 · int8",
+    "app_version": "0.9.0",
+    "language": "en",
+    "audio_sha256": "c60d1d9c6eb91bd87b5d713766dfe250afd22b5f83d669c0d44e88ccfa1189f2",
+    "local_only": true,
+    "encrypted_at_rest": "AES-256-GCM · device key",
+    "retention": "team_default",
+    "network": "offline"
+   },
+   "retention": {
+    "retain_until": "2026-11-15T00:00:00Z",
+    "policy": "internal_30d",
+    "legal_hold": false
+   },
+   "tags": [
+    "northgate",
+    "internal",
+    "financial"
+   ],
+   "baseline_lookup_min": 26,
+   "ppma": {
+    "status": "sent",
+    "event_id": "evt_seed_pricing",
+    "completed_at": "2026-10-15T16:09:00Z"
+   },
+   "import": false
+  }
+ ],
+ "notes": [
+  {
+   "id": "note_01",
+   "note_id": "note_01J9N0R7H6G5A4T3E2",
+   "title": "Northgate site walk — loading bay",
+   "text": "Client mentioned the 14th is tight because of the install crew. They can open the bay at seven if we confirm by Friday. Lift limit is 900 kg — our racks are 780. Two van permits needed on Saturday.",
+   "captured_at": "2026-10-28T15:42:00Z",
+   "location": {
+    "label": "Northgate — Building C",
+    "precision": "site",
+    "lat": 51.5045,
+    "lon": -0.0912
+   },
+   "evidence_ref": "ev_n01",
+   "consent": {
+    "state": "granted",
+    "basis": "user_note",
+    "jurisdiction": "GB",
+    "participants_notified": false,
+    "evidence_ref": "consent_n01",
+    "wording_version": "GB-2026-1",
+    "recorded_at": "2026-10-28T15:40:00Z",
+    "recorded_by": "user_tomas"
+   },
+   "sensitivity": "client_confidential",
+   "photo": {
+    "label": "Bay door and height marker",
+    "ocr": "LOADING BAY 07:00–10:00\nMAX HEIGHT 2.4 m\nLIFT 900 kg",
+    "ocr_confidence": 0.97,
+    "captured_on_device": true
+   },
+   "offline_captured": true,
+   "queued_seconds": 0,
+   "ppma": {
+    "status": "sent",
+    "event_id": "evt_seed_note",
+    "completed_at": "2026-10-28T15:42:11Z"
+   },
+   "tags": [
+    "northgate",
+    "site-walk",
+    "field"
+   ]
+  }
+ ],
+ "ppma": {
+  "manifest": {
+   "app_id": "recall-capture",
+   "display_name": "RECALL",
+   "version": "0.9.0",
+   "contract": "PPMA North Contract v0",
+   "direction": "events out; limited commands in",
+   "event_prefix": "capture.*",
+   "default_sensitivity": "personal",
+   "last_validated": "2026-10-30T08:00:00Z",
+   "resources": "text + signed evidence pointers by default; encrypted media only on explicit opt-in",
+   "auth": "per-device app token, owner-scoped; rotate on uninstall",
+   "events": [
+    {
+     "type": "capture.recording.started",
+     "sensitivity": "personal",
+     "resource": "none",
+     "description": "Metadata only. No transcript, no audio."
+    },
+    {
+     "type": "capture.meeting.completed",
+     "sensitivity": "personal",
+     "resource": "evidence pointers",
+     "description": "The main event: decisions, actions, questions, evidence, consent, redactions and provenance."
+    },
+    {
+     "type": "capture.call.completed",
+     "sensitivity": "personal",
+     "resource": "evidence pointers",
+     "description": "Same shape as a meeting with mode=call; phone hashes only."
+    },
+    {
+     "type": "capture.note.created",
+     "sensitivity": "personal",
+     "resource": "evidence pointer",
+     "description": "A field note, photo note or observation."
+    },
+    {
+     "type": "capture.correction",
+     "sensitivity": "personal",
+     "resource": "none",
+     "description": "A human corrected a speaker, quote or extracted item."
+    },
+    {
+     "type": "capture.redaction.applied",
+     "sensitivity": "personal",
+     "resource": "safe text",
+     "description": "A passage was redacted before sharing."
+    },
+    {
+     "type": "capture.memory.deleted",
+     "sensitivity": "personal",
+     "resource": "none",
+     "description": "A tombstone. Deletion is not a silent drop."
+    },
+    {
+     "type": "capture.consent.changed",
+     "sensitivity": "personal",
+     "resource": "none",
+     "description": "Consent was withdrawn or changed."
+    }
+   ],
+   "commands": [
+    {
+     "type": "capture.forget",
+     "direction": "in",
+     "description": "PPMA asks RECALL to delete a memory after a forget correction or retention decision."
+    },
+    {
+     "type": "capture.apply_retention",
+     "direction": "in",
+     "description": "PPMA passes a retention policy for a capture."
+    }
+   ],
+   "deprecation": {
+    "window": "two minor versions",
+    "migration": "add fields, never silently change payload semantics; keep the capture.* prefix stable"
+   }
+  },
+  "project": {
+   "id": "prj_northgate",
+   "name": "Northgate fit-out",
+   "space": "ppma://spaces/northgate",
+   "owner": "Anna Voss",
+   "state_before": "Handover targeted for 12 November. Access survey complete. Training quoted separately.",
+   "state_after": "Handover moved to 14 November. The 12th is not achievable. Written confirmation due today before 17:00. Training date to follow.",
+   "followup_draft": "Hi Sandra — confirming installation moves to Saturday 14 November, building access from 07:00. Training remains a separate visit; I will confirm the date and commercial terms tomorrow. Two van permits are included.",
+   "link": "ppma://spaces/northgate/projects/prj_northgate",
+   "proposed_action": "Send the written confirmation and set a follow-up for the training date.",
+   "approval_required": true,
+   "updated_at": "2026-10-30T09:00:00Z"
+  },
+  "memory": [
+   {
+    "id": "mem_01",
+    "capture_id": "cap_01J8Z1P4T6R2M9K3L5N7Q0S",
+    "meeting_id": "mtg_kickoff_1009",
+    "type": "decision",
+    "text": "Handover targeted for the 12th, with an access-survey review trigger.",
+    "speaker_id": "p2",
+    "evidence_id": "ev_k01",
+    "confidence": 0.93,
+    "sensitivity": "client_confidential",
+    "consent": "granted",
+    "redacted": false,
+    "source": "RECALL",
+    "created_at": "2026-10-09T14:43:09Z",
+    "state": "active"
+   },
+   {
+    "id": "mem_02",
+    "capture_id": "cap_01J8Z1P4T6R2M9K3L5N7Q0S",
+    "meeting_id": "mtg_kickoff_1009",
+    "type": "action",
+    "text": "Access survey by 16 October — owner Sandra Klein.",
+    "speaker_id": "p3",
+    "evidence_id": "ev_k02",
+    "confidence": 0.9,
+    "sensitivity": "client_confidential",
+    "consent": "granted",
+    "redacted": false,
+    "source": "RECALL",
+    "created_at": "2026-10-09T14:43:09Z",
+    "state": "active"
+   },
+   {
+    "id": "mem_03",
+    "capture_id": "cap_01J8Z1P4T6R2M9K3L5N7Q0S",
+    "meeting_id": "mtg_kickoff_1009",
+    "type": "question",
+    "text": "Is the loading bay available on Saturdays?",
+    "speaker_id": "p4",
+    "evidence_id": "ev_k03",
+    "confidence": 0.93,
+    "sensitivity": "client_confidential",
+    "consent": "granted",
+    "redacted": false,
+    "source": "RECALL",
+    "created_at": "2026-10-09T14:43:09Z",
+    "state": "active"
+   },
+   {
+    "id": "mem_04",
+    "capture_id": "cap_01J9A2B3C4D5E6F7G8H9J0K",
+    "meeting_id": "mtg_standup_1023",
+    "type": "decision",
+    "text": "Hold the four-person rota until Friday.",
+    "speaker_id": "p2",
+    "evidence_id": "ev_s01",
+    "confidence": 0.9,
+    "sensitivity": "personal",
+    "consent": "granted",
+    "redacted": false,
+    "source": "RECALL",
+    "created_at": "2026-10-23T07:48:20Z",
+    "state": "active"
+   },
+   {
+    "id": "mem_05",
+    "capture_id": "note_01J9N0R7H6G5A4T3E2",
+    "meeting_id": "note_01",
+    "type": "note",
+    "text": "Loading bay opens at 07:00 if confirmed by Friday. Lift limit 900 kg; two Saturday van permits needed.",
+    "speaker_id": null,
+    "evidence_id": "ev_n01",
+    "confidence": 0.97,
+    "sensitivity": "client_confidential",
+    "consent": "granted",
+    "redacted": false,
+    "source": "RECALL",
+    "created_at": "2026-10-28T15:42:18Z",
+    "state": "active"
+   }
+  ],
+  "events": [
+   {
+    "event_id": "evt_seed_kickoff",
+    "app_id": "recall-capture",
+    "space": "ppma://spaces/northgate",
+    "occurred_at": "2026-10-09T14:43:02Z",
+    "type": "capture.meeting.completed",
+    "sensitivity": "client_confidential",
+    "payload": {
+     "capture_id": "cap_01J8Z1P4T6R2M9K3L5N7Q0S",
+     "title": "Kickoff call — Northgate fit-out",
+     "started_at": "2026-10-09T14:00:00Z",
+     "ended_at": "2026-10-09T14:42:18Z",
+     "language": "en",
+     "participants": [
+      {
+       "id": "p1",
+       "name": "Anna Voss",
+       "role": "Account lead",
+       "initials": "AV",
+       "color": "amber"
+      },
+      {
+       "id": "p2",
+       "name": "Marek Nowak",
+       "role": "Delivery lead",
+       "initials": "MN",
+       "color": "cyan"
+      },
+      {
+       "id": "p3",
+       "name": "Sandra Klein",
+       "role": "Client operations",
+       "initials": "SK",
+       "color": "violet"
+      },
+      {
+       "id": "p4",
+       "name": "Tomás Rivera",
+       "role": "Installation lead",
+       "initials": "TR",
+       "color": "green"
+      }
+     ],
+     "summary": "Kickoff for the Northgate fit-out. Handover targeted for the 12th, access survey due 16 October, training kept separate. A survey slip triggers a date review.",
+     "decisions": [
+      {
+       "id": "dec_k01",
+       "text": "Target handover for the 12th with a survey review trigger.",
+       "evidence_id": "ev_k01",
+       "confidence": 0.93,
+       "status": "accepted"
+      },
+      {
+       "id": "dec_k02",
+       "text": "Keep training as a separate visit.",
+       "evidence_id": "ev_k03",
+       "confidence": 0.84,
+       "status": "accepted"
+      }
+     ],
+     "action_items": [
+      {
+       "id": "act_k01",
+       "text": "Complete the access survey by 16 October.",
+       "owner": "Sandra",
+       "due": "2026-10-16",
+       "evidence_id": "ev_k02",
+       "confidence": 0.9,
+       "status": "done"
+      },
+      {
+       "id": "act_k02",
+       "text": "Circulate the plan and the date-review trigger.",
+       "owner": "Anna",
+       "due": "2026-10-10",
+       "evidence_id": "ev_k04",
+       "confidence": 0.94,
+       "status": "done"
+      }
+     ],
+     "open_questions": [
+      "Is the loading bay available on Saturdays?"
+     ],
+     "consent": {
+      "state": "granted",
+      "basis": "all_participants_notified",
+      "jurisdiction": "DE",
+      "participants_notified": true,
+      "evidence_ref": "consent_k01",
+      "wording_version": "DE-2026-2",
+      "recorded_at": "2026-10-30T08:59:12Z",
+      "recorded_by": "user_anna"
+     },
+     "redactions": [],
+     "evidence": [
+      {
+       "id": "ev_k01",
+       "kind": "decision",
+       "quote": "The 12th is the earliest we can commit. Anything earlier is not honest.",
+       "speaker_id": "p2",
+       "start": 149,
+       "end": 154.9,
+       "confidence": 0.95,
+       "attribution_confidence": 0.97,
+       "utterance_id": "u_1009_022",
+       "sensitivity": "client_confidential",
+       "redaction_id": null
+      },
+      {
+       "id": "ev_k02",
+       "kind": "action",
+       "quote": "Survey complete by the 16th of October.",
+       "speaker_id": "p3",
+       "start": 96,
+       "end": 98.5,
+       "confidence": 0.9,
+       "attribution_confidence": 0.91,
+       "utterance_id": "u_1009_014",
+       "sensitivity": "client_confidential",
+       "redaction_id": null
+      },
+      {
+       "id": "ev_k03",
+       "kind": "question",
+       "quote": "Is the loading bay available on Saturdays?",
+       "speaker_id": "p4",
+       "start": 116,
+       "end": 121.0,
+       "confidence": 0.93,
+       "attribution_confidence": 0.95,
+       "utterance_id": "u_1009_017",
+       "sensitivity": "client_confidential",
+       "redaction_id": null
+      },
+      {
+       "id": "ev_k04",
+       "kind": "action",
+       "quote": "I'll circulate the plan and the trigger.",
+       "speaker_id": "p1",
+       "start": 201,
+       "end": 203.9,
+       "confidence": 0.92,
+       "attribution_confidence": 0.96,
+       "utterance_id": "u_1009_029",
+       "sensitivity": "client_confidential",
+       "redaction_id": null
+      }
+     ],
+     "provenance": {
+      "device": "iPhone 16 Pro · A18",
+      "npu": "Apple Neural Engine · 16-core",
+      "asr_model": "parakeet-tdt-0.6b-int8",
+      "diarization_model": "pyannote-3.1-mini · int8",
+      "vad_model": "silero-vad-5 · int8",
+      "redaction_model": "redact-clf-0.4 · int8",
+      "app_version": "0.9.0",
+      "language": "en",
+      "audio_sha256": "91052a749bdf9acb7453dddc6b2474c1895402755c1bb709a34b8c1be8bf0ad9",
+      "local_only": true,
+      "encrypted_at_rest": "AES-256-GCM · device key",
+      "retention": "team_default",
+      "network": "offline"
+     }
+    },
+    "provenance": {
+     "device": "iPhone 16 Pro · A18",
+     "model": "parakeet-tdt-0.6b-int8",
+     "app_version": "0.9.0",
+     "local_only": true
+    },
+    "delivery": {
+     "status": "delivered",
+     "attempts": 1,
+     "delivered_at": "2026-10-09T14:43:09Z",
+     "duplicate": false,
+     "latency_ms": 7000
+    }
+   },
+   {
+    "event_id": "evt_seed_note",
+    "app_id": "recall-capture",
+    "space": "ppma://spaces/northgate",
+    "occurred_at": "2026-10-28T15:42:11Z",
+    "type": "capture.note.created",
+    "sensitivity": "client_confidential",
+    "payload": {
+     "note_id": "note_01J9N0R7H6G5A4T3E2",
+     "text": "Client mentioned the 14th is tight because of the install crew. They can open the bay at seven if we confirm by Friday. Lift limit is 900 kg — our racks are 780. Two van permits needed on Saturday.",
+     "captured_at": "2026-10-28T15:42:00Z",
+     "location": {
+      "label": "Northgate — Building C",
+      "precision": "site",
+      "lat": 51.5045,
+      "lon": -0.0912
+     },
+     "evidence_ref": "ev_n01",
+     "consent": {
+      "state": "granted",
+      "basis": "user_note",
+      "jurisdiction": "GB",
+      "participants_notified": false,
+      "evidence_ref": "consent_n01",
+      "wording_version": "GB-2026-1",
+      "recorded_at": "2026-10-28T15:40:00Z",
+      "recorded_by": "user_tomas"
+     }
+    },
+    "provenance": {
+     "device": "iPhone 16 Pro · A18",
+     "model": "ocr-small-v3",
+     "app_version": "0.9.0",
+     "local_only": true
+    },
+    "delivery": {
+     "status": "delivered",
+     "attempts": 1,
+     "delivered_at": "2026-10-28T15:42:18Z",
+     "duplicate": false,
+     "latency_ms": 7000
+    }
+   },
+   {
+    "event_id": "evt_seed_standup",
+    "app_id": "recall-capture",
+    "space": "ppma://spaces/northgate",
+    "occurred_at": "2026-10-23T07:48:20Z",
+    "type": "capture.meeting.completed",
+    "sensitivity": "personal",
+    "payload": {
+     "capture_id": "cap_01J9A2B3C4D5E6F7G8H9J0K",
+     "title": "Install crew stand-up",
+     "started_at": "2026-10-23T07:30:00Z",
+     "ended_at": "2026-10-23T07:48:02Z",
+     "language": "en",
+     "participants": [
+      {
+       "id": "p2",
+       "name": "Marek Nowak",
+       "role": "Delivery lead",
+       "initials": "MN",
+       "color": "cyan"
+      },
+      {
+       "id": "p4",
+       "name": "Tomás Rivera",
+       "role": "Installation lead",
+       "initials": "TR",
+       "color": "green"
+      },
+      {
+       "id": "p5",
+       "name": "Priya Shah",
+       "role": "Crew scheduler",
+       "initials": "PS",
+       "color": "blue"
+      }
+     ],
+     "summary": "Crew and van status for Northgate. Bracknell finishes on the 10th; one van is in service on the 11th. The four-person rota is held until Friday. The access list remains the critical path.",
+     "decisions": [
+      {
+       "id": "dec_s01",
+       "text": "Hold the four-person rota until Friday.",
+       "evidence_id": "ev_s01",
+       "confidence": 0.9,
+       "status": "accepted"
+      }
+     ],
+     "action_items": [
+      {
+       "id": "act_s01",
+       "text": "Escalate the access list if it is not in by Tuesday noon.",
+       "owner": "Marek",
+       "due": "2026-10-27",
+       "evidence_id": "ev_s02",
+       "confidence": 0.92,
+       "status": "open"
+      },
+      {
+       "id": "act_s02",
+       "text": "Confirm the extra van for 17 November.",
+       "owner": "Tomás",
+       "due": "2026-10-24",
+       "evidence_id": "ev_s03",
+       "confidence": 0.87,
+       "status": "open"
+      }
+     ],
+     "open_questions": [
+      "Do we need the extra van on the 17th?"
+     ],
+     "consent": {
+      "state": "granted",
+      "basis": "all_participants_notified",
+      "jurisdiction": "DE",
+      "participants_notified": true,
+      "evidence_ref": "consent_s01",
+      "wording_version": "DE-2026-2",
+      "recorded_at": "2026-10-30T08:59:12Z",
+      "recorded_by": "user_anna"
+     },
+     "redactions": [],
+     "evidence": [
+      {
+       "id": "ev_s01",
+       "kind": "decision",
+       "quote": "Hold the four-person rota until Friday.",
+       "speaker_id": "p2",
+       "start": 40,
+       "end": 45.5,
+       "confidence": 0.9,
+       "attribution_confidence": 0.94,
+       "utterance_id": "u_1023_006",
+       "sensitivity": "client_confidential",
+       "redaction_id": null
+      },
+      {
+       "id": "ev_s02",
+       "kind": "action",
+       "quote": "Escalate the access list to Marek by Tuesday noon.",
+       "speaker_id": "p2",
+       "start": 102,
+       "end": 106.6,
+       "confidence": 0.92,
+       "attribution_confidence": 0.95,
+       "utterance_id": "u_1023_014",
+       "sensitivity": "client_confidential",
+       "redaction_id": null
+      },
+      {
+       "id": "ev_s03",
+       "kind": "question",
+       "quote": "Do we need the extra van on the 17th?",
+       "speaker_id": "p4",
+       "start": 117,
+       "end": 122.9,
+       "confidence": 0.88,
+       "attribution_confidence": 0.93,
+       "utterance_id": "u_1023_016",
+       "sensitivity": "client_confidential",
+       "redaction_id": null
+      }
+     ],
+     "provenance": {
+      "device": "iPhone 16 Pro · A18",
+      "npu": "Apple Neural Engine · 16-core",
+      "asr_model": "parakeet-tdt-0.6b-int8",
+      "diarization_model": "pyannote-3.1-mini · int8",
+      "vad_model": "silero-vad-5 · int8",
+      "redaction_model": "redact-clf-0.4 · int8",
+      "app_version": "0.9.0",
+      "language": "en",
+      "audio_sha256": "91052a749bdf9acb7453dddc6b2474c1895402755c1bb709a34b8c1be8bf0ad9",
+      "local_only": true,
+      "encrypted_at_rest": "AES-256-GCM · device key",
+      "retention": "team_default",
+      "network": "offline"
+     }
+    },
+    "provenance": {
+     "device": "iPhone 16 Pro · A18",
+     "model": "parakeet-tdt-0.6b-int8",
+     "app_version": "0.9.0",
+     "local_only": true
+    },
+    "delivery": {
+     "status": "queued",
+     "attempts": 0,
+     "delivered_at": null,
+     "duplicate": false,
+     "latency_ms": null
+    }
+   },
+   {
+    "event_id": "evt_seed_pricing",
+    "app_id": "recall-capture",
+    "space": "ppma://spaces/northgate",
+    "occurred_at": "2026-10-15T16:09:00Z",
+    "type": "capture.meeting.completed",
+    "sensitivity": "financial",
+    "payload": {
+     "capture_id": "cap_01J9P1R2I3C4I5N6G7X8Y9Z",
+     "title": "Internal pricing review — Northgate",
+     "started_at": "2026-10-15T16:00:00Z",
+     "ended_at": "2026-10-15T16:08:12Z",
+     "language": "en",
+     "participants": [
+      {
+       "id": "p1",
+       "name": "Anna Voss",
+       "role": "Account lead",
+       "initials": "AV",
+       "color": "amber"
+      },
+      {
+       "id": "p2",
+       "name": "Marek Nowak",
+       "role": "Delivery lead",
+       "initials": "MN",
+       "color": "cyan"
+      }
+     ],
+     "summary": "Internal margin review. The install margin is 12% at the current crew rate and 8% if Saturday overtime is absorbed. Do not include margins in the client confirmation.",
+     "decisions": [
+      {
+       "id": "dec_p01",
+       "text": "Keep commercial margin out of the client confirmation.",
+       "evidence_id": "ev_p01",
+       "confidence": 0.91,
+       "status": "accepted"
+      }
+     ],
+     "action_items": [],
+     "open_questions": [],
+     "consent": {
+      "state": "granted",
+      "basis": "all_participants_notified",
+      "jurisdiction": "DE",
+      "participants_notified": true,
+      "evidence_ref": "consent_p01",
+      "wording_version": "DE-2026-2",
+      "recorded_at": "2026-10-30T08:59:12Z",
+      "recorded_by": "user_anna"
+     },
+     "redactions": [],
+     "evidence": [
+      {
+       "id": "ev_p01",
+       "kind": "decision",
+       "quote": "Let's not put the margin in the client confirmation.",
+       "speaker_id": "p1",
+       "start": 38,
+       "end": 41.8,
+       "confidence": 0.93,
+       "attribution_confidence": 0.96,
+       "utterance_id": "u_1015_005",
+       "sensitivity": "client_confidential",
+       "redaction_id": null
+      },
+      {
+       "id": "ev_p02",
+       "kind": "note",
+       "quote": "The install margin is twelve percent at the current crew rate.",
+       "speaker_id": "p2",
+       "start": 10,
+       "end": 14.6,
+       "confidence": 0.94,
+       "attribution_confidence": 0.95,
+       "utterance_id": "u_1015_002",
+       "sensitivity": "financial",
+       "redaction_id": null
+      }
+     ],
+     "provenance": {
+      "device": "MacBook Pro 14 · M4",
+      "npu": "Apple Neural Engine · 16-core",
+      "asr_model": "parakeet-tdt-0.6b-int8",
+      "diarization_model": "pyannote-3.1-mini · int8",
+      "vad_model": "silero-vad-5 · int8",
+      "redaction_model": "redact-clf-0.4 · int8",
+      "app_version": "0.9.0",
+      "language": "en",
+      "audio_sha256": "c60d1d9c6eb91bd87b5d713766dfe250afd22b5f83d669c0d44e88ccfa1189f2",
+      "local_only": true,
+      "encrypted_at_rest": "AES-256-GCM · device key",
+      "retention": "team_default",
+      "network": "offline"
+     }
+    },
+    "provenance": {
+     "device": "MacBook Pro 14 · M4",
+     "model": "parakeet-tdt-0.6b-int8",
+     "app_version": "0.9.0",
+     "local_only": true
+    },
+    "delivery": {
+     "status": "delivered",
+     "attempts": 1,
+     "delivered_at": "2026-10-15T16:09:08Z",
+     "duplicate": false,
+     "latency_ms": 8000
+    }
+   },
+   {
+    "event_id": "evt_seed_pricing_retention",
+    "app_id": "recall-capture",
+    "space": "ppma://spaces/northgate",
+    "occurred_at": "2026-10-29T09:02:00Z",
+    "type": "capture.consent.changed",
+    "sensitivity": "financial",
+    "payload": {
+     "capture_id": "cap_01J9P1R2I3C4I5N6G7X8Y9Z",
+     "state": "granted",
+     "reason": "retention_review",
+     "effective_at": "2026-10-29T09:02:00Z"
+    },
+    "provenance": {
+     "device": "MacBook Pro 14 · M4",
+     "model": "consent-service",
+     "app_version": "0.9.0",
+     "local_only": true
+    },
+    "delivery": {
+     "status": "delivered",
+     "attempts": 1,
+     "delivered_at": "2026-10-29T09:02:01Z",
+     "duplicate": false,
+     "latency_ms": 1000
+    }
+   }
+  ],
+  "queue": [],
+  "commands": [
+   {
+    "id": "cmd_01",
+    "kind": "command",
+    "target": "recall-capture",
+    "type": "capture.apply_retention",
+    "received_at": "2026-10-29T09:05:00Z",
+    "payload": {
+     "capture_id": "cap_01J9P1R2I3C4I5N6G7X8Y9Z",
+     "retain_until": "2026-11-15T00:00:00Z",
+     "reason": "team_policy"
+    },
+    "status": "pending",
+    "note": "PPMA applied the stricter internal 30-day policy to the pricing review."
+   },
+   {
+    "id": "cmd_02",
+    "kind": "command",
+    "target": "recall-capture",
+    "type": "capture.forget",
+    "received_at": "2026-10-30T08:12:00Z",
+    "payload": {
+     "capture_id": "cap_01J9P1R2I3C4I5N6G7X8Y9Z",
+     "scope": "all",
+     "reason": "user_forget",
+     "requested_by": "user_anna"
+    },
+    "status": "pending",
+    "note": "Anna asked PPMA to forget the internal pricing review. RECALL must delete locally and confirm with a tombstone."
+   }
+  ],
+  "limits": {
+   "per_team_per_minute": 60,
+   "per_team_per_day": 20000,
+   "used_today": 412,
+   "backpressure": "pause non-critical events, keep consent + deletion",
+   "dead_letter_after": 5
+  },
+  "credentials": [
+   {
+    "team": "Northgate project team",
+    "device": "MacBook Pro 14 · M4",
+    "token_hint": "rc_live_••••7f2a",
+    "created": "2026-09-12",
+    "rotated": "2026-10-12",
+    "status": "active"
+   },
+   {
+    "team": "Northgate project team",
+    "device": "iPhone 16 Pro · A18",
+    "token_hint": "rc_live_••••b91c",
+    "created": "2026-09-12",
+    "rotated": "2026-10-12",
+    "status": "active"
+   },
+   {
+    "team": "Field team · pilot",
+    "device": "iPad Air · M2",
+    "token_hint": "rc_field_••••0d4e",
+    "created": "2026-10-01",
+    "rotated": "2026-10-01",
+    "status": "active"
+   }
+  ],
+  "conformance": [
+   {
+    "id": "c01",
+    "label": "Manifest publishes every capture.* event with a sensitivity label",
+    "status": "pass",
+    "detail": "8 event types, 2 commands, versioned"
+   },
+   {
+    "id": "c02",
+    "label": "No event without a recorded consent state",
+    "status": "pass",
+    "detail": "emitter blocks captures whose consent is missing or withdrawn"
+   },
+   {
+    "id": "c03",
+    "label": "Event ids are stable and PPMA deduplicates",
+    "status": "pass",
+    "detail": "replay of evt_seed_kickoff is rejected as a duplicate"
+   },
+   {
+    "id": "c04",
+    "label": "Corrections are new events, never silent mutations",
+    "status": "pass",
+    "detail": "capture.correction carries before/after and the human actor"
+   },
+   {
+    "id": "c05",
+    "label": "Deletion is a tombstone and survives replay",
+    "status": "pass",
+    "detail": "tombstones are kept after the transcript is removed"
+   },
+   {
+    "id": "c06",
+    "label": "Raw media is not attached by default",
+    "status": "pass",
+    "detail": "payload carries evidence pointers and a local-only provenance block"
+   },
+   {
+    "id": "c07",
+    "label": "Offline queue preserves order and retries with backoff",
+    "status": "pass",
+    "detail": "queued events keep occurred_at and attempts"
+   },
+   {
+    "id": "c08",
+    "label": "Manifest versioning and deprecation window",
+    "status": "pass",
+    "detail": "additive changes only; two-minor-version window"
+   }
+  ]
+ },
+ "pilot": {
+  "baseline_min": 26,
+  "quote_seconds": 18,
+  "target_quote_seconds": 10,
+  "capture_to_ppma_s": 14,
+  "target_capture_to_ppma_s": 30,
+  "useful_rate": 0.84,
+  "quote_success": 0.96,
+  "consent_coverage": 1.0,
+  "redaction_precision": 0.94,
+  "redaction_recall": 0.91,
+  "deletion_propagation_syncs": 1,
+  "action_conversion": 0.61,
+  "weekly": [
+   {
+    "week": "W40",
+    "capture_to_ppma_s": 28,
+    "useful_rate": 0.64,
+    "quotes": 12,
+    "actions": 3,
+    "deletions": 1
+   },
+   {
+    "week": "W41",
+    "capture_to_ppma_s": 24,
+    "useful_rate": 0.69,
+    "quotes": 18,
+    "actions": 5,
+    "deletions": 1
+   },
+   {
+    "week": "W42",
+    "capture_to_ppma_s": 21,
+    "useful_rate": 0.74,
+    "quotes": 24,
+    "actions": 7,
+    "deletions": 2
+   },
+   {
+    "week": "W43",
+    "capture_to_ppma_s": 18,
+    "useful_rate": 0.79,
+    "quotes": 31,
+    "actions": 9,
+    "deletions": 2
+   },
+   {
+    "week": "W44",
+    "capture_to_ppma_s": 14,
+    "useful_rate": 0.84,
+    "quotes": 39,
+    "actions": 12,
+    "deletions": 3
+   }
+  ],
+  "funnel": [
+   {
+    "stage": "Captures",
+    "count": 124
+   },
+   {
+    "stage": "Quotes retrieved",
+    "count": 119
+   },
+   {
+    "stage": "Memories accepted",
+    "count": 96
+   },
+   {
+    "stage": "Follow-ups created",
+    "count": 59
+   },
+   {
+    "stage": "Follow-ups done",
+    "count": 41
+   }
+  ],
+  "extraction": [
+   {
+    "kind": "decisions",
+    "precision": 0.93,
+    "recall": 0.88,
+    "useful": 0.86
+   },
+   {
+    "kind": "promises",
+    "precision": 0.95,
+    "recall": 0.9,
+    "useful": 0.91
+   },
+   {
+    "kind": "actions",
+    "precision": 0.9,
+    "recall": 0.85,
+    "useful": 0.83
+   },
+   {
+    "kind": "questions",
+    "precision": 0.87,
+    "recall": 0.8,
+    "useful": 0.76
+   }
+  ],
+  "gates": [
+   {
+    "id": "g1",
+    "label": "Capture-to-PPMA latency under 30 seconds",
+    "target": "< 30 s",
+    "actual": "14 s",
+    "status": "pass"
+   },
+   {
+    "id": "g2",
+    "label": "At least 80% of emitted items judged useful",
+    "target": "≥ 80%",
+    "actual": "84%",
+    "status": "pass"
+   },
+   {
+    "id": "g3",
+    "label": "Zero raw media uploaded by default",
+    "target": "0",
+    "actual": "0",
+    "status": "pass"
+   },
+   {
+    "id": "g4",
+    "label": "Every quote reconstructable in under 10 seconds",
+    "target": "< 10 s",
+    "actual": "18 s (pilot), target 10 s",
+    "status": "watch"
+   },
+   {
+    "id": "g5",
+    "label": "Deletion and correction propagate in one sync",
+    "target": "1",
+    "actual": "1",
+    "status": "pass"
+   },
+   {
+    "id": "g6",
+    "label": "100% of captured meetings have a consent state",
+    "target": "100%",
+    "actual": "100%",
+    "status": "pass"
+   }
+  ],
+  "notes": [
+   "One team, one repeated cadence: the Northgate delivery call. No synthetic records enter the pilot metric after week one.",
+   "The quote retrieval target is 10 s; the pilot is at 18 s. Search ranking is the next fix, not a new feature.",
+   "All latency numbers are measured capture-stop to PPMA acknowledgment on the local loopback."
+  ]
+ },
+ "admin": {
+  "spaces": [
+   {
+    "id": "sp_northgate",
+    "name": "Northgate fit-out",
+    "members": 12,
+    "role": "team_lead",
+    "visibility": "project",
+    "retention": "365 days",
+    "status": "active"
+   },
+   {
+    "id": "sp_field",
+    "name": "Field operations · pilot",
+    "members": 5,
+    "role": "field",
+    "visibility": "invite-only",
+    "retention": "90 days",
+    "status": "active"
+   },
+   {
+    "id": "sp_legal",
+    "name": "Legal hold · Q4",
+    "members": 3,
+    "role": "privacy_legal",
+    "visibility": "restricted",
+    "retention": "until released",
+    "status": "hold"
+   }
+  ],
+  "roles": [
+   {
+    "role": "individual",
+    "can": "capture, recall, redact, share own evidence",
+    "cannot": "team settings, retention, billing"
+   },
+   {
+    "role": "team_lead",
+    "can": "team spaces, meeting visibility, retention defaults",
+    "cannot": "legal hold, SSO, billing"
+   },
+   {
+    "role": "privacy_legal",
+    "can": "consent templates, audit, legal hold, deletion review",
+    "cannot": "capture content without a hold reason"
+   },
+   {
+    "role": "field",
+    "can": "offline capture, photo notes, sync when connected",
+    "cannot": "team settings, other teams' meetings"
+   },
+   {
+    "role": "admin",
+    "can": "SSO, devices, billing, residency, kill switch",
+    "cannot": "read transcript content"
+   }
+  ],
+  "sso": {
+   "provider": "OIDC · Entra ID",
+   "status": "configured",
+   "enforcement": "required",
+   "scim": "enabled",
+   "groups": [
+    "recall-team-northgate",
+    "recall-legal"
+   ]
+  },
+  "residency": {
+   "primary": "eu-central-1 · Frankfurt",
+   "backup": "eu-west-1 · Dublin",
+   "media": "on device only",
+   "note": "Derived text may reside in the PPMA region; raw media never leaves the device."
+  },
+  "compliance": [
+   {
+    "id": "cmp_01",
+    "name": "GDPR record of processing",
+    "standard": "GDPR Art. 30",
+    "status": "ready",
+    "controls": 14,
+    "covered": 14,
+    "detail": "Consent basis, retention, deletion tombstones and processor map."
+   },
+   {
+    "id": "cmp_02",
+    "name": "Two-party consent · DE",
+    "standard": "§ 201 StGB",
+    "status": "ready",
+    "controls": 6,
+    "covered": 6,
+    "detail": "Wording version DE-2026-2, recorded before capture."
+   },
+   {
+    "id": "cmp_03",
+    "name": "Two-party consent · US-CA",
+    "standard": "Cal. Penal Code 632",
+    "status": "ready",
+    "controls": 5,
+    "covered": 5,
+    "detail": "All-party notification template and retention note."
+   },
+   {
+    "id": "cmp_04",
+    "name": "Health data minimisation",
+    "standard": "HIPAA-style",
+    "status": "in_progress",
+    "controls": 11,
+    "covered": 8,
+    "detail": "Redaction classifier needs a clinical false-negative review."
+   },
+   {
+    "id": "cmp_05",
+    "name": "Legal hold and eDiscovery",
+    "standard": "Internal / pilot",
+    "status": "ready",
+    "controls": 7,
+    "covered": 7,
+    "detail": "Hold overrides deletion; both sides show the hold."
+   }
+  ],
+  "jurisdictions": [
+   {
+    "code": "DE",
+    "name": "Germany",
+    "model": "all-party notification",
+    "wording": "DE-2026-2",
+    "status": "active"
+   },
+   {
+    "code": "GB",
+    "name": "United Kingdom",
+    "model": "one-party + notice",
+    "wording": "GB-2026-1",
+    "status": "active"
+   },
+   {
+    "code": "US-CA",
+    "name": "California",
+    "model": "all-party consent",
+    "wording": "USCA-2026-1",
+    "status": "active"
+   },
+   {
+    "code": "FR",
+    "name": "France",
+    "model": "all-party notification",
+    "wording": "FR-2026-1",
+    "status": "draft"
+   }
+  ],
+  "billing": {
+   "plan": "PPMA bundle · per seat",
+   "seats": 12,
+   "per_seat_eur_month": 18,
+   "bundle_discount_pct": 15,
+   "enterprise_addon_eur_month": 240,
+   "field_addon_eur_month": 90,
+   "npu_included": true,
+   "mrr_eur": 513.6,
+   "next_invoice": "2026-11-01",
+   "invoices": [
+    {
+     "id": "INV-2026-10",
+     "date": "2026-10-01",
+     "amount_eur": 513.6,
+     "status": "paid"
+    },
+    {
+     "id": "INV-2026-09",
+     "date": "2026-09-01",
+     "amount_eur": 513.6,
+     "status": "paid"
+    },
+    {
+     "id": "INV-2026-08",
+     "date": "2026-08-01",
+     "amount_eur": 486.0,
+     "status": "paid"
+    }
+   ],
+   "metering": "No per-meeting charge. Capture is never metered."
+  },
+  "model_cards": [
+   {
+    "id": "mdl_asr",
+    "name": "Parakeet TDT 0.6B",
+    "version": "int8 · 0.9.0",
+    "kind": "ASR",
+    "inputs": "16 kHz mono audio, on device",
+    "limits": "English-first; accented speech degrades below 0.8 confidence",
+    "failure_modes": "overlapping speech, far-field, technical jargon",
+    "owner": "Speech team",
+    "last_validated": "2026-10-21",
+    "status": "champion",
+    "metric": "WER 6.8% (pilot set)"
+   },
+   {
+    "id": "mdl_diar",
+    "name": "pyannote 3.1 mini",
+    "version": "int8 · 0.9.0",
+    "kind": "Diarization",
+    "inputs": "VAD segments, on device",
+    "limits": "similar voices can swap; always correctable",
+    "failure_modes": "crosstalk, remote audio, new speakers",
+    "owner": "Speech team",
+    "last_validated": "2026-10-21",
+    "status": "champion",
+    "metric": "DER 11.2% (pilot set)"
+   },
+   {
+    "id": "mdl_vad",
+    "name": "Silero VAD 5",
+    "version": "int8 · 0.9.0",
+    "kind": "VAD",
+    "inputs": "audio frames",
+    "limits": "low-energy speech can be trimmed",
+    "failure_modes": "HVAC noise, very quiet speakers",
+    "owner": "Speech team",
+    "last_validated": "2026-10-20",
+    "status": "champion",
+    "metric": "0.4% missed speech"
+   },
+   {
+    "id": "mdl_ocr",
+    "name": "OCR small v3",
+    "version": "0.9.0",
+    "kind": "OCR",
+    "inputs": "camera frame, on device",
+    "limits": "handwriting and glare",
+    "failure_modes": "rotated signage, low light",
+    "owner": "Vision team",
+    "last_validated": "2026-10-18",
+    "status": "champion",
+    "metric": "0.97 CER on field set"
+   },
+   {
+    "id": "mdl_redact",
+    "name": "Redact classifier 0.4",
+    "version": "int8 · 0.4",
+    "kind": "Redaction",
+    "inputs": "transcript spans",
+    "limits": "sarcasm and implied secrets; human review required",
+    "failure_modes": "false negative on oblique references",
+    "owner": "Trust team",
+    "last_validated": "2026-10-22",
+    "status": "champion",
+    "metric": "P 0.94 / R 0.91"
+   },
+   {
+    "id": "mdl_extract",
+    "name": "Fact extractor 0.7",
+    "version": "0.7.2",
+    "kind": "Extraction",
+    "inputs": "transcript + speakers",
+    "limits": "decisions phrased as questions",
+    "failure_modes": "multi-party hedged commitments",
+    "owner": "Memory team",
+    "last_validated": "2026-10-25",
+    "status": "challenger",
+    "metric": "P 0.90 / R 0.85"
+   }
+  ],
+  "health": {
+   "status": "healthy",
+   "last_scan": "2026-10-30T08:55:00Z",
+   "metrics": {
+    "wer": 0.068,
+    "diarization_der": 0.112,
+    "extraction_precision": 0.9,
+    "extraction_recall": 0.85,
+    "redaction_precision": 0.94,
+    "redaction_recall": 0.91,
+    "consent_coverage": 1.0,
+    "queue_depth": 1,
+    "dead_letter": 0,
+    "duplicate_rate": 0.004,
+    "deletion_lag_h": 0.2,
+    "retention_expired": 0,
+    "mic_clipping": 0
+   },
+   "drift": [
+    {
+     "model": "Diarization",
+     "status": "watch",
+     "delta": "+1.4 pp DER",
+     "detail": "New remote speaker on two calls; review speaker map."
+    },
+    {
+     "model": "ASR",
+     "status": "ok",
+     "delta": "-0.2 pp WER",
+     "detail": "Within the calibration band."
+    },
+    {
+     "model": "Redaction",
+     "status": "ok",
+     "delta": "+0.1 pp recall",
+     "detail": "No false-redaction review pending."
+    }
+   ],
+   "incidents": [
+    {
+     "id": "inc_01",
+     "at": "2026-10-22T11:00:00Z",
+     "kind": "drift",
+     "severity": "info",
+     "title": "Diarization drift on remote audio",
+     "status": "watching",
+     "detail": "Speaker swap on one call caught by the human. Correction fed back to the threshold review."
+    }
+   ],
+   "kill_switch": false
+  },
+  "audit": [
+   {
+    "id": "aud_01",
+    "at": "2026-10-30T08:59:12Z",
+    "actor": "Anna Voss",
+    "action": "consent.recorded",
+    "object": "cap_01J9Q4M2R7X8K3N5V6B1C0D",
+    "detail": "DE-2026-2 · all participants notified",
+    "model": "consent-service",
+    "sources": [
+     "device:dev_mac_01"
+    ]
+   },
+   {
+    "id": "aud_02",
+    "at": "2026-10-30T09:13:42Z",
+    "actor": "Anna Voss",
+    "action": "capture.completed",
+    "object": "cap_01J9Q4M2R7X8K3N5V6B1C0D",
+    "detail": "13:42 · 4 speakers · local only",
+    "model": "parakeet-tdt-0.6b-int8",
+    "sources": [
+     "device:dev_mac_01"
+    ]
+   },
+   {
+    "id": "aud_03",
+    "at": "2026-10-28T15:42:11Z",
+    "actor": "Tomás Rivera",
+    "action": "note.shared",
+    "object": "note_01J9N0R7H6G5A4T3E2",
+    "detail": "Field note + OCR · queued 0 s · delivered",
+    "model": "ocr-small-v3",
+    "sources": [
+     "device:dev_ipad_01"
+    ]
+   },
+   {
+    "id": "aud_04",
+    "at": "2026-10-27T10:22:00Z",
+    "actor": "Lena Hoffmann",
+    "action": "legal_hold.applied",
+    "object": "sp_legal",
+    "detail": "Q4 legal hold · deletion blocked",
+    "model": "policy-engine",
+    "sources": [
+     "admin"
+    ]
+   },
+   {
+    "id": "aud_05",
+    "at": "2026-10-25T16:04:00Z",
+    "actor": "Marek Nowak",
+    "action": "correction.applied",
+    "object": "ev_s01",
+    "detail": "speaker corrected · Priya → Marek",
+    "model": "human",
+    "sources": [
+     "device:dev_iphone_01"
+    ]
+   }
+  ]
+ }
+}

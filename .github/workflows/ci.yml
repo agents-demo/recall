@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: web
+      - name: Test
+        run: npm test
+        working-directory: web
+      - name: Type-check and build
+        run: npm run build
+        working-directory: web
+      - name: Verify the offline shell
+        run: |
+          test -f web/dist/demo-pack.json
+          test -f web/dist/manifest.webmanifest
+          test -f web/dist/sw.js
+          test -f web/dist/favicon.svg
+
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Regenerate the deterministic pack
+        run: python scripts/build_demo_pack.py
+      - name: The committed pack must be reproducible
+        run: git diff --exit-code -- web/public/demo-pack.json
