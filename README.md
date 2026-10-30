@@ -311,6 +311,7 @@ PPMA server suite.
 - [Manager proof](https://jiuwendemos.github.io/recall/#/proof) — the 90-second and 10-minute manager run, metrics, privacy and boundary.
 - [Naming decision](docs/naming.md) - RECALL vs the PPMA `recall` memory view.
 - [Live integration](docs/integration-live.md) - the exact commands that ran PPMA and the openjiuwen agent.
+- [Integration status](docs/integration-status.md) - every external dependency, why it is needed and what the app does with it.
 - [Real-case example](examples/real-case/README.md) - what to fill in, which files to upload, and how to ingest and analyse your own case.
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
 - [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 392 implemented and 3 external validations.
