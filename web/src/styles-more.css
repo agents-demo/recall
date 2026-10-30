@@ -891,3 +891,9 @@
   .panel, .meeting-card { border-color: #ddd; background: #fff; }
   .content { max-width: none; padding: 0; }
 }
+
+/* stage honesty labels */
+.stage-honesty, .stage-ppma { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border: 1px solid var(--line); border-radius: 999px; font-size: 8.5px; color: var(--soft); white-space: nowrap; }
+.stage-ppma { border-color: color-mix(in srgb, var(--signal) 32%, transparent); color: var(--signal-2); background: var(--signal-dim); }
+.stage-ppma.live { border-color: color-mix(in srgb, var(--consent) 35%, transparent); color: var(--consent); background: var(--consent-dim); }
+@media (max-width: 900px) { .stage-honesty { display: none; } }

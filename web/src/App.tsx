@@ -25,6 +25,7 @@ const Connectors = lazy(() => import("./pages/Connectors"));
 const Share = lazy(() => import("./pages/Share"));
 const ShareTarget = lazy(() => import("./pages/ShareTarget"));
 const Lab = lazy(() => import("./pages/Lab"));
+const Proof = lazy(() => import("./pages/Proof"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -58,6 +59,7 @@ function Routed() {
       "/canvas": "Memory canvas — RECALL",
       "/connectors": "Connected services — RECALL",
       "/lab": "Capability lab — RECALL",
+      "/proof": "Manager proof — RECALL",
       "/record": "Record — RECALL",
       "/meetings": "Meetings — RECALL",
       "/recall": "Recall — RECALL",
@@ -141,6 +143,7 @@ function Routed() {
           <Route path="/connectors" element={<Connectors />} />
           <Route path="/share-target" element={<ShareTarget />} />
           <Route path="/lab" element={<Lab />} />
+          <Route path="/proof" element={<Proof />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

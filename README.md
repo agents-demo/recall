@@ -66,6 +66,7 @@ A meeting room. A phone on the table. The client asks: *“What did we promise t
 | **Recall** | A threaded conversation with follow-ups, voice input, inline citations and an inspectable trace. It refuses when evidence is missing. | [`/#/recall`](https://jiuwendemos.github.io/recall/#/recall) |
 | **Memory canvas** | Meetings, evidence, people and field notes as one inspectable graph. | [`/#/canvas`](https://jiuwendemos.github.io/recall/#/canvas) |
 | **Connected services** | PPMA, openjiuwen, calendar, meetings, communication, CRM, work, knowledge, security and billing connectors with purpose, scopes and an off switch. | [`/#/connectors`](https://jiuwendemos.github.io/recall/#/connectors) |
+| **Manager proof** | The 90-second and 10-minute manager run, metrics, privacy promise, naming decision and definition of done. | [/#/proof](https://jiuwendemos.github.io/recall/#/proof) |
 | **Capability lab** | Every remaining roadmap surface: speech, OCR, translation, wearable/AR, rooms, identity, billing, connectors and gates, each with a working contract or deterministic simulator. | [`/#/lab`](https://jiuwendemos.github.io/recall/#/lab) |
 | **PPMA north app** | Manifest, event log, local PPMA inbox, replay/idempotency, offline queue, commands, conformance and the live SSE stream. | [`/#/ppma`](https://jiuwendemos.github.io/recall/#/ppma) |
 | **Field capture** | Offline-first notes, photo OCR, ambient controls, low-power mode, do-not-record zones and sync. | [`/#/field`](https://jiuwendemos.github.io/recall/#/field) |
@@ -114,7 +115,7 @@ deliberately hides what a role cannot act on.
 - an email draft (never sent), browser extension and safe evidence API.
 
 **Still simulated:** ASR/diarization, NPU, OCR, vendor OAuth, billing and the synthetic meeting itself.
-All 366 checkboxes are now checked at the real, contract or simulator level; the Capability lab exposes the simulated surfaces.
+391 of 394 checkboxes are now checked at the real, contract or simulator level. The three open items are human validations: the real team pilot, the five-stranger test and the unprompted manager boundary test.
 
 ---
 
@@ -260,8 +261,10 @@ PPMA server suite.
 
 ## Documentation
 
+- [Manager proof](https://jiuwendemos.github.io/recall/#/proof) — the 90-second and 10-minute manager run, metrics, privacy and boundary.
+- [Naming decision](docs/naming.md) — RECALL vs the PPMA `recall` memory view.
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
-- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 366 implemented and 0 planned.
+- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 391 implemented and 3 external validations.
 - [PPMA × RECALL contract](docs/integration-ppma.md) — events, commands, consent, deletion, idempotency.
 - [Architecture](docs/architecture.md) — state machine, store, event pipeline, security, production swaps.
 - [Local PPMA server](server/README.md) — signed events, memory, commands, SSE and the openjiuwen adapter.
@@ -273,7 +276,7 @@ PPMA server suite.
 - [Capability lab](https://jiuwendemos.github.io/recall/#/lab) — every simulator and contract surface, runnable.
 - [Provenance](docs/provenance.md) — assets, synthetic data, reproducibility and the public-demo boundary.
 
-All **366 checkboxes** are now checked. Each is real, a contract with a mock provider, or a deterministic
+All **366 base checkboxes** are checked, and the new manager-proof/SD additions add 25 checked items and 3 external human validations. Each is real, a contract with a mock provider, or a deterministic
 simulator exposed in the Capability lab. See
 [Beyond v0.9.0](docs/roadmap.md#beyond-v090--the-three-tracks).
 

@@ -69,6 +69,8 @@ const CAPABILITIES: Capability[] = [
   { id: "firsttime", title: "First-time path", category: "Craft", detail: "Capture, recall and send without a product tour.", kind: "real", action: "Open the guided path" },
   { id: "connected-gate", title: "Connected end-to-end gate", category: "Connectors", detail: "Local PPMA, one capture, zero raw-media egress.", kind: "contract", action: "Run the gate" },
   { id: "boundary", title: "PPMA boundary decision", category: "Attention", detail: "RECALL stays the capture layer; PPMA owns action.", kind: "real", action: "Show the decision" },
+  { id: "multilingual", title: "Multilingual ASR / diarization", category: "Capture", detail: "Language detection, CJK/European transcripts and speaker maps.", kind: "simulator", action: "Run multilingual sample" },
+  { id: "domain", title: "Domain packs: legal, health, finance, field", category: "Capture", detail: "Vocabulary, redaction rules and risk thresholds per domain.", kind: "simulator", action: "Show domain packs" },
   { id: "gateway", title: "Model gateway", category: "Capture", detail: "One policy gate for local models; no silent cloud fallback.", kind: "contract", action: "Show gateway policy" },
   { id: "observability", title: "Observability", category: "Connectors", detail: "Request ids, metrics, queue depth and consent-safe logs.", kind: "real", action: "Show telemetry" },
   { id: "per-team", title: "Per-team credentials and quota", category: "Identity", detail: "Per-team token, event quota and backpressure policy.", kind: "contract", action: "Show team limits" },
@@ -205,6 +207,8 @@ export default function Lab() {
         case "firsttime": body = `First-time path: New capture → consent → Record → transcript → Ask the evidence → Send to PPMA.\nNo product tour is required; the tour is optional.\nTest this with five strangers and measure completion.`; break;
         case "connected-gate": body = `Gate: local PPMA server + one capture + zero raw media egress.\nServer: http://localhost:8787 · HMAC signed · 2 events / 11 memories in the last run.\nReal team and real meeting remain the production gate; this is the reproducible demo gate.`; break;
         case "boundary": body = `Decision: RECALL stays a capture layer.\nIt notices, prepares and proposes; PPMA owns tasks, calendar, messages and project state.\nA move to a proactive agent would require a new contract, consent model and non-goals before shipping.`; break;
+        case "multilingual": body = `Language detected: de (0.96) · zh (0.91) · en (0.98)\nTranscript: “Wir können den 14. halten, aber nicht den 12.”\nDiarization: 4 speakers · accent calibration DE 94% / remote 77%\nThe source language and translation label stay separate.`; break;
+        case "domain": body = `Legal: privilege, names, settlement amounts\nHealth: patient identifiers, diagnoses, medication\nFinance: price, margin, account numbers\nField: site access, lift limits, safety notes\nEach pack changes vocabulary and redaction rules, never the consent gate.`; break;
         case "gateway": body = `Model gateway policy:
 • local NPU first
 • CPU fallback with a visible warning

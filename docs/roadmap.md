@@ -776,6 +776,55 @@ Every integration ships with a scope, a consent purpose, a failure mode and an o
 
 ---
 
+---
+
+## P0/P1/P2 — manager proof and SD-level additions (October 2026)
+
+This section records the manager-demo critique and the next scope. P0 is complete; P1/P2 are complete at
+the real, contract or simulator level except where a human test or physical hardware is required.
+
+### P0 — before the first manager demo
+
+- [x] Build the 90-second stage cut with a meeting table, phone and room audio **(M)**
+- [x] Show a deterministic pack explicitly, with “no microphone” on the stage **(S)**
+- [x] Show a visibly labelled local PPMA fake or a live PPMA server in the same scene **(M)**
+- [x] Keep the trust beat: wrong speaker → human correction → PPMA memory update **(S)**
+- [x] Keep the audience choice: share the clip vs redact first; show what PPMA receives **(S)**
+- [x] Package one manager proof page: time-to-quote, useful extraction, zero raw media, consent, deletion **(M)**
+- [x] Update the portfolio docs from “concept only” to “live demo built” **(S)**
+- [x] Resolve the RECALL vs PPMA `recall` naming in the contract, docs and on screen **(S)**
+- [x] Add a rehearsal page for reset, fallback and consent/refusal **(S)**
+- [x] Add the exact words the manager should be able to repeat **(S)**
+
+### P1 — next 90 days
+
+- [ ] Run one real team pilot with on-device ASR and diarization; measure time-to-quote and useful extraction **(L)**
+- [x] Prove the PPMA contract end to end: signed events, idempotency, queue, deletion/forget **(M)**
+- [x] Add SSO, retention, legal hold and team roles for the pilot at contract level **(L)**
+- [x] Add capture health: WER, diarization, redaction precision/recall, model cards and drift **(M)**
+- [x] Add onboarding with a sample meeting and a first-run path **(S)**
+- [x] Measure task families per user per month **(S)**
+- [x] Adopt the weekly demo cadence: one visible capability, one proof, one trust feature, one next **(S)**
+
+### P2 — to become SD-level
+
+- [x] Ambient/wearable capture with battery, consent and privacy proof **(L)**
+- [x] Multilingual ASR and domain packs for legal, health, finance and field **(L)**
+- [x] Enterprise data residency and legal-hold workflows at contract level **(L)**
+- [x] A safe evidence API and share ecosystem **(M)**
+- [x] 2026 product experience at the daily-desk level **(L)**
+
+### Definition of done
+
+- [ ] Five strangers: four can explain RECALL in one sentence **(S)**
+- [x] First touch within 15 seconds; quote by 30 seconds **(S)**
+- [x] Full arc in 90 seconds **(S)**
+- [x] Reset under five seconds; runs offline **(S)**
+- [x] PPMA update, redaction and deletion are visible and attributable **(S)**
+- [ ] A manager can state the privacy promise and PPMA boundary without prompting **(S)**
+
+---
+
 ## Not planned (with reasons)
 
 > The three tracks relax only the **reading** and **drafting** side. Read context and draft handoffs are

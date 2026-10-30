@@ -18,7 +18,7 @@ const beats: { id: Step; label: string }[] = [
 ];
 
 export default function Stage() {
-  const { pack, meetingById, correctSpeaker, redact, sendMeeting, resetStage, project, events } = useStore();
+  const { pack, meetingById, correctSpeaker, redact, sendMeeting, resetStage, project, events, settings, remoteAcks } = useStore();
   const t = useT();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("cold");
@@ -147,6 +147,8 @@ export default function Stage() {
         <div className="stage-top-right">
           <span className="stage-live"><i className="dot live" /> on-device · offline</span>
           <span className="stage-time mono">90 seconds</span>
+          <span className="stage-honesty" title="The transcript is synthetic; the microphone is not opened in this build">deterministic pack · no microphone</span>
+          <span className={classNames("stage-ppma", settings.ppmaMode === "live" && "live")}>{settings.ppmaMode === "live" ? "PPMA live server" : "PPMA local fake"}</span>
           <button className="stage-reset" onClick={reset} title="Reset the piece (R)">
             <Icon name="refresh" size={14} /> {t("stage.reset")} <kbd>R</kbd>
           </button>
@@ -464,7 +466,7 @@ export default function Stage() {
                   <span className="kicker">Follow-up drafted · not sent</span>
                   <p>{project.followup || pack.ppma.project.followup_draft}</p>
                 </div>
-                <div className="ppma-source"><i /> Source: RECALL · evidence link · consent {meeting.consent.state}</div>
+                <div className="ppma-source"><i /> Source: RECALL · evidence link · consent {meeting.consent.state} · {settings.ppmaMode === "live" ? "live PPMA" : "local PPMA fake"}{remoteAcks.length ? ` · ${remoteAcks.filter((ack) => ack.status === "delivered").length} live ack` : ""}</div>
               </div>
               <div className="stage-card soft-card">
                 <span className="kicker">The line</span>
@@ -481,7 +483,7 @@ export default function Stage() {
         <span><kbd>R</kbd> reset</span>
         <span><kbd>Esc</kbd> exit</span>
         <span className="stage-foot-line">{t("stage.line")}</span>
-        <span className="stage-foot-meta">{pack.meta.model}</span>
+        <span className="stage-foot-meta">{pack.meta.model} · no microphone · recall-capture</span>
       </footer>
     </div>
   );

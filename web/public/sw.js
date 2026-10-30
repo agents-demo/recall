@@ -1,5 +1,5 @@
 /* RECALL offline shell. The public demo must run with the network unplugged. */
-const CACHE = "recall-shell-v4";
+const CACHE = "recall-shell-v5";
 const CORE = ["./", "./index.html", "./demo-pack.json", "./favicon.svg", "./manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
