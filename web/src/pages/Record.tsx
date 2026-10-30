@@ -8,7 +8,7 @@ import { Icon } from "../components/Icon";
 import type { Consent } from "../types";
 
 export default function Record() {
-  const { pack, recordSession, importAudio, settings, say } = useStore();
+  const { pack, recordSession, importAudio, importCaseFile, settings, say } = useStore();
   const t = useT();
   const navigate = useNavigate();
   const [jurisdiction, setJurisdiction] = useState(pack?.team.jurisdiction ?? "DE");
@@ -21,6 +21,7 @@ export default function Record() {
   const [elapsed, setElapsed] = useState(0);
   const [lines, setLines] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
+  const caseRef = useRef<HTMLInputElement>(null);
   if (!pack) return null;
 
   const scenario = pack.meetings.find((m) => m.id === scenarioId) ?? pack.meetings[0];
@@ -73,6 +74,17 @@ export default function Record() {
     if (id) navigate(`/meetings/${id}?import=1`);
   };
 
+  const onImportCase = async (file: File | undefined) => {
+    if (!file) return;
+    if (!consentReady) {
+      say("Record consent first. A case file contains other people's words and cannot be imported without it.");
+      return;
+    }
+    const text = await file.text();
+    const id = importCaseFile(file.name, text, consent);
+    if (id) navigate(`/meetings/${id}?import=1`);
+  };
+
   return (
     <>
       <PageHead
@@ -81,6 +93,8 @@ export default function Record() {
         subtitle={t("record.subtitle")}
         actions={
           <>
+            <button className="btn" onClick={() => caseRef.current?.click()}><Icon name="file" size={14} /> Import a case</button>
+            <input ref={caseRef} type="file" accept=".json,.txt,.md,.vtt,.srt,application/json,text/plain" hidden onChange={(event) => void onImportCase(event.target.files?.[0])} />
             <button className="btn" onClick={() => fileRef.current?.click()}><Icon name="download" size={14} /> {t("record.import")}</button>
             <input ref={fileRef} type="file" accept="audio/*,video/*" hidden onChange={(event) => onImport(event.target.files?.[0])} />
           </>

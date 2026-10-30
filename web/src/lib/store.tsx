@@ -56,6 +56,7 @@ import {
 import { deriveAttention, nudgeMetrics, attentionForMeeting as attentionForMeetingEngine } from "./attention";
 import { converse } from "./conversation";
 import { defaultConnectorState } from "./connectors";
+import { buildMeeting, parseCaseFile } from "./caseImport";
 import { sendEvent, sendCommand } from "./ppmaClient";
 import { clearVault, encryptionAvailable, loadVault, saveVault } from "./vault";
 
@@ -430,6 +431,7 @@ interface StoreValue {
   recordSession: (mode: "meeting" | "call" | "note", title: string, consentState: Consent, scenarioId?: string) => string;
   completeRecording: (meetingId: string) => void;
   importAudio: (fileName: string) => string;
+  importCaseFile: (fileName: string, text: string, consent: Consent) => string;
   addFieldNote: (text: string, location: string, photo?: { label: string; ocr: string }) => string;
   setSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
   setSettings: (patch: Partial<Settings>) => void;
@@ -1352,6 +1354,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [pack, say, state.settings.workspaceMode],
   );
 
+  const importCaseFile = useCallback(
+    (fileName: string, text: string, consentState: Consent) => {
+      if (!pack) return "";
+      const parsed = parseCaseFile(fileName, text);
+      if (!parsed) {
+        say("That file could not be read as a case. Use the example JSON, a .vtt/.srt transcript or a plain transcript.");
+        return "";
+      }
+      const copy = buildMeeting(parsed, pack.meetings[0], consentState);
+      setState((prev) => ({ ...prev, imported: [...prev.imported, copy] }));
+      say(`Imported ${fileName} · ${parsed.transcript.length} transcript lines · ${parsed.decisions.length} decisions · ${parsed.actions.length} actions`);
+      return copy.id;
+    },
+    [pack, say],
+  );
+
   const addFieldNote = useCallback(
     (text: string, location: string, photo?: { label: string; ocr: string }) => {
       if (!pack) return "";
@@ -1568,6 +1586,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     recordSession,
     completeRecording,
     importAudio,
+    importCaseFile,
     addFieldNote,
     setSetting,
     setSettings,

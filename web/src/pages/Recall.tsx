@@ -139,7 +139,16 @@ export default function Recall() {
         subtitle={t("recall.subtitle")}
         actions={<Chip tone="green" dot="live">No web · no model memory</Chip>}
       />
-      <DataNote seed={pack.meta.seed} note="Answers and follow-ups are composed locally from this deterministic pack. If no evidence matches, RECALL refuses. Voice input uses the browser speech engine; the private capture path remains on-device." />
+      <DataNote
+        seed={pack.meta.seed}
+        label={settings.workspaceMode === "personal" ? "My workspace" : undefined}
+        tone={settings.workspaceMode === "personal" ? "green" : "amber"}
+        note={
+          settings.workspaceMode === "personal"
+            ? "Answers are composed locally from the cases and notes you imported. If no evidence matches, RECALL refuses. Nothing comes from the open web."
+            : "Answers and follow-ups are composed locally from this deterministic pack. If no evidence matches, RECALL refuses. Voice input uses the browser speech engine; the private capture path remains on-device."
+        }
+      />
 
       <div className="recall-shell">
         <div className="recall-bar">

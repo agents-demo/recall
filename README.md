@@ -95,6 +95,15 @@ deliberately hides what a role cannot act on.
 
 ---
 
+## What’s new in v1.5
+
+**Import a real case in the app**
+
+- **Record → Import a case** accepts the example JSON, `.vtt`, `.srt` or a plain transcript.
+- The import is consent-gated and builds a real meeting: transcript, speakers, decisions, actions,
+  questions and evidence.
+- The imported case is searchable in **Recall**, opens in the meeting workspace and can be sent to PPMA.
+
 ## What’s new in v1.4
 
 **A workspace that can be yours**

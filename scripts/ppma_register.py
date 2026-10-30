@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = ROOT / "server" / "adapter" / "north-manifest.json"
 TOKEN_FILE = ROOT / "server" / ".ppma-app-token"
 APP_ID = "capture"
-APP_VERSION = "1.4.0"
+APP_VERSION = "1.5.0"
 
 
 def owner_token() -> str:

@@ -24,15 +24,26 @@ own facts; do not put real customer data in a public repo.
 1. Open the app → **Settings** → **Workspace data** → **My workspace (blank)**.
 2. Go to **Field**. Paste a paragraph from `transcript.txt` or `field-notes.md` as the note text.
    Choose a location and press **Capture note**. This is genuinely your text and it is saved.
-3. Go to **Record**. Tick both consent boxes, give the capture a title, start and stop.
-   The capture is saved with consent, title and time. **It has no transcript**, because this public
-   build does not run speech recognition.
-4. To attach the real recording, use **Record → Import audio** and choose
-   `uploads/sample-upload.wav` (or your own file). The file is accepted, but the build does **not**
-   transcribe it and does **not** substitute a synthetic transcript.
-5. Switch back to **Synthetic demo** at any time; your notes and captures stay.
+3. Go to **Record**. Tick both consent boxes, then press **Import a case** and choose
+   `case.example.json` (or your own `case.json`). The app builds a real meeting with the transcript,
+   speakers, decisions, actions and evidence — and it is searchable in **Recall**.
+4. Without a case file, press **Start recording** and stop. The capture is saved with consent, title
+   and time, but **no transcript**, because this public build does not run speech recognition.
+5. To attach a real recording, use **Import audio** and choose `uploads/sample-upload.wav` (or your
+   own file). The file is accepted, but the build does **not** transcribe it and does **not**
+   substitute a synthetic transcript.
+6. Switch back to **Synthetic demo** at any time; your imported cases and notes stay.
 
-This path proves the UI and consent flow. It does **not** analyse the transcript.
+This path proves the UI, consent flow, transcript import and local recall.
+
+### What the case import accepts
+
+- **JSON** in the shape of `case.example.json`: title, consent, participants, summary, decisions,
+  actions, questions, transcript.
+- **`.vtt` / `.srt`** subtitle files with cue timings.
+- **Plain text** with `[mm:ss] Speaker` lines, `Speaker: text` lines, or one line per utterance.
+
+The import is gated by consent: the button refuses until both consent boxes are ticked.
 
 ## Path B — ingest the case and analyse it (recommended)
 
