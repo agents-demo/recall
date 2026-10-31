@@ -17,8 +17,7 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@laix/attention": ["../packages/laix-attention/src/index.ts"],
-      "@laix/decision-record": ["../packages/laix-decision-record/src/index.ts"]
+      "laix": ["./src/types/laix.d.ts"]
     },
     "types": ["vitest/globals"]
   },

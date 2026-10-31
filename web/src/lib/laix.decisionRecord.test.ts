@@ -6,15 +6,13 @@ import {
   rejectRecord,
   undoRecord,
   verifyRecord,
-} from "@laix/decision-record";
+} from "laix";
 
 const evidence = [
   {
     id: "e3",
     kind: "decision",
     quote: "Then we hold the enterprise pilot on the fourth and move self-serve onboarding to the eighteenth.",
-    speaker: "Dana Whitfield",
-    start: 68,
     confidence: 0.95,
   },
 ];
@@ -25,9 +23,9 @@ function record() {
       title: "Helios rollout readiness review",
       decision: "Hold the enterprise pilot on 4 November; move self-serve onboarding to 18 November.",
       confidence: 0.94,
-      meetingId: "mtg_1",
       evidence,
       requiresApproval: true,
+      metadata: { meetingId: "mtg_1" },
     },
     { now: "2026-11-04T10:00:00Z", id: "dr_test" },
   );

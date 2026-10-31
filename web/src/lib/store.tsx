@@ -59,7 +59,7 @@ import { converse } from "./conversation";
 import { defaultConnectorState } from "./connectors";
 import { buildMeeting, parseCaseFile } from "./caseImport";
 import { decideAttention, mergeAttention } from "./laixAttention";
-import { approveRecord, createDecisionRecord, type DecisionRecord, type EvidenceRef } from "@laix/decision-record";
+import { approveRecord, createDecisionRecord, type DecisionRecord, type EvidenceRef } from "laix";
 import { sendEvent, sendCommand } from "./ppmaClient";
 import { clearVault, encryptionAvailable, loadVault, saveVault } from "./vault";
 
@@ -1625,6 +1625,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       let record: DecisionRecord | null = null;
       if (meeting && analysis) {
         const evidence = new Map<string, EvidenceRef>();
+        const evidenceDetails: Record<string, unknown>[] = [];
         const add = (utteranceId: string, kind: string, confidence?: number) => {
           const line = meeting.utterances.find((row) => row.id === utteranceId);
           if (!line || evidence.has(line.id)) return;
@@ -1632,11 +1633,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             id: line.id,
             kind,
             quote: line.text,
+            confidence: confidence ?? line.confidence,
+            source: `recall://captures/${meeting.capture_id}#t=${line.start}`,
+          });
+          evidenceDetails.push({
+            id: line.id,
             speaker: meeting.participants.find((person) => person.id === line.speaker_id)?.name ?? "Speaker",
             start: line.start,
             end: line.end,
-            confidence: confidence ?? line.confidence,
-            source: `recall://captures/${meeting.capture_id}`,
           });
         };
         analysis.decisions.forEach((item) => add(item.evidence_id, "decision", item.confidence));
@@ -1645,7 +1649,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         analysis.risks.forEach((item) => add(item.evidence_id, "risk", 0.9));
         analysis.gaps.forEach((item) => add(item.evidence_id, "gap", 0.85));
         record = createDecisionRecord({
-          meetingId,
           title: meeting.title,
           summary: analysis.summary,
           decision: analysis.summary,
@@ -1655,6 +1658,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           alternatives: analysis.risks.map((risk) => risk.text),
           requiresApproval: true,
           metadata: {
+            meetingId,
+            evidenceDetails,
             model: analysis.trace.model,
             latency_ms: analysis.trace.latency_ms,
             decisions: analysis.decisions.length,
@@ -1671,7 +1676,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...prev,
         analysisApproved: { ...prev.analysisApproved, [meetingId]: true },
         decisionRecords: record
-          ? [...prev.decisionRecords.filter((item) => item.meetingId !== meetingId), record]
+          ? [...prev.decisionRecords.filter((item) => item.metadata.meetingId !== meetingId), record]
           : prev.decisionRecords,
       }));
       say(record ? `Findings approved · decision record ${record.hash.slice(-12)} · ${record.evidence.length} evidence refs` : "Findings approved by a human. The agent proposed; you decided.");
@@ -1680,7 +1685,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
 
   const decisionRecordFor = useCallback(
-    (meetingId: string) => state.decisionRecords.find((record) => record.meetingId === meetingId) ?? null,
+    (meetingId: string) => state.decisionRecords.find((record) => record.metadata.meetingId === meetingId) ?? null,
     [state.decisionRecords],
   );
 

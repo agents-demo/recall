@@ -1,6 +1,6 @@
 {
   "app": "capture",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "display_name": "RECALL",
   "emits": [
     {

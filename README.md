@@ -99,19 +99,22 @@ deliberately hides what a role cannot act on.
 
 ---
 
+## What’s new in v1.8
+
+**RECALL now uses the real LAIX package**
+
+- `laix@0.2.1` is vendored as a pinned tarball (`vendor/laix-0.2.1.tgz`) and added as
+  `file:../vendor/laix-0.2.1.tgz`.
+- The local `packages/laix-attention` and `packages/laix-decision-record` copies and their Vite
+  aliases are gone.
+- Attention goes **RECALL item → adapter → LAIX `decide` → RECALL UI**.
+- Approval goes **RECALL approval → LAIX `createDecisionRecord` / `approveRecord` → RECALL UI**.
+- LAIX’s verb is `guide`; the UI shows `LAIX · guide`. `notify` is no longer a LAIX action.
+- See [`docs/laix-extraction.md`](docs/laix-extraction.md) for the boundary and the upgrade path.
+
 ## What’s new in v1.7
 
-**Two LAIX-ready modules, extracted from RECALL**
-
-- [`packages/laix-attention`](packages/laix-attention/README.md) — a UI-free decision layer:
-  `wait / notify / ask / act / verify / escalate`, with quiet hours, interruption budget, feedback
-  suppression and a small outcome learner.
-- [`packages/laix-decision-record`](packages/laix-decision-record/README.md) — what · why · evidence ·
-  approval · audit · undo, with a content fingerprint and a JSON Schema.
-- The app now shows **LAIX · ask/notify** on attention items and creates a **LAIX decision record**
-  when a human approves the findings.
-- Both packages are pure TypeScript: no React, no browser storage, no RECALL types.
-- See [`docs/laix-extraction.md`](docs/laix-extraction.md) for the boundary and the migration path.
+**The intelligence layer and the evidence workflow** — see the v1.6/v1.7 history below.
 
 ## What’s new in v1.6
 
@@ -350,7 +353,7 @@ PPMA server suite.
 - [Live integration](docs/integration-live.md) - the exact commands that ran PPMA and the openjiuwen agent.
 - [Integration status](docs/integration-status.md) - every external dependency, why it is needed and what the app does with it.
 - [Intelligence layer](docs/intelligence.md) - raw transcript → evidence-linked findings → proactive risk → human approval → PPMA.
-- [LAIX extraction](docs/laix-extraction.md) - the two packages LAIX can take: attention and decision record.
+- [LAIX integration](docs/laix-extraction.md) - the `laix` package, the adapter boundary and the upgrade path.
 - [Real-case example](examples/real-case/README.md) - what to fill in, which files to upload, and how to ingest and analyse your own case.
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
 - [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 394 implemented and 3 external validations.

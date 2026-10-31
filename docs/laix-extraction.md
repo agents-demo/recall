@@ -1,111 +1,103 @@
-# LAIX extraction — what was taken out of RECALL
+# LAIX integration — one package, one boundary
 
-RECALL was rebuilt so two pieces can be lifted into LAIX without dragging the app with them:
-
-| Package | What it is | Why LAIX |
-|---|---|---|
-| [`packages/laix-attention`](../packages/laix-attention/README.md) | a UI-free policy: wait / notify / ask / act / verify / escalate | LAIX is the layer that decides **when** to act |
-| [`packages/laix-decision-record`](../packages/laix-decision-record/README.md) | a portable record: what, why, evidence, approval, audit, undo, fingerprint | LAIX/Max already needs a **decision record** |
-
-Both are pure TypeScript. No React, no browser storage, no RECALL types, no PPMA memory.
-
-## The boundary
+RECALL uses the real **`laix@0.2.1`** package. The local copies of `@laix/attention` and
+`@laix/decision-record` are gone.
 
 ```
-LAIX        decides when and how to intervene
-PPMA        remembers what matters over time and owns project state
-RECALL      captures, proves, records the decision, and shows the evidence
+RECALL attention item -> RECALL adapter -> LAIX decide -> RECALL UI
+RECALL approval        -> LAIX decision record        -> RECALL UI
 ```
 
-That is the only version of RECALL that is complementary rather than a second PPMA.
+## Ownership
 
-## 1. `laix-attention`
-
-North interface:
-
-| App supplies | Module returns |
+| Layer | Owns |
 |---|---|
-| candidates: severity, confidence, due, evidence refs, interruption cost | one decision per candidate |
-| context: now, quiet hours, interruption budget, mute list, minimum confidence | action, score, reason, evidence refs |
-| feedback and past outcomes | suppression, ranking, learned adjustment |
+| **LAIX** | attention decision, verbs, timing, outcome log, decision record, approval/audit/undo contract |
+| **RECALL** | capture, transcript, evidence routes, meeting links, storage, UI, PPMA integration |
 
-Actions: `wait`, `notify`, `ask`, `act`, `verify`, `escalate`.
+LAIX does not know what a meeting is. RECALL does not implement a second decision policy.
 
-The policy is inspectable:
+## Dependency
 
-```
-severity + due urgency + confidence - interruption cost + learned adjustment
-```
-
-Defaults: notify at 48, ask at 72, escalate at 92. Critical items always reach a human. Quiet hours
-and the interruption budget are hard constraints. `OutcomeLog` learns from `helped / no_effect /
-hurt`; a LAIX bandit can replace it behind the same interface.
-
-RECALL uses it in `web/src/lib/laixAttention.ts`: every attention item becomes a candidate and gets a
-`LAIX · ask` / `LAIX · notify` label on Home.
-
-## 2. `laix-decision-record`
-
-Lifecycle:
+- Package: `laix@0.2.1`
+- Tarball: `vendor/laix-0.2.1.tgz`
+- `web/package.json`: `"laix": "file:../vendor/laix-0.2.1.tgz"`
+- SHA-256:
 
 ```
-draft --approve--> approved --execute--> executed --undo--> undone
-  |
-  +--reject--> rejected
+B5D231F513D617E0C9E48402738EA00ADB6358D5FCF68D5159B30E7C39F288ED
 ```
 
-Rules:
+The tarball is pinned and committed. Nothing is published.
 
-- at least one evidence ref with `id` and `quote` is required;
-- only a draft can be approved or rejected;
-- only approved records can be executed;
-- every transition appends an audit event and re-seals the fingerprint;
-- `verifyRecord` detects tampering.
+## Adapter boundary
 
-`hash` is an FNV-1a 64-bit content fingerprint, not a cryptographic signature. A LAIX deployment
-that needs signatures wraps it with its own key.
+`web/src/lib/laixAttention.ts` is the only place RECALL maps its attention model onto LAIX:
 
-RECALL creates one record when a human approves the agent's findings. It carries the decision
-summary, every quote as evidence, the approver and the audit trail. The Intelligence tab shows the
-record and its fingerprint.
+- `toSignal(item)` maps a RECALL `AttentionItem` to a LAIX `Signal`;
+- `decideAttention(items, input)` maps settings to `Context`, records RECALL outcomes in
+  `OutcomeLog`, passes per-kind `context.learned` adjustments, calls `decide(context, signals)`,
+  then maps `Decision.signalId` back to the attention item id;
+- `mergeAttention` remains the app-side dedupe between analysis items and rule items;
+- the adapter sets `laix_action`, `laix_reason` and `laix_score` on the item;
+- LAIX’s `guide` is shown as **`LAIX · guide`**. `notify` is no longer a LAIX action and is not shown.
 
-The JSON Schema is at
-[`packages/laix-decision-record/schema/decision-record.schema.json`](../packages/laix-decision-record/schema/decision-record.schema.json).
+The app keeps the evidence route, the attention list, the UI and the decision-record rendering.
+`web/src/lib/store.tsx` imports `createDecisionRecord`, `approveRecord`, `DecisionRecord` and
+`EvidenceRef` directly from `laix`.
 
-## What was deliberately not extracted
+The decision record has no `meetingId` field. RECALL passes it as `metadata.meetingId`, alongside
+`metadata.evidenceDetails` (speaker/time) that the generic LAIX evidence ref does not carry.
 
-| Not extracted | Why |
-|---|---|
-| transcript analysis | It belongs to PPMA/LAIX, not the capture layer |
-| PPMA memory and project state | PPMA owns them |
-| React pages and components | The app owns its experience |
-| consent/redaction UI | It can become a policy adapter later, not a LAIX core |
-| the local bridge | Deployment plumbing, not a decision layer |
+## Type bridge
 
-## How LAIX can take the packages
+LAIX publishes TypeScript source, not a compiled `.d.ts`. The web app keeps a types-only declaration
+bridge at `web/src/types/laix.d.ts` and maps `"laix"` to it in `tsconfig.json`. Vite still bundles the
+real package from `node_modules/laix`; the bridge only keeps `tsc` from checking the dependency's own
+source. It contains no runtime code and no second policy.
 
-1. Copy `packages/laix-attention` and `packages/laix-decision-record` into the LAIX repository.
-2. Keep the exported types and the action/status enums.
-3. Replace `OutcomeLog` with the LAIX bandit, preserving `adjustment(kind)`.
-4. Replace the fingerprint with a signed hash if the deployment needs signatures.
-5. Point the LAIX app at the same north interface; no RECALL import is required.
-6. Move the contract tests with the packages; they are already independent of the app.
+## Upgrade LAIX
 
-## Verification
+1. Check out the new LAIX tag (do not move the tag).
+2. Pack it into `vendor/`:
+   ```powershell
+   cd C:\Workspace\laix\typescript\laix
+   npm pack --pack-destination C:\Workspace\openjiuwendemos\recall\vendor
+   ```
+3. Update `web/package.json` to the new `file:../vendor/laix-<version>.tgz`.
+4. Update `vendor/README.md` with the tag, command and SHA-256.
+5. Update `web/src/types/laix.d.ts` if the public types changed.
+6. Run `npm install`, `npm test`, `npm run build`, `npm run lint` in `web`.
+7. Run the browser checks on Home, Intelligence and the decision record.
 
-- `web/src/lib/laix.attention.test.ts` — 7 contract tests (ask, escalate, quiet hours, snooze, budget,
-  outcome learning, adapter).
-- `web/src/lib/laix.decisionRecord.test.ts` — 5 contract tests (create, evidence requirement, approve,
-  tamper detection, reject/execute/undo).
-- `web` build passes with the packages imported through Vite aliases.
-- The app shows `LAIX · ask/notify` on Home and a `LAIX decision record` after approval.
+## Known differences from the removed local package
 
-## What is still missing for LAIX
+- `Signal` replaces `Candidate`; `decision.signalId` replaces `candidateId`.
+- `guide` replaces `notify`; `observe` is an additional LAIX verb.
+- LAIX severity includes `medium`/`low`; the adapter maps RECALL `warning` to `medium`.
+- Scores are LAIX’s scale, not the old local scale.
+- `EvidenceRef` carries `id`, `kind`, `quote`, `confidence`, `source`; RECALL keeps speaker and time
+  in `metadata.evidenceDetails`.
+- `Context` supports `minSeverity`, `sent`, `stopped`, `escalateAfterHours` and `learned`; the adapter
+  currently passes the fields RECALL has and the computed learned adjustments.
 
-- a named LAIX owner for the packages;
-- a decision on whether LAIX or PPMA owns experience state (open question in LAIX interfaces);
-- a real evaluation set for interruption precision;
-- a signature/key story for the record;
-- removing RECALL's own analysis, which still duplicates PPMA/LAIX.
+## Tests
 
-Until those are decided, the packages are a clean extraction, not an integration.
+- `web/src/lib/laix.attention.test.ts` — real `decide`, `guide`, `signalId`, quiet hours, snooze,
+  budget, learning, adapter mapping and merge.
+- `web/src/lib/laix.decisionRecord.test.ts` — lifecycle against the real `laix` record API.
+- `web/src/lib/laix.packaging.test.ts` — local packages absent; only `laix` imported; vendored
+  dependency present.
+
+```bash
+cd web
+npm test
+npm run build
+npm run lint
+```
+
+## What is still not solved
+
+- The fingerprint is a content hash, not a signature.
+- The canonical score scale and CUE-vs-TS differences remain a LAIX product decision.
+- RECALL still has its own transcript analysis; that remains a PPMA/LAIX boundary question.

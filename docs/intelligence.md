@@ -95,15 +95,14 @@ npm run preview -- --port 5190
 # Review, then Approve findings & send to PPMA
 ```
 
-## LAIX modules
+## LAIX
 
-The timing policy and the decision record are now extracted into two LAIX-ready packages:
+The attention decision and the decision record come from the real `laix@0.2.1` package:
 
-- `@laix/attention` — wait / notify / ask / act / verify / escalate, with quiet hours, interruption
-  budget and outcome learning;
-- `@laix/decision-record` — what · why · evidence · approval · audit · undo, with a fingerprint.
+- attention: `decide(context, signals)` with RECALL's adapter mapping items to signals;
+- decision record: `createDecisionRecord` / `approveRecord` from the same package.
 
-RECALL imports both and acts as the first reference app. See
+RECALL owns capture, evidence, meeting links and the UI. See
 [`docs/laix-extraction.md`](laix-extraction.md).
 
 ## Why this is the product

@@ -571,7 +571,7 @@ export interface AttentionItem {
   confidence: number;
   score: number;
   due?: string;
-  laix_action?: "wait" | "notify" | "ask" | "act" | "verify" | "escalate";
+  laix_action?: "wait" | "observe" | "guide" | "ask" | "act" | "verify" | "escalate";
   laix_reason?: string;
   laix_score?: number;
 }

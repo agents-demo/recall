@@ -1,4 +1,12 @@
-import { decide, type Candidate, type Decision, type Feedback, type Outcome } from "@laix/attention";
+import {
+  decide,
+  OutcomeLog,
+  type Context,
+  type Decision,
+  type Feedback,
+  type Outcome,
+  type Signal,
+} from "laix";
 import type { AttentionFeedback, AttentionItem } from "../types";
 
 export interface LaixAttentionInput {
@@ -14,6 +22,13 @@ export interface LaixAttentionResult {
   decisions: Decision[];
 }
 
+const SEVERITY: Record<AttentionItem["severity"], NonNullable<Signal["severity"]>> = {
+  info: "info",
+  warning: "medium",
+  high: "high",
+  critical: "critical",
+};
+
 const SEVERITY_COST: Record<AttentionItem["severity"], number> = {
   info: 0.12,
   warning: 0.24,
@@ -21,16 +36,16 @@ const SEVERITY_COST: Record<AttentionItem["severity"], number> = {
   critical: 0.08,
 };
 
-export function toCandidate(item: AttentionItem): Candidate {
+/** RECALL attention item -> LAIX signal. */
+export function toSignal(item: AttentionItem): Signal {
   return {
     id: item.id,
     kind: item.kind,
     title: item.title,
     detail: item.detail,
-    why: item.why,
-    severity: item.severity,
+    severity: SEVERITY[item.severity],
     confidence: Math.max(0, Math.min(1, item.confidence)),
-    due: item.due,
+    due: item.due ?? null,
     evidenceRefs: item.evidence_id ? [item.evidence_id] : [],
     interruptionCost: SEVERITY_COST[item.severity],
     reversible: item.kind !== "consent_gap" && item.kind !== "contradiction",
@@ -57,10 +72,10 @@ function toOutcomes(feedback: Record<string, AttentionFeedback> | undefined): Ou
   if (!feedback) return [];
   const at = new Date(0).toISOString();
   return Object.entries(feedback)
-    .filter(([, value]) => value.state === "accepted" || value.state === "assigned" || value.state === "dismissed" || value.state === "wrong")
+    .filter(([, value]) => ["accepted", "assigned", "dismissed", "wrong"].includes(value.state))
     .map(([candidateId, value]) => ({
       candidateId,
-      action: "notify" as const,
+      action: "guide" as const,
       result:
         value.state === "accepted" || value.state === "assigned"
           ? ("helped" as const)
@@ -78,6 +93,13 @@ function parseQuietHours(value: string | undefined): [string, string] | null {
   return match ? [match[1], match[2]] : null;
 }
 
+/** LAIX learned adjustments are points on the score; OutcomeLog returns -0.2..0.2. */
+function learnedAdjustments(items: AttentionItem[], feedback: Record<string, AttentionFeedback> | undefined): Record<string, number> {
+  const log = new OutcomeLog(toOutcomes(feedback));
+  const kinds = new Set(items.map((item) => item.kind));
+  return Object.fromEntries([...kinds].map((kind) => [kind, Math.round(log.adjustment(kind) * 1000) / 10]));
+}
+
 const OVERLAP = new Set(["promise_due", "unanswered_question", "correction_needed", "redaction_review"]);
 
 /** Merge analysis-derived items with the rule-derived base without duplicating a meeting's topics. */
@@ -91,23 +113,22 @@ export function mergeAttention(base: AttentionItem[], analysis: AttentionItem[],
 }
 
 /**
- * Run RECALL's attention items through the LAIX attention decision layer.
- * The app still owns the UI and the evidence route; LAIX owns the timing decision.
+ * Run RECALL's attention items through the real LAIX attention policy.
+ * The app still owns the evidence route, the list and the UI; LAIX owns the decision.
  */
 export function decideAttention(items: AttentionItem[], input: LaixAttentionInput = {}): LaixAttentionResult {
   if (items.length === 0) return { items, decisions: [] };
-  const decisions = decide(
-    {
-      now: input.now ?? new Date(),
-      quietHours: parseQuietHours(input.quietHours),
-      interruptionBudget: input.interruptionBudget,
-      minConfidence: input.minConfidence,
-      feedback: toFeedback(input.feedback),
-      outcomes: toOutcomes(input.feedback),
-    },
-    items.map(toCandidate),
-  );
-  const byId = new Map(decisions.map((decision) => [decision.candidateId, decision]));
+  const feedback = toFeedback(input.feedback);
+  const context: Context = {
+    now: input.now ?? new Date(),
+    quietHours: parseQuietHours(input.quietHours),
+    interruptionBudget: input.interruptionBudget,
+    minConfidence: input.minConfidence,
+    feedback,
+    learned: learnedAdjustments(items, input.feedback),
+  };
+  const decisions = decide(context, items.map(toSignal));
+  const byId = new Map(decisions.map((decision) => [decision.signalId, decision]));
   return {
     items: items.map((item) => {
       const decision = byId.get(item.id);
