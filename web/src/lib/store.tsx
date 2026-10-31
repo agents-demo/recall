@@ -58,7 +58,7 @@ import { deriveAttention, nudgeMetrics, attentionForMeeting as attentionForMeeti
 import { converse } from "./conversation";
 import { defaultConnectorState } from "./connectors";
 import { buildMeeting, parseCaseFile } from "./caseImport";
-import { decideAttention } from "./laixAttention";
+import { decideAttention, mergeAttention } from "./laixAttention";
 import { approveRecord, createDecisionRecord, type DecisionRecord, type EvidenceRef } from "@laix/decision-record";
 import { sendEvent, sendCommand } from "./ppmaClient";
 import { clearVault, encryptionAvailable, loadVault, saveVault } from "./vault";
@@ -837,13 +837,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [activeMeetings, state.analysisByMeeting, state.attentionFeedback]);
 
   const attention = useMemo(() => {
-    const analyzed = new Set(Object.keys(state.analysisByMeeting));
-    const overlapping = new Set(["promise_due", "unanswered_question", "correction_needed", "redaction_review"]);
-    const base = (pack ? deriveAttention(pack, activeMeetings, notes, events, state.attentionFeedback) : []).filter(
-      (item) => !(item.meeting_id && analyzed.has(item.meeting_id) && overlapping.has(item.kind)),
-    );
-    const seen = new Set(base.map((item) => item.id));
-    const combined = [...analysisAttention, ...base.filter((item) => !seen.has(item.id))].sort((a, b) => b.score - a.score);
+    const base = pack ? deriveAttention(pack, activeMeetings, notes, events, state.attentionFeedback) : [];
+    const combined = mergeAttention(base, analysisAttention, Object.keys(state.analysisByMeeting)).sort((a, b) => b.score - a.score);
     return decideAttention(combined, {
       quietHours: state.settings.quietHours,
       interruptionBudget: state.settings.attentionBudget,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { OutcomeLog, decide, type Candidate } from "@laix/attention";
-import { decideAttention, toCandidate } from "./laixAttention";
+import { decideAttention, mergeAttention, toCandidate } from "./laixAttention";
 import type { AttentionItem } from "../types";
 
 const candidate = (overrides: Partial<Candidate> = {}): Candidate => ({
@@ -81,5 +81,55 @@ describe("LAIX attention decision layer", () => {
     const result = decideAttention([item], { now: new Date("2026-11-04T09:00:00Z") });
     expect(result.items[0].laix_action).toBe("ask");
     expect(result.items[0].laix_score).toBeGreaterThan(0);
+  });
+
+  it("merges analysis and rule items without dropping the base", () => {
+    const base: AttentionItem[] = [
+      {
+        id: "promise_due:m1",
+        kind: "promise_due",
+        severity: "high",
+        title: "Promise is due",
+        detail: "m1",
+        why: "due",
+        meeting_id: "m1",
+        route: "/meetings/m1",
+        action_label: "Open",
+        confidence: 0.9,
+        score: 80,
+      },
+      {
+        id: "consent_gap:m2",
+        kind: "consent_gap",
+        severity: "critical",
+        title: "Consent missing",
+        detail: "m2",
+        why: "no consent",
+        meeting_id: "m2",
+        route: "/meetings/m2",
+        action_label: "Review",
+        confidence: 1,
+        score: 100,
+      },
+    ];
+    const analysis: AttentionItem[] = [
+      {
+        id: "risk:m1:1",
+        kind: "risk",
+        severity: "high",
+        title: "Runbook risk",
+        detail: "m1",
+        why: "blocked",
+        meeting_id: "m1",
+        route: "/meetings/m1?tab=intelligence",
+        action_label: "Review",
+        confidence: 0.9,
+        score: 98,
+      },
+    ];
+    const merged = mergeAttention(base, analysis, ["m1"]);
+    expect(merged.some((item) => item.id === "risk:m1:1")).toBe(true);
+    expect(merged.some((item) => item.id === "consent_gap:m2")).toBe(true);
+    expect(merged.some((item) => item.id === "promise_due:m1")).toBe(false);
   });
 });

@@ -78,6 +78,18 @@ function parseQuietHours(value: string | undefined): [string, string] | null {
   return match ? [match[1], match[2]] : null;
 }
 
+const OVERLAP = new Set(["promise_due", "unanswered_question", "correction_needed", "redaction_review"]);
+
+/** Merge analysis-derived items with the rule-derived base without duplicating a meeting's topics. */
+export function mergeAttention(base: AttentionItem[], analysis: AttentionItem[], analyzedMeetings: string[]): AttentionItem[] {
+  const analyzed = new Set(analyzedMeetings);
+  const keptBase = base.filter(
+    (item) => !(item.meeting_id && analyzed.has(item.meeting_id) && OVERLAP.has(item.kind)),
+  );
+  const seen = new Set(analysis.map((item) => item.id));
+  return [...analysis, ...keptBase.filter((item) => !seen.has(item.id))];
+}
+
 /**
  * Run RECALL's attention items through the LAIX attention decision layer.
  * The app still owns the UI and the evidence route; LAIX owns the timing decision.
