@@ -4,7 +4,8 @@ Two packages extracted from RECALL, plus the evidence needed to decide what LAIX
 
 - **Branch:** `laix/handoff-v1`
 - **Tag:** `laix-handoff-v1`
-- **Handoff commit:** resolve with `git rev-parse laix-handoff-v1^{commit}` (the tag points to the commit that contains this file)
+- **Extraction commit:** `ec367c6cacc3239cb5799fb52a92b2aaa6acd519`
+- **Handoff commit:** the commit that contains this file; resolve with `git rev-parse laix-handoff-v1^{commit}`
 - **CUE contract used for comparison:** `laix-attention` v1.1.0, CUE commit `a4c6bef885fe0d59a1885656a801c5478cc1be11`
 
 ## Packages
