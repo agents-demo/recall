@@ -95,6 +95,17 @@ npm run preview -- --port 5190
 # Review, then Approve findings & send to PPMA
 ```
 
+## LAIX modules
+
+The timing policy and the decision record are now extracted into two LAIX-ready packages:
+
+- `@laix/attention` — wait / notify / ask / act / verify / escalate, with quiet hours, interruption
+  budget and outcome learning;
+- `@laix/decision-record` — what · why · evidence · approval · audit · undo, with a fingerprint.
+
+RECALL imports both and acts as the first reference app. See
+[`docs/laix-extraction.md`](laix-extraction.md).
+
 ## Why this is the product
 
 A transcript is not memory. A summary is not proof. The value is a system that can say:

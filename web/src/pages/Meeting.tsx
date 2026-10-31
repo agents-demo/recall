@@ -73,6 +73,7 @@ export default function Meeting() {
     approveAnalysis,
     isAnalysisApproved,
     analysisRunning,
+    decisionRecordFor,
     say,
   } = store;
 
@@ -168,6 +169,7 @@ export default function Meeting() {
   const appliedRedactions = meeting.redactions.filter((r) => r.status === "applied");
   const analysis = analysisFor(meeting.id);
   const approved = isAnalysisApproved(meeting.id);
+  const decisionRecord = decisionRecordFor(meeting.id);
   const quoteFor = (utteranceId: string) => meeting.utterances.find((row) => row.id === utteranceId);
 
   if (meeting.status === "tombstoned") {
@@ -468,6 +470,22 @@ export default function Meeting() {
                   </button>
                   <span className="xsmall soft">The agent proposes; a human approves. No finding is written to project memory without this step.</span>
                 </div>
+
+                {decisionRecord && (
+                  <div className="decision-record">
+                    <div className="row between">
+                      <span className="kicker">LAIX decision record</span>
+                      <Chip tone="green">{decisionRecord.status}</Chip>
+                    </div>
+                    <p>{decisionRecord.decision.text}</p>
+                    <div className="analysis-trace">
+                      <Chip>{decisionRecord.evidence.length} evidence refs</Chip>
+                      <Chip>{decisionRecord.approval.by ?? "pending"}</Chip>
+                      <Chip tone="violet">{decisionRecord.hash}</Chip>
+                    </div>
+                    <span className="xsmall soft">what · why · evidence · approval · audit · undo — portable JSON for LAIX.</span>
+                  </div>
+                )}
               </>
             )}
           </Panel>

@@ -58,6 +58,8 @@ import { deriveAttention, nudgeMetrics, attentionForMeeting as attentionForMeeti
 import { converse } from "./conversation";
 import { defaultConnectorState } from "./connectors";
 import { buildMeeting, parseCaseFile } from "./caseImport";
+import { decideAttention } from "./laixAttention";
+import { approveRecord, createDecisionRecord, type DecisionRecord, type EvidenceRef } from "@laix/decision-record";
 import { sendEvent, sendCommand } from "./ppmaClient";
 import { clearVault, encryptionAvailable, loadVault, saveVault } from "./vault";
 
@@ -104,6 +106,7 @@ interface Persisted {
   project: ProjectState | null;
   analysisByMeeting: Record<string, AnalysisResult>;
   analysisApproved: Record<string, boolean>;
+  decisionRecords: DecisionRecord[];
   settings: Settings;
   killSwitch: boolean;
   lastReplay: { event_id: string; at: string; result: string } | null;
@@ -160,6 +163,7 @@ const EMPTY: Persisted = {
   project: null,
   analysisByMeeting: {},
   analysisApproved: {},
+  decisionRecords: [],
   settings: DEFAULT_SETTINGS,
   killSwitch: false,
   lastReplay: null,
@@ -442,6 +446,7 @@ interface StoreValue {
   approveAnalysis: (meetingId: string) => void;
   isAnalysisApproved: (meetingId: string) => boolean;
   analysisRunning: string | null;
+  decisionRecordFor: (meetingId: string) => DecisionRecord | null;
   addFieldNote: (text: string, location: string, photo?: { label: string; ocr: string }) => string;
   setSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
   setSettings: (patch: Partial<Settings>) => void;
@@ -832,10 +837,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [activeMeetings, state.analysisByMeeting, state.attentionFeedback]);
 
   const attention = useMemo(() => {
-    const base = pack ? deriveAttention(pack, activeMeetings, notes, events, state.attentionFeedback) : [];
+    const analyzed = new Set(Object.keys(state.analysisByMeeting));
+    const overlapping = new Set(["promise_due", "unanswered_question", "correction_needed", "redaction_review"]);
+    const base = (pack ? deriveAttention(pack, activeMeetings, notes, events, state.attentionFeedback) : []).filter(
+      (item) => !(item.meeting_id && analyzed.has(item.meeting_id) && overlapping.has(item.kind)),
+    );
     const seen = new Set(base.map((item) => item.id));
-    return [...analysisAttention, ...base.filter((item) => !seen.has(item.id))].sort((a, b) => b.score - a.score);
-  }, [pack, activeMeetings, notes, events, state.attentionFeedback, analysisAttention]);
+    const combined = [...analysisAttention, ...base.filter((item) => !seen.has(item.id))].sort((a, b) => b.score - a.score);
+    return decideAttention(combined, {
+      quietHours: state.settings.quietHours,
+      interruptionBudget: state.settings.attentionBudget,
+      minConfidence: state.settings.attentionThreshold,
+      feedback: state.attentionFeedback,
+    }).items;
+  }, [pack, activeMeetings, notes, events, state.attentionFeedback, analysisAttention, state.settings.quietHours, state.settings.attentionBudget, state.settings.attentionThreshold, state.analysisByMeeting]);
   const attentionMetrics = useMemo(() => nudgeMetrics(state.attentionFeedback), [state.attentionFeedback]);
   const attentionForMeeting = useCallback(
     (meetingId: string) => {
@@ -1610,10 +1625,68 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const approveAnalysis = useCallback(
     (meetingId: string) => {
-      setState((prev) => ({ ...prev, analysisApproved: { ...prev.analysisApproved, [meetingId]: true } }));
-      say("Findings approved by a human. The agent proposed; you decided.");
+      const meeting = meetingById(meetingId);
+      const analysis = state.analysisByMeeting[meetingId];
+      let record: DecisionRecord | null = null;
+      if (meeting && analysis) {
+        const evidence = new Map<string, EvidenceRef>();
+        const add = (utteranceId: string, kind: string, confidence?: number) => {
+          const line = meeting.utterances.find((row) => row.id === utteranceId);
+          if (!line || evidence.has(line.id)) return;
+          evidence.set(line.id, {
+            id: line.id,
+            kind,
+            quote: line.text,
+            speaker: meeting.participants.find((person) => person.id === line.speaker_id)?.name ?? "Speaker",
+            start: line.start,
+            end: line.end,
+            confidence: confidence ?? line.confidence,
+            source: `recall://captures/${meeting.capture_id}`,
+          });
+        };
+        analysis.decisions.forEach((item) => add(item.evidence_id, "decision", item.confidence));
+        analysis.actions.forEach((item) => add(item.evidence_id, "action", item.confidence));
+        analysis.questions.forEach((item) => add(item.evidence_id, "question", 0.9));
+        analysis.risks.forEach((item) => add(item.evidence_id, "risk", 0.9));
+        analysis.gaps.forEach((item) => add(item.evidence_id, "gap", 0.85));
+        record = createDecisionRecord({
+          meetingId,
+          title: meeting.title,
+          summary: analysis.summary,
+          decision: analysis.summary,
+          confidence: 0.9,
+          rationale: "Human approved the agent's evidence-linked findings.",
+          evidence: [...evidence.values()],
+          alternatives: analysis.risks.map((risk) => risk.text),
+          requiresApproval: true,
+          metadata: {
+            model: analysis.trace.model,
+            latency_ms: analysis.trace.latency_ms,
+            decisions: analysis.decisions.length,
+            actions: analysis.actions.length,
+            risks: analysis.risks.length,
+          },
+        });
+        record = approveRecord(record, {
+          by: state.settings.role,
+          note: "Approved in RECALL after reviewing the quotes.",
+        });
+      }
+      setState((prev) => ({
+        ...prev,
+        analysisApproved: { ...prev.analysisApproved, [meetingId]: true },
+        decisionRecords: record
+          ? [...prev.decisionRecords.filter((item) => item.meetingId !== meetingId), record]
+          : prev.decisionRecords,
+      }));
+      say(record ? `Findings approved · decision record ${record.hash.slice(-12)} · ${record.evidence.length} evidence refs` : "Findings approved by a human. The agent proposed; you decided.");
     },
-    [say],
+    [meetingById, say, state.analysisByMeeting, state.settings.role],
+  );
+
+  const decisionRecordFor = useCallback(
+    (meetingId: string) => state.decisionRecords.find((record) => record.meetingId === meetingId) ?? null,
+    [state.decisionRecords],
   );
 
   const isAnalysisApproved = useCallback(
@@ -1843,6 +1916,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     approveAnalysis,
     isAnalysisApproved,
     analysisRunning,
+    decisionRecordFor,
     addFieldNote,
     setSetting,
     setSettings,

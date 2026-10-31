@@ -99,6 +99,20 @@ deliberately hides what a role cannot act on.
 
 ---
 
+## What’s new in v1.7
+
+**Two LAIX-ready modules, extracted from RECALL**
+
+- [`packages/laix-attention`](packages/laix-attention/README.md) — a UI-free decision layer:
+  `wait / notify / ask / act / verify / escalate`, with quiet hours, interruption budget, feedback
+  suppression and a small outcome learner.
+- [`packages/laix-decision-record`](packages/laix-decision-record/README.md) — what · why · evidence ·
+  approval · audit · undo, with a content fingerprint and a JSON Schema.
+- The app now shows **LAIX · ask/notify** on attention items and creates a **LAIX decision record**
+  when a human approves the findings.
+- Both packages are pure TypeScript: no React, no browser storage, no RECALL types.
+- See [`docs/laix-extraction.md`](docs/laix-extraction.md) for the boundary and the migration path.
+
 ## What’s new in v1.6
 
 **A real intelligence layer**
@@ -179,7 +193,7 @@ See [`docs/intelligence.md`](docs/intelligence.md) and the raw example
 - an email draft (never sent), browser extension and safe evidence API.
 
 **Still simulated:** ASR/diarization, NPU, OCR, vendor OAuth, billing and the synthetic meeting itself.
-393 of 396 checkboxes are now checked at the real, contract or simulator level. The three open items are human validations: the real team pilot, the five-stranger test and the unprompted manager boundary test.
+394 of 397 checkboxes are now checked at the real, contract or simulator level. The three open items are human validations: the real team pilot, the five-stranger test and the unprompted manager boundary test.
 
 ---
 
@@ -336,9 +350,10 @@ PPMA server suite.
 - [Live integration](docs/integration-live.md) - the exact commands that ran PPMA and the openjiuwen agent.
 - [Integration status](docs/integration-status.md) - every external dependency, why it is needed and what the app does with it.
 - [Intelligence layer](docs/intelligence.md) - raw transcript → evidence-linked findings → proactive risk → human approval → PPMA.
+- [LAIX extraction](docs/laix-extraction.md) - the two packages LAIX can take: attention and decision record.
 - [Real-case example](examples/real-case/README.md) - what to fill in, which files to upload, and how to ingest and analyse your own case.
 - [Concept](docs/concept.md) — what RECALL is, what it is not, the buyer, the business model.
-- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 393 implemented and 3 external validations.
+- [Roadmap](docs/roadmap.md) — 0A through Phase 6 plus the three v1 tracks; 394 implemented and 3 external validations.
 - [PPMA × RECALL contract](docs/integration-ppma.md) — events, commands, consent, deletion, idempotency.
 - [Architecture](docs/architecture.md) — state machine, store, event pipeline, security, production swaps.
 - [Local PPMA server](server/README.md) — signed events, memory, commands, SSE and the openjiuwen adapter.

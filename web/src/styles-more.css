@@ -915,3 +915,8 @@
 .analysis-quote { font-size: 8.4px; color: var(--muted); line-height: 1.45; font-style: italic; border-left: 1px solid var(--line); padding-left: 7px; }
 .analysis-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
 @media (max-width: 900px) { .analysis-grid { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------------ LAIX decision record */
+.decision-record { margin-top: 12px; border: 1px solid color-mix(in srgb, var(--consent) 30%, var(--line)); background: var(--consent-dim); border-radius: 9px; padding: 11px 13px; }
+.decision-record p { font-size: 9.5px; line-height: 1.5; margin: 6px 0 8px; }
+.decision-record .analysis-trace { margin-top: 0; }

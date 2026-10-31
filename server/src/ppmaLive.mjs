@@ -15,7 +15,7 @@
  *   PPMA_BASE_URL              default http://127.0.0.1:8770
  *   PPMA_SPACE                 default me
  *   PPMA_APP_ID                default capture
- *   PPMA_APP_VERSION           default 1.6.0
+ *   PPMA_APP_VERSION           default 1.7.0
  *   PPMA_APP_TOKEN_FILE        default ../.ppma-app-token
  *   PPMA_OWNER_TOKEN_FILE      default ~/.config/ppma/setup-token
  *   RECALL_SHARED_SECRET       HMAC secret the browser signs with (default recall-demo-secret)
@@ -35,7 +35,7 @@ const HOST = process.env.HOST || "127.0.0.1";
 const PPMA_BASE = (process.env.PPMA_BASE_URL || "http://127.0.0.1:8770").replace(/\/$/, "");
 const SPACE = process.env.PPMA_SPACE || "me";
 const APP_ID = process.env.PPMA_APP_ID || "capture";
-const APP_VERSION = process.env.PPMA_APP_VERSION || "1.6.0";
+const APP_VERSION = process.env.PPMA_APP_VERSION || "1.7.0";
 const SECRET = process.env.RECALL_SHARED_SECRET || "recall-demo-secret";
 const TOKEN = process.env.RECALL_TOKEN || "";
 const TOKEN_FILE = resolve(ROOT, process.env.PPMA_APP_TOKEN_FILE || ".ppma-app-token");

@@ -109,7 +109,10 @@ export default function Home() {
             {attention.slice(0, settings.attentionBudget).map((item) => (
               <article className={`attention-mini sev-${item.severity}`} key={item.id}>
                 <div className="row between">
-                  <Chip tone={item.severity === "critical" || item.severity === "high" ? "red" : "amber"}>{item.severity}</Chip>
+                  <div className="row gap6">
+                    <Chip tone={item.severity === "critical" || item.severity === "high" ? "red" : "amber"}>{item.severity}</Chip>
+                    {item.laix_action && <span title={item.laix_reason}><Chip tone="violet">LAIX · {item.laix_action}</Chip></span>}
+                  </div>
                   <span className="mono xsmall soft">{Math.round(item.score)}</span>
                 </div>
                 <Link to={item.route}><b>{item.title}</b></Link>

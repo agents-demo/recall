@@ -15,6 +15,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@laix/attention": ["../packages/laix-attention/src/index.ts"],
+      "@laix/decision-record": ["../packages/laix-decision-record/src/index.ts"]
+    },
     "types": ["vitest/globals"]
   },
   "include": ["src"]
