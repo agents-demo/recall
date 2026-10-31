@@ -1645,7 +1645,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         analysis.risks.forEach((item) => add(item.evidence_id, "risk", 0.9));
         analysis.gaps.forEach((item) => add(item.evidence_id, "gap", 0.85));
         record = createDecisionRecord({
-          meetingId,
           title: meeting.title,
           summary: analysis.summary,
           decision: analysis.summary,
@@ -1655,6 +1654,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           alternatives: analysis.risks.map((risk) => risk.text),
           requiresApproval: true,
           metadata: {
+            meetingId,
             model: analysis.trace.model,
             latency_ms: analysis.trace.latency_ms,
             decisions: analysis.decisions.length,
@@ -1671,7 +1671,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...prev,
         analysisApproved: { ...prev.analysisApproved, [meetingId]: true },
         decisionRecords: record
-          ? [...prev.decisionRecords.filter((item) => item.meetingId !== meetingId), record]
+          ? [...prev.decisionRecords.filter((item) => item.metadata.meetingId !== meetingId), record]
           : prev.decisionRecords,
       }));
       say(record ? `Findings approved · decision record ${record.hash.slice(-12)} · ${record.evidence.length} evidence refs` : "Findings approved by a human. The agent proposed; you decided.");
@@ -1680,7 +1680,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
 
   const decisionRecordFor = useCallback(
-    (meetingId: string) => state.decisionRecords.find((record) => record.meetingId === meetingId) ?? null,
+    (meetingId: string) => state.decisionRecords.find((record) => record.metadata.meetingId === meetingId) ?? null,
     [state.decisionRecords],
   );
 

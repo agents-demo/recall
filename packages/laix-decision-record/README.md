@@ -19,7 +19,6 @@ half. RECALL already has the evidence and approval workflow; this makes it porta
 interface DecisionRecord {
   id: string;
   version: 1;
-  meetingId?: string;
   title: string;
   summary: string;
   decision: { text: string; confidence: number; rationale?: string };
@@ -69,7 +68,6 @@ let record = createDecisionRecord({
   title: "Helios rollout readiness review",
   decision: "Hold the enterprise pilot on 4 November; move self-serve onboarding to 18 November.",
   confidence: 0.94,
-  meetingId: "mtg_1",
   evidence: [
     { id: "ev_3", kind: "decision", quote: "Then we hold the enterprise pilot on the fourth…", speaker: "Dana Whitfield", start: 68 },
   ],
@@ -96,5 +94,9 @@ and shows the fingerprint. LAIX can take the package and the record unchanged.
 
 ## Tests
 
-Contract tests live in `web/src/lib/laix.decisionRecord.test.ts` so they run with the app's Vitest
-setup; move them next to the package when it is extracted.
+Package-local contract tests use Node's built-in test runner with TypeScript type stripping:
+
+```bash
+cd packages/laix-decision-record
+npm test
+```

@@ -1,0 +1,31 @@
+{
+  "name": "laix-decision-record-replay-v1",
+  "note": "Deterministic replay: fixed now and id, no wall clock, no random values. The test executes the steps in order.",
+  "create": {
+    "id": "dr_replay_1",
+    "now": "2026-11-04T10:00:00Z",
+    "input": {
+      "title": "Helios rollout readiness review",
+      "decision": "Hold the enterprise pilot on 4 November; move self-serve onboarding to 18 November.",
+      "confidence": 0.94,
+      "evidence": [
+        {
+          "id": "e3",
+          "kind": "decision",
+          "quote": "Then we hold the enterprise pilot on the fourth and move self-serve onboarding to the eighteenth.",
+          "speaker": "Dana Whitfield",
+          "start": 68,
+          "confidence": 0.95
+        }
+      ],
+      "requiresApproval": true,
+      "metadata": { "meetingId": "mtg_replay_1" }
+    }
+  },
+  "steps": [
+    { "action": "create", "expectedStatus": "draft" },
+    { "action": "approve", "by": "owner", "at": "2026-11-04T10:05:00Z", "expectedStatus": "approved" },
+    { "action": "execute", "by": "ppma", "at": "2026-11-04T10:06:00Z", "expectedStatus": "executed" },
+    { "action": "undo", "by": "owner", "at": "2026-11-04T10:07:00Z", "reason": "Wrong meeting.", "expectedStatus": "undone" }
+  ]
+}

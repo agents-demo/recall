@@ -44,7 +44,6 @@ export interface Undo {
 export interface DecisionRecord {
   id: string;
   version: 1;
-  meetingId?: string;
   title: string;
   summary: string;
   decision: {
@@ -70,7 +69,6 @@ export interface CreateDecisionInput {
   decision: string;
   confidence?: number;
   rationale?: string;
-  meetingId?: string;
   evidence: EvidenceRef[];
   alternatives?: string[];
   requiresApproval?: boolean;
@@ -149,7 +147,6 @@ export function createDecisionRecord(input: CreateDecisionInput, options: Create
   const base: DecisionRecord = {
     id: options.id ?? newId(),
     version: 1,
-    meetingId: input.meetingId,
     title: input.title.trim(),
     summary: (input.summary ?? input.decision).trim(),
     decision: {

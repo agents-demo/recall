@@ -93,12 +93,18 @@ The JSON Schema is at
 
 ## Verification
 
-- `web/src/lib/laix.attention.test.ts` — 7 contract tests (ask, escalate, quiet hours, snooze, budget,
-  outcome learning, adapter).
-- `web/src/lib/laix.decisionRecord.test.ts` — 5 contract tests (create, evidence requirement, approve,
-  tamper detection, reject/execute/undo).
+- `packages/laix-attention`: 11 package tests; `packages/laix-decision-record`: 6 package tests.
+- `packages/laix-attention/CONFORMANCE.md`: 23 CUE vectors compared; **7 pass, 16 fail**, reported by
+  mismatch class. This is evidence, not a gate.
+- `web/src/lib/laix.attention.test.ts` and `web/src/lib/laix.decisionRecord.test.ts` remain the app
+  adapter tests.
 - `web` build passes with the packages imported through Vite aliases.
 - The app shows `LAIX · ask/notify` on Home and a `LAIX decision record` after approval.
+
+## App residue removed
+
+`meetingId` is no longer a field of `DecisionRecord` or `CreateDecisionInput`. RECALL passes it as
+`metadata.meetingId` in the app adapter.
 
 ## What is still missing for LAIX
 

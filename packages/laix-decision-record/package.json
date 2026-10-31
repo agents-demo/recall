@@ -9,7 +9,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "files": ["src", "schema", "fixtures"],
+  "sideEffects": false,
   "scripts": {
-    "test": "vitest run"
+    "test": "node --experimental-strip-types --test test/decisionRecord.test.ts test/replay.test.ts"
   }
 }

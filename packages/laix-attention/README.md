@@ -102,5 +102,17 @@ The evidence refs and human approval are already in RECALL; this module supplies
 
 ## Tests
 
-The contract tests live in `web/src/lib/laix.attention.test.ts` so they run with the app's Vitest
-setup. A LAIX team taking the package can move them next to the package unchanged.
+Package-local contract tests use Node's built-in test runner with TypeScript type stripping:
+
+```bash
+cd packages/laix-attention
+npm test
+```
+
+The CUE conformance report is a separate, non-failing command:
+
+```bash
+npm run conformance
+```
+
+It writes [`CONFORMANCE.md`](CONFORMANCE.md).

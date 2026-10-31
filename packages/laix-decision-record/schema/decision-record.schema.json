@@ -7,7 +7,6 @@
   "properties": {
     "id": { "type": "string", "minLength": 1 },
     "version": { "const": 1 },
-    "meetingId": { "type": "string" },
     "title": { "type": "string", "minLength": 1 },
     "summary": { "type": "string" },
     "decision": {

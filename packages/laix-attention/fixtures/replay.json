@@ -1,0 +1,49 @@
+{
+  "name": "laix-attention-replay-v1",
+  "note": "Deterministic replay: fixed now, fixed candidate ids, no wall clock, no random values. Expected values are the current TS policy, not CUE.",
+  "cases": [
+    {
+      "id": "high_approval_asks",
+      "context": { "now": "2026-11-04T09:00:00Z" },
+      "candidates": [
+        { "id": "s1", "kind": "risk", "title": "Signal", "severity": "high", "confidence": 0.9, "requiresApproval": true }
+      ],
+      "expected": [
+        { "candidateId": "s1", "action": "ask", "score": 79, "deliver": true, "reason": "The action needs a human decision." }
+      ]
+    },
+    {
+      "id": "warning_quiet_waits",
+      "context": { "now": "2026-11-04T23:00:00Z", "quietHours": ["20:00", "07:00"] },
+      "candidates": [
+        { "id": "s1", "kind": "risk", "title": "Signal", "severity": "warning", "confidence": 0.9, "due": "2026-11-20T09:00:00Z", "requiresApproval": false }
+      ],
+      "expected": [
+        { "candidateId": "s1", "action": "wait", "score": 57, "deliver": false, "reason": "Quiet hours: hold until the user is available." }
+      ]
+    },
+    {
+      "id": "critical_escalates",
+      "context": { "now": "2026-11-04T09:00:00Z" },
+      "candidates": [
+        { "id": "s1", "kind": "risk", "title": "Signal", "severity": "critical", "confidence": 0.9, "requiresApproval": false }
+      ],
+      "expected": [
+        { "candidateId": "s1", "action": "escalate", "score": 99, "deliver": true, "reason": "Critical severity: a human must see it now." }
+      ]
+    },
+    {
+      "id": "snoozed_waits_until_expiry",
+      "context": {
+        "now": "2026-11-04T09:00:00Z",
+        "feedback": { "s1": { "state": "snoozed", "until": "2026-11-05T09:00:00Z" } }
+      },
+      "candidates": [
+        { "id": "s1", "kind": "risk", "title": "Signal", "severity": "high", "confidence": 0.9, "requiresApproval": true }
+      ],
+      "expected": [
+        { "candidateId": "s1", "action": "wait", "score": 0, "deliver": false, "reason": "Suppressed: snoozed." }
+      ]
+    }
+  ]
+}
